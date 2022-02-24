@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public class Sampler2D {
 
-		public static string defaultPath = Path.Combine(RaytracedRenderer.rootPath, "Textures");
+		public static string defaultPath = Path.Combine(RaytracerEngine.rootPath, "Textures");
 
 		public Color[,] texture;
 		public readonly int width;
@@ -62,7 +62,7 @@ namespace Raytracer {
 		public Color Sample(float x, float y, bool alwaysSample = false) {
 			while(x < 0) x++;
 			while(y < 0) y++;
-			if(!RaytracedRenderer.CurrentSettings.sampleTextures && !alwaysSample) return averageColor;
+			if(!RaytracerEngine.CurrentSettings.sampleTextures && !alwaysSample) return averageColor;
 			x -= (float)Math.Floor(x);
 			y -= (float)Math.Floor(y);
 			y = 1 - y;

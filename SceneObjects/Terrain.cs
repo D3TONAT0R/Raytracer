@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using static Raytracer.RaytracedRenderer;
+using static Raytracer.RaytracerEngine;
 
 namespace Raytracer {
 
@@ -21,7 +21,7 @@ namespace Raytracer {
 
 		public Sampler2D heightmap;
 		[DataIdentifier("HEIGHTMAP")]
-		string heightmapFile;
+		public string heightmapFile;
 
 		public Terrain() : base(null) { }
 
@@ -35,8 +35,11 @@ namespace Raytracer {
 
 		protected override void OnInit() {
 			heightmap = Sampler2D.Create(heightmapFile);
-			material.mappingType = TextureMappingType.LocalYProj;
-			material.textureTiling = new TilingVector(0, 0, 1f / dimensions.X, 1f / dimensions.Z);
+			if (material != null)
+			{
+				material.mappingType = TextureMappingType.LocalYProj;
+				material.textureTiling = new TilingVector(0, 0, 1f / dimensions.X, 1f / dimensions.Z);
+			}
 		}
 
 		public override void SetupAABBs() {
@@ -116,7 +119,10 @@ namespace Raytracer {
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos) {
-			throw new NotImplementedException();
+			var h = GetHeightAt(GetTerrainCoord(worldPos).XZ());
+			h *= dimensions.Y;
+			h += localPosition.Y;
+			return Math.Abs(h - worldPos.Y);
 		}
 	}
 }

@@ -167,6 +167,7 @@ namespace Raytracer {
 		static Dictionary<Type, Func<string, object>> parsingTable = new Dictionary<Type, Func<string, object>>() {
 			{ typeof(int), (s) => int.Parse(s) },
 			{ typeof(float), (s) => float.Parse(s) },
+			{ typeof(string), (s) => s },
 			{ typeof(Vector3), (s) => ParseVector3(s) },
 			{ typeof(Color), (s) => ParseColor(s) },
 			{ typeof(TilingVector), (s) => ParseTiling(s) },

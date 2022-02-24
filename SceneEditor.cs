@@ -22,9 +22,9 @@ namespace Raytracer {
 		}
 
 		static void UpdateInspector() {
-			if(RaytracedRenderer.infoWindow.IsInitialized) {
-				RaytracedRenderer.infoWindow.Invoke((Action)delegate {
-					var inspector = RaytracedRenderer.infoWindow.propertiesPanel;
+			if(RaytracerEngine.infoWindow.IsInitialized) {
+				RaytracerEngine.infoWindow.Invoke((Action)delegate {
+					var inspector = RaytracerEngine.infoWindow.propertiesPanel;
 					inspector.Controls.Clear();
 					if(inspectedObject == null) return;
 					var set = ReflectionTest.GetExposedFieldSet(inspectedObject.GetType());
@@ -102,7 +102,7 @@ namespace Raytracer {
 			num.Value = (decimal)f;
 			num.ValueChanged += (object sender, EventArgs e) => {
 				feedback((float)num.Value);
-				RaytracedRenderer.RedrawScreen(false);
+				RaytracerEngine.RedrawScreen(false);
 			};
 			num.Increment = 0.5m;
 			return num;
@@ -126,7 +126,7 @@ namespace Raytracer {
 			box.SelectedItem = index;
 			box.SelectedValueChanged += (object sender, EventArgs e) => {
 				feedback((string)box.SelectedItem);
-				RaytracedRenderer.RedrawScreen(false);
+				RaytracerEngine.RedrawScreen(false);
 			};
 			return box;
 		}

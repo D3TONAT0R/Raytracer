@@ -18,7 +18,7 @@ namespace Raytracer {
 		public Color ambientColor = new Color(0.2f, 0.2f, 0.25f);
 		public Color simpleSunColor = new Color(1.00f, 0.96f, 0.88f);
 
-		public float? fogDistance = 40f;
+		public float? fogDistance = 250f;
 		public Color fogColor = System.Drawing.Color.LightSkyBlue;
 
 		public List<SceneObject> sceneContent = new List<SceneObject>();
@@ -40,9 +40,9 @@ namespace Raytracer {
 				(0.49f, System.Drawing.Color.DarkOliveGreen),
 				(0.51f, System.Drawing.Color.LightBlue),
 				(1f, System.Drawing.Color.White));
-			skyboxTexture = Sampler2D.Create("skybox.png");
+			skyboxTexture = Sampler2D.Create("skybox");
 			if(skyboxTexture == null) {
-				skyboxTexture = Sampler2D.Create("skydome.png");
+				skyboxTexture = Sampler2D.Create("skydome");
 				if(skyboxTexture != null) skyboxIsSpherical = true;
 			}
 			/*skybox = new Gradient(

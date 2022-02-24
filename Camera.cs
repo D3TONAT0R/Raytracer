@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static Raytracer.RaytracedRenderer;
+using static Raytracer.RaytracerEngine;
 using static Raytracer.CurrentPixelRenderData;
 
 namespace Raytracer {
@@ -78,49 +78,13 @@ namespace Raytracer {
 		public void Render(Scene scene, Bitmap buffer) {
 			if(rendering) return;
 			rendering = true;
-			stripsRendered = 0;
 			scene.OnBeginRender(CurrentSettings.rayMarchDistanceInVoid);
 			SetScreenParams(buffer.Width, buffer.Height);
-			int width = buffer.Width;
-			int height = buffer.Height;
-			var pixelDepth = Bitmap.GetPixelFormatSize(buffer.PixelFormat) / 8;
-			lock(locker) {
-				var rect = new Rectangle(0, 0, width, height);
-				var data = buffer.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadWrite, buffer.PixelFormat);
-				var byteBuffer = new byte[height * width * pixelDepth];
-				Marshal.Copy(data.Scan0, byteBuffer, 0, byteBuffer.Length);
-
-				Parallel.For(0, height, i => DrawPixelRow(i, scene, byteBuffer, width, height, pixelDepth));
-
-				Marshal.Copy(byteBuffer, 0, data.Scan0, byteBuffer.Length);
-				buffer.UnlockBits(data);
+			lock(locker)
+			{
+				SceneRenderer.RenderScene(this, scene, buffer);
 			}
 			rendering = false;
-		}
-
-		private void DrawPixelRow(int y1, Scene scene, byte[] buffer, int width, int height, int depth) {
-			for(int x = 0; x < width; x++) {
-				DrawPixel(x, y1, scene, buffer, width, height, depth);
-			}
-			RaytracedRenderer.stripsRendered++;
-		}
-
-		private void DrawPixel(int x, int y, Scene scene, byte[] buffer, int width, int height, int depth) {
-			viewportCoord = new Vector2(x / (float)screenWidth, y / (float)screenHeight) * 2f - Vector2.One;
-			pixelX = x;
-			pixelY = y;
-
-			var ray = ScreenPointToRay(viewportCoord);
-			var color = TraceRay(scene, ray).SetAlpha(1).DrawingColor;
-
-			int by = height - y - 1;
-			int pos = (by * width + x) * depth;
-
-			buffer[pos + 0] = color.B;
-			buffer[pos + 1] = color.G;
-			buffer[pos + 2] = color.R;
-
-			//buffer.SetPixel(x, buffer.Height - y - 1, color.SetAlpha(1).DrawingColor);
 		}
 
 		private float Lerp(float a, float b, float t) {

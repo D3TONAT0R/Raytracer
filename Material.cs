@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using static Raytracer.RaytracedRenderer;
+using static Raytracer.RaytracerEngine;
 
 namespace Raytracer {
 
@@ -162,10 +162,10 @@ namespace Raytracer {
 			} else {
 				output = Color.Black;
 			}
-			if(RaytracedRenderer.Scene.fogDistance != null) {
+			if(RaytracerEngine.Scene.fogDistance != null) {
 				//Apply fog
-				float fogDensity = Math.Min(1, distance / (float)RaytracedRenderer.Scene.fogDistance);
-				output = Color.Lerp(output, RaytracedRenderer.Scene.fogColor, fogDensity);
+				float fogDensity = Math.Min(1, distance / (float)RaytracerEngine.Scene.fogDistance);
+				output = Color.Lerp(output, RaytracerEngine.Scene.fogColor, fogDensity);
 			}
 			return output;
 		}
@@ -180,13 +180,13 @@ namespace Raytracer {
 			//Apply transparency
 			if(mainColor.a < 1) {
 				var newray = new Ray(ray.position, MathUtils.Refract(ray.Direction, nrm, refraction), ray.reflectionIteration+1, ray.sourceScreenPos);
-				var backColor = TraceRay(RaytracedRenderer.Scene, newray, shape) * mainColor;
+				var backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * mainColor;
 				final = Color.Lerp(backColor, final, mainColor.a);
 			}
 			//Apply reflections
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentSettings.maxBounces) {
 				var newray = new Ray(ray.position, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
-				var reflColor = TraceRay(RaytracedRenderer.Scene, newray, shape) * reflectivity;
+				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * reflectivity;
 				final += reflColor;
 			}
 			return final;
@@ -199,12 +199,12 @@ namespace Raytracer {
 				float y = 0.5f + nrm.Y * 0.5f;
 				float z = 0.5f + nrm.Z * -0.5f;
 				float brightness = MathUtils.Step(Math.Max(0, Math.Min(1, y * 0.6f + z * 0.25f + x * 0.15f)), 0.33f);
-				return Color.Lerp(RaytracedRenderer.Scene.ambientColor, RaytracedRenderer.Scene.simpleSunColor, brightness);
+				return Color.Lerp(RaytracerEngine.Scene.ambientColor, RaytracerEngine.Scene.simpleSunColor, brightness);
 			} else {
 				//Apply "complex" lighting
-				Color lightCol = RaytracedRenderer.Scene.ambientColor;
-				foreach(var l in RaytracedRenderer.Scene.GetContributingLights(point)) {
-					lightCol += l.GetLightAtPoint(RaytracedRenderer.Scene, point, nrm, lighting, shape, out bool shadow);
+				Color lightCol = RaytracerEngine.Scene.ambientColor;
+				foreach(var l in RaytracerEngine.Scene.GetContributingLights(point)) {
+					lightCol += l.GetLightAtPoint(RaytracerEngine.Scene, point, nrm, lighting, shape, out bool shadow);
 					if(CurrentSettings.specularHighlights && !shadow) {
 						lightCol += l.GetSpecularHighlight(point, reflNrm, smoothness);
 					}

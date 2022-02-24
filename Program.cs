@@ -11,7 +11,7 @@ namespace Raytracer
 
 		static void Main()
 		{
-			new RaytracedRenderer().Run();
+			new RaytracerEngine().Run();
 		}
 	}
 }

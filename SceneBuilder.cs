@@ -37,7 +37,7 @@ namespace Raytracer {
 
 		public static Scene Generate(int index) {
 			if(index == 0) {
-				return new SceneFileLoader().CreateFromFile(System.IO.File.ReadAllLines(System.IO.Path.Combine(RaytracedRenderer.rootPath, "scene_4.txt")), 0);
+				return new SceneFileLoader().CreateFromFile(System.IO.File.ReadAllLines(System.IO.Path.Combine(RaytracerEngine.rootPath, "scene_4.txt")), 0);
 			} else if(index == 1) {
 				return GenerateSphereWorld();
 			} else if(index == 2) {
@@ -103,14 +103,14 @@ namespace Raytracer {
 				sn.fogDistance = 160f;
 
 				//Animation
-				var prop = new AnimatedProperty(RaytracedRenderer.instance.camera, "POSITION",
+				var prop = new AnimatedProperty(RaytracerEngine.instance.camera, "POSITION",
 					new AnimatedProperty.Keyframe[] {
 						new AnimatedProperty.Keyframe(0, new Vector3(-5f, 5f, -10f)),
 						new AnimatedProperty.Keyframe(1, new Vector3(0f, 2f, -5f)),
 						new AnimatedProperty.Keyframe(3, new Vector3(2f, 1f, 3))
 					}
 				);
-				var prop2 = new AnimatedProperty(RaytracedRenderer.instance.camera, "ROTATION",
+				var prop2 = new AnimatedProperty(RaytracerEngine.instance.camera, "ROTATION",
 					new AnimatedProperty.Keyframe[] {
 						new AnimatedProperty.Keyframe(0, new Vector3(25, 30, 30)),
 						new AnimatedProperty.Keyframe(1, new Vector3(5, 0, 10)),

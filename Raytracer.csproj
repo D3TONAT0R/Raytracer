@@ -73,6 +73,8 @@
     <Compile Include="Color.cs" />
     <Compile Include="CurrentPixelRenderData.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="ProgressiveChunkRenderer.cs" />
+    <Compile Include="FullscreenStripRenderer.cs" />
     <Compile Include="GPUTest\GPUTest.cs" />
     <Compile Include="Gradient.cs" />
     <Compile Include="Input.cs" />
@@ -85,7 +87,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ray.cs" />
-    <Compile Include="RaytracedRenderer.cs" />
+    <Compile Include="ScreenRenderer.cs" />
+    <Compile Include="SceneRenderer.cs" />
+    <Compile Include="RaytracerEngine.cs" />
     <Compile Include="RaytracerForm.cs">
       <SubType>Form</SubType>
     </Compile>

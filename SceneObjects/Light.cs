@@ -84,7 +84,7 @@ namespace Raytracer {
 			} else if(lighting == LightingType.RaytracedHardShadows) {
 				shadowed = false;
 				//return new Color(point.X - (int)point.X, point.Y - (int)point.Y, point.Z - (int)point.Z);
-				if(RaytracedRenderer.CurrentSettings.allowSelfShadowing) {
+				if(RaytracerEngine.CurrentSettings.allowSelfShadowing) {
 					//Depenetrate surface to allow self shadowing
 					point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
 					sourceShape = null;
@@ -94,7 +94,7 @@ namespace Raytracer {
 				var ray = new Ray(point + HierarchyPositionOffset, lightNormal, 0, Vector2.Zero, Vector3.Distance(WorldPosition, point));
 				Vector3? caster = null;
 				if(Vector3.Distance(WorldPosition, point) > shadowStartOffset) {
-					caster = RaytracedRenderer.TraceRay(scene, ref ray, out _, sourceShape);
+					caster = SceneRenderer.TraceRay(scene, ref ray, out _, sourceShape);
 				}
 				float shadow;
 				if(caster == null) {

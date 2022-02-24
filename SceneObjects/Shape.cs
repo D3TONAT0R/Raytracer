@@ -23,7 +23,7 @@ namespace Raytracer {
 			}
 			protected set {
 				shapeAABB = value;
-				ExpandedAABB = value.Expand(RaytracedRenderer.CurrentSettings.rayMarchDistanceInVoid);
+				ExpandedAABB = value.Expand(RaytracerEngine.CurrentSettings.rayMarchDistanceInVoid);
 			}
 		}
 

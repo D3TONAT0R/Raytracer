@@ -61,6 +61,17 @@ namespace Raytracer {
 			return c;
 		}
 
+		public byte[] GetBytes()
+		{
+			return new byte[]
+			{
+				ToColorByte(r),
+				ToColorByte(g),
+				ToColorByte(b),
+				ToColorByte(a)
+			};
+		}
+
 		public static implicit operator Color(System.Drawing.Color dc) {
 			return new Color(dc.R / 255f, dc.G / 255f, dc.B / 255f, dc.A / 255f);
 		}

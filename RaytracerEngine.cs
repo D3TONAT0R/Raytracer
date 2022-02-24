@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Raytracer {
-	public class RaytracedRenderer {
+	public class RaytracerEngine {
 
 		public static string rootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Raytracer");
 
-		public static RaytracedRenderer instance;
+		public static RaytracerEngine instance;
 
 		public static Action SceneLoaded;
 
@@ -24,6 +24,8 @@ namespace Raytracer {
 
 		bool render = false;
 		bool maxRender = false;
+
+		public bool IsFullRendering => render || maxRender;
 
 		static Scene scene;
 		public static Scene Scene {
@@ -39,7 +41,6 @@ namespace Raytracer {
 		public Camera camera;
 		bool flyMode = true;
 		public static bool redrawScreen = true;
-		public static int stripsRendered = 0;
 
 		static float movementSpeedScale = 1;
 
@@ -57,14 +58,14 @@ namespace Raytracer {
 
 		public void Run() {
 			exit = false;
-			hqRenderSettings = new RenderSettings(512, 288) {
+			hqRenderSettings = new RenderSettings(1280, 720) {
 				rayMarchDistanceInVoid = 0.1f,
 				rayMarchDistanceInObject = 0.01f,
 				rayDistanceDegradation = 0f,
 				maxBounces = 2,
 				lightingType = LightingType.RaytracedHardShadows
 			};
-			previewRenderSettings = new RenderSettings(192, 108) {
+			previewRenderSettings = new RenderSettings(240, 135) {
 				rayMarchDistanceInVoid = 0.5f,
 				rayMarchDistanceInObject = 0.1f,
 				rayDistanceDegradation = 0.05f,
@@ -73,13 +74,14 @@ namespace Raytracer {
 				allowSelfShadowing = false,
 				specularHighlights = false
 			};
-			maxRenderSettings = new RenderSettings(1280, 720) {
+			maxRenderSettings = new RenderSettings(1920, 1080) {
 				rayMarchDistanceInVoid = 0.1f,
 				rayMarchDistanceInObject = 0.01f,
 				rayDistanceDegradation = 0f,
-				maxBounces = 4,
+				maxBounces = 3,
 				lightingType = LightingType.RaytracedHardShadows
 			};
+
 			instance = this;
 			int sceneIndex = 0;
 			redrawScreen = true;
@@ -121,9 +123,18 @@ namespace Raytracer {
 				SaveScreenshot("anim");
 				redrawScreen = true;
 			}
-			infoWindow.Invoke((Action)delegate {
-				infoWindow.imageViewer.Image = CurrentSettings.renderBuffer;
-			});
+			RefreshImageView();
+		}
+
+		public void RefreshImageView()
+		{
+			lock (SceneRenderer.bufferLock)
+			{
+				infoWindow.Invoke((Action)delegate
+				{
+					infoWindow.imageViewer.Image = CurrentSettings.renderBuffer;
+				});
+			}
 		}
 
 		void MakeWinforms() {
@@ -152,21 +163,28 @@ namespace Raytracer {
 					if(infoWindow.IsInitialized) {
 						infoWindow.Invoke((Action)delegate {
 							StringBuilder sb = new StringBuilder();
+							float progress = 1;
 							if(camera.rendering) {
 								sb.AppendLine("Rendering...");
-								sb.AppendLine($"{stripsRendered}/{CurrentSettings.screenHeight}");
-								int percent = (int)Math.Round(stripsRendered / (float)CurrentSettings.screenHeight);
+								SceneRenderer.ActiveScreenRenderer.GetProgressInfo(out string progressString, out progress);
+								sb.AppendLine(progressString);
 							} else {
 								sb.AppendLine("Idle.");
 							}
+							progress = Math.Min(1, Math.Max(0, progress));
 							infoWindow.progressInfo.Text = sb.ToString();
-							infoWindow.progressBar.Maximum = CurrentSettings.screenHeight;
-							infoWindow.progressBar.Value = camera.rendering ? stripsRendered : infoWindow.progressBar.Maximum;
+							infoWindow.progressBar.Maximum = 100;
+							infoWindow.progressBar.Value = (int)(progress*100);
 							movementSpeedScale = infoWindow.cameraSpeedScale.Value / 10f;
 							BuildSceneTree();
 						});
+						if(SceneRenderer.IsRendering && IsFullRendering)
+						{
+							SceneRenderer.RequestImageRefresh();
+							RefreshImageView();
+						}
 					}
-					Thread.Sleep(100);
+					Thread.Sleep(200);
 				}
 			} catch {
 				exit = true;
@@ -329,109 +347,6 @@ namespace Raytracer {
 				}
 				CurrentSettings.renderBuffer.Save(path + num.ToString("D4") + ".png");
 			}
-		}
-
-		public static Color TraceRay(Scene scene, Ray ray, Shape excludeShape = null) {
-			if(ray.reflectionIteration >= CurrentSettings.maxBounces + 1) return Color.Black;
-			Vector3? hit = TraceRay(scene, ref ray, out var intersection, excludeShape);
-			if(hit != null) {
-				return intersection.GetColorAt((Vector3)hit, ray);
-			} else {
-				//We didn't hit anything, render the sky instead
-				return scene.SampleSkybox(ray.Direction);
-			}
-		}
-
-		public static Vector3? TraceRay(Scene scene, ref Ray ray, out Shape intersectingShape, Shape excludeShape = null) {
-			var shapes = scene.GetIntersectingShapes(ray);
-			intersectingShape = null;
-			//Ignore excluded shape
-			if(excludeShape != null && shapes.Contains(excludeShape)) shapes.Remove(excludeShape);
-			if(shapes.Count > 0) {
-				OptimizeRay(ray, shapes);
-				while(scene.IsInWorldBounds(ray.position)) {
-					var intersecting = scene.GetAABBIntersectingShapes(ray.position, shapes);
-					if(intersecting.Length == 0) {
-						//No AABB collision detected
-						if(!ray.Advance(CurrentSettings.rayMarchDistanceInVoid + ray.travelDistance * CurrentSettings.rayDistanceDegradation)) {
-							return null;
-						}
-					} else {
-						for(int i = 0; i < intersecting.Length; i++) {
-							var localpos = ray.position - intersecting[i].HierarchyPositionOffset;
-							if(intersecting[i].Intersects(localpos)) {
-								//We are about to hit something
-								intersectingShape = intersecting[i];
-								return ray.position;
-							}
-						}
-						//If Advance returns false, we have reached the ray's maximum distance without hitting any surface
-						if(!ray.Advance(CurrentSettings.rayMarchDistanceInObject + ray.travelDistance * CurrentSettings.rayDistanceDegradation)) {
-							return null;
-						}
-					}
-				}
-			}
-			return null;
-		}
-
-		static void OptimizeRay(Ray ray, List<Shape> shapes) {
-			//Jump directly to the first intersection point (skip marching in empty space)
-			float nearestIntersection = float.MaxValue;
-			float farthestIntersection = 0;
-			for(int i = 0; i < shapes.Count; i++) {
-				var intersections = GetAABBIntersectionPoints(ray, shapes[i].ExpandedAABB/*scene.shapeAABBs[shapes[i]][1]*/);
-				if(intersections.Count > 0) {
-					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.position, intersections[0]));
-				}
-				if(intersections.Count > 1) {
-					farthestIntersection = Math.Max(farthestIntersection, Vector3.Distance(ray.position, intersections[1]));
-				}
-			}
-			if(farthestIntersection > 0) {
-				ray.maxDistance = farthestIntersection;
-			}
-			if(nearestIntersection < float.MaxValue) {
-				ray.Advance(nearestIntersection);
-			}
-		}
-
-		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb) {
-
-			Vector3 segmentBegin = ray.position;
-			Vector3 segmentEnd = ray.position + ray.Direction * ray.maxDistance;
-			Vector3 boxCenter = aabb.Center;
-			Vector3 boxSize = aabb.Size;
-
-			var beginToEnd = segmentEnd - segmentBegin;
-			var minToMax = new Vector3(boxSize.X, boxSize.Y, boxSize.Z);
-			var min = boxCenter - minToMax / 2;
-			var max = boxCenter + minToMax / 2;
-			var beginToMin = min - segmentBegin;
-			var beginToMax = max - segmentBegin;
-			var tNear = float.MinValue;
-			var tFar = float.MaxValue;
-
-			var intersections = new List<Vector3>();
-			for(int axis = 0; axis < 3; axis++) {
-				if(beginToEnd.GetAxisValue(axis) == 0) // parallel
-				{
-					if(beginToMin.GetAxisValue(axis) > 0 || beginToMax.GetAxisValue(axis) < 0)
-						return intersections; // segment is not between planes
-				} else {
-					var t1 = beginToMin.GetAxisValue(axis) / beginToEnd.GetAxisValue(axis);
-					var t2 = beginToMax.GetAxisValue(axis) / beginToEnd.GetAxisValue(axis);
-					var tMin = Math.Min(t1, t2);
-					var tMax = Math.Max(t1, t2);
-					if(tMin > tNear) tNear = tMin;
-					if(tMax < tFar) tFar = tMax;
-					if(tNear > tFar || tFar < 0) return intersections;
-
-				}
-			}
-			if(tNear >= 0 && tNear <= 1) intersections.Add(segmentBegin + beginToEnd * tNear);
-			if(tFar >= 0 && tFar <= 1) intersections.Add(segmentBegin + beginToEnd * tFar);
-			return intersections;
 		}
 	}
 }

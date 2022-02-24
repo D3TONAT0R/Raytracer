@@ -18,13 +18,13 @@ namespace Raytracer {
 			for(int i = 0; i <= 5; i++) {
 				sceneSelection.Items.Add("Scene #: " + i);
 			}
-			RaytracedRenderer.SceneLoaded += OnSceneLoaded;
+			RaytracerEngine.SceneLoaded += OnSceneLoaded;
 		}
 
 		void OnSceneLoaded() {
 			Invoke((Action)delegate {
-				if(RaytracedRenderer.Scene != null) {
-					sceneSelection.SelectedIndex = RaytracedRenderer.Scene.sceneIndex;
+				if(RaytracerEngine.Scene != null) {
+					sceneSelection.SelectedIndex = RaytracerEngine.Scene.sceneIndex;
 				} else {
 					sceneSelection.SelectedIndex = 0;
 				}
@@ -58,7 +58,7 @@ namespace Raytracer {
 		private void OnChange(object sender, EventArgs e) {
 			var selection = sceneSelection.SelectedItem.ToString();
 			var value = int.Parse(selection.Split(':')[1].Trim());
-			RaytracedRenderer.Scene = SceneBuilder.Generate(value);
+			RaytracerEngine.Scene = SceneBuilder.Generate(value);
 		}
 
 		private void OnFocusEnter(object sender, EventArgs e) {

@@ -14,6 +14,6 @@ namespace Raytracer {
 		[ThreadStatic] public static int pixelX;
 		[ThreadStatic] public static int pixelY;
 
-		[ThreadStatic] public static Vector2 viewportCoord;
+		//[ThreadStatic] public static Vector2 viewportCoord;
 	}
 }
