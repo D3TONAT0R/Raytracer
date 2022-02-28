@@ -97,7 +97,7 @@ namespace Raytracer {
 		public float smoothness = 1;
 		public float? transparencyCutout = null;
 		[DataIdentifier("REFRACTION")]
-		public float refraction = 0.5f;
+		public float refraction = 1f;
 
 		public Material() {
 		}
@@ -179,7 +179,7 @@ namespace Raytracer {
 			final *= shade;
 			//Apply transparency
 			if(mainColor.a < 1) {
-				var newray = new Ray(ray.position, MathUtils.Refract(ray.Direction, nrm, refraction), ray.reflectionIteration+1, ray.sourceScreenPos);
+				var newray = new Ray(ray.position, MathUtils.Refract(ray.Direction, nrm, refraction * 0.1f), ray.reflectionIteration+1, ray.sourceScreenPos);
 				var backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * mainColor;
 				final = Color.Lerp(backColor, final, mainColor.a);
 			}

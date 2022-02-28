@@ -171,7 +171,7 @@ namespace Raytracer {
 							} else {
 								sb.AppendLine("Idle.");
 							}
-							progress = Math.Min(1, Math.Max(0, progress));
+							progress = float.IsNaN(progress) ? 0 : Math.Min(1, Math.Max(0, progress));
 							infoWindow.progressInfo.Text = sb.ToString();
 							infoWindow.progressBar.Maximum = 100;
 							infoWindow.progressBar.Value = (int)(progress*100);
@@ -184,9 +184,11 @@ namespace Raytracer {
 							RefreshImageView();
 						}
 					}
-					Thread.Sleep(200);
+					Thread.Sleep(SceneRenderer.IsRendering ? 500 : 125);
 				}
-			} catch {
+			}
+			catch
+			{
 				exit = true;
 			}
 		}

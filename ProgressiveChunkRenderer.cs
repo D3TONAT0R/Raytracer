@@ -18,6 +18,8 @@ namespace Raytracer
 			public int yMax;
 			public int cellSize;
 
+			public int Area => (yMax - yMin + 1) * (xMax - xMin + 1);
+
 			public Chunk(int x, int y, int size, int imgWidth, int imgHeight)
 			{
 				cellSize = size;
@@ -50,8 +52,9 @@ namespace Raytracer
 			}
 		}
 
-		const int passCount = 2;
-		const int cellSize = 8;
+		const int passCount = 3;
+		const int cellSize = 4;
+		const int minChunkSize = 16;
 
 		private List<Chunk> currentIterationChunks = new List<Chunk>();
 		private List<Chunk> nextIterationChunks = new List<Chunk>();
@@ -65,17 +68,18 @@ namespace Raytracer
 		private byte[] currentBuffer;
 
 		private int chunksRendered = 0;
+		private int pixelsRendered = 0;
 
 		public override void GetProgressInfo(out string progressString, out float progress)
 		{
 			progressString = $"Pass {(passCount - pass)}/{passCount}: {chunksRendered}/{currentIterationChunks.Count}";
-			float p1 = (passCount - pass) / (float)(passCount + 1);
-			float p2 = chunksRendered / (float)currentIterationChunks.Count / (passCount+1);
-			progress = p1 + p2;
+			progress = pixelsRendered / (float)CurrentPixelRenderData.ScreenArea;
 		}
 
 		public override void RenderToScreen(Camera camera, Scene scene, byte[] byteBuffer, int width, int height, int pixelDepth)
 		{
+			pixelsRendered = 0;
+
 			currentCamera = camera;
 			currentScene = scene;
 			currentBuffer = byteBuffer;
@@ -85,32 +89,31 @@ namespace Raytracer
 
 			pass = passCount;
 
-			currentIterationChunks.Clear();
-			int size = Pow(cellSize, pass + 1);
-			var screenChunk = new Chunk(0, 0, size, width, height);
-			screenChunk.Split(currentIterationChunks, Pow(cellSize, pass), width, height);
-			//currentIterationChunks.Add(screenChunk);
-			while(pass >= 0)
+			InitializeFullscreenChunkArea();
+			bool firstPass = true;
+			while (pass >= 0)
 			{
 				chunksRendered = 0;
-				//nextIterationChunks = new List<Chunk>();
+				nextIterationChunks.Clear();
 				int i = 0;
-				Parallel.For(i, currentIterationChunks.Count, ci => RenderChunk(currentIterationChunks[ci], pass));
-				//currentIterationChunks = nextIterationChunks;
-				//TODO: doesn't seem to do anything
-				SceneRenderer.FlushCurrent();
+				Parallel.For(i, currentIterationChunks.Count, ci => RenderChunk(currentIterationChunks[ci], pass, firstPass));
+				firstPass = false;
+				currentIterationChunks.Clear();
+				currentIterationChunks.AddRange(nextIterationChunks);
 				pass--;
 			}
 		}
 
-		private void RenderChunk(Chunk c, int pass)
+		private void RenderChunk(Chunk c, int pass, bool isFirstPass)
 		{
 			//Render
 			int s = Pow(cellSize, pass);
+			int rendered = 0;
 			for (int y = c.yMin; y <= c.yMax; y += s)
 			{
 				for (int x = c.xMin; x <= c.xMax; x += s)
 				{
+					if (isFirstPass && x == c.xMin && y == c.yMin) continue;
 					var col = GetPixelColor(x, y, currentCamera, currentScene);
 					if (s <= 1)
 					{
@@ -120,9 +123,20 @@ namespace Raytracer
 					{
 						FillPixels(currentBuffer, x, y, x + s - 1, y + s - 1, col, targetWidth, targetHeight, targetDepth);
 					}
+					rendered++;
 				}
 			}
 			chunksRendered++;
+			pixelsRendered += rendered;
+
+			if (pass > 1 && Pow(cellSize, pass) > minChunkSize)
+			{
+				c.SplitNextIteration(nextIterationChunks, targetWidth, targetHeight);
+			}
+			else
+			{
+				nextIterationChunks.Add(c);
+			}
 			/*
 			//Split
 			if (s > cellSize)
@@ -137,13 +151,27 @@ namespace Raytracer
 			*/
 		}
 
+		private void InitializeFullscreenChunkArea()
+		{
+			currentIterationChunks.Clear();
+			int size = Pow(cellSize, pass + 1);
+			for (int y = 0; y < targetHeight; y += size)
+			{
+				for (int x = 0; x < targetWidth; x += size)
+				{
+					var chunk = new Chunk(x, y, size, targetWidth, targetHeight);
+					currentIterationChunks.Add(chunk);
+				}
+			}
+		}
+
 		private int Pow(int v, int e)
 		{
 			if (e == 0) return 1;
 			int r = v;
 			for (int i = 1; i < e; i++)
 			{
-				r *= r;
+				r *= v;
 			}
 			return r;
 		}

@@ -8,8 +8,8 @@ namespace Raytracer {
 		public const float Rad2Deg = 180f / (float)Math.PI;
 
 		public static Vector3 Refract(Vector3 rayNrm, Vector3 surfaceNrm, float refraction) {
-			if(refraction <= 0) return rayNrm;
-			return Vector3.Normalize(Vector3.Lerp(rayNrm, -surfaceNrm, refraction));
+			float r = -refraction * (1f - Math.Abs(Vector3.Dot(rayNrm, surfaceNrm)));
+			return Vector3.Normalize(Vector3.Lerp(rayNrm, -surfaceNrm, -refraction));
 		}
 
 		public static float Step(float x, float a) {

@@ -11,6 +11,8 @@ namespace Raytracer {
 		public static int screenWidth;
 		public static int screenHeight;
 
+		public static int ScreenArea => screenWidth * screenHeight;
+
 		[ThreadStatic] public static int pixelX;
 		[ThreadStatic] public static int pixelY;
 
