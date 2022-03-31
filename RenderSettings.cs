@@ -5,13 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Raytracer {
-	public class RenderSettings {
-
-		public int screenWidth = 128;
-		public int screenHeight = 72;
-
-		public int PixelCount => screenWidth * screenHeight;
+namespace Raytracer
+{
+	public class RenderSettings
+	{
+		public string name;
 
 		public float rayMarchDistanceInVoid = 0.20f;
 		public float rayMarchDistanceInObject = 0.02f;
@@ -26,23 +24,14 @@ namespace Raytracer {
 		public bool allowSelfShadowing = true;
 		public bool specularHighlights = true;
 
-		private Bitmap m_renderBuffer;
-		public Bitmap renderBuffer {
-			get {
-				if(m_renderBuffer == null) {
-					m_renderBuffer = new Bitmap(screenWidth, screenHeight, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-				}
-				return m_renderBuffer;
-			}
+		public RenderSettings(string name)
+		{
+			this.name = name;
 		}
 
-		public RenderSettings(int width, int height) {
-			screenWidth = width;
-			screenHeight = height;
-		}
-
-		public RenderSettings Scale(float scale) {
-			RenderSettings rs = new RenderSettings((int)(screenWidth * scale), (int)(screenHeight * scale));
+		public RenderSettings Scale(string newName, float scale)
+		{
+			RenderSettings rs = new RenderSettings(newName);
 			rs.rayMarchDistanceInVoid /= scale;
 			rs.rayMarchDistanceInObject /= scale;
 			bouncedRayQuality /= (float)Math.Sqrt(scale);

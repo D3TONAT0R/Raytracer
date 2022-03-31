@@ -62,7 +62,7 @@ namespace Raytracer {
 		public Color Sample(float x, float y, bool alwaysSample = false) {
 			while(x < 0) x++;
 			while(y < 0) y++;
-			if(!RaytracerEngine.CurrentSettings.sampleTextures && !alwaysSample) return averageColor;
+			if(!RaytracerEngine.CurrentRenderSettings.sampleTextures && !alwaysSample) return averageColor;
 			x -= (float)Math.Floor(x);
 			y -= (float)Math.Floor(y);
 			y = 1 - y;

@@ -23,7 +23,7 @@ namespace Raytracer {
 			}
 			protected set {
 				shapeAABB = value;
-				ExpandedAABB = value.Expand(RaytracerEngine.CurrentSettings.rayMarchDistanceInVoid);
+				ExpandedAABB = value.Expand(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid);
 			}
 		}
 
@@ -42,20 +42,11 @@ namespace Raytracer {
 			return material;
 		}
 
-		/*public virtual void SetupAABBs(Dictionary<Shape, AABB> expandedAABBs, float expansionAmount) {
-			shapeAABB = SetupAABB();
-			if(!expandedAABBs.ContainsKey(this)) {
-				expandedAABBs.Add(this, shapeAABB.Offset(HierarchyPositionOffset).Expand(expansionAmount));
-			}
-		}*/
-
 		public abstract void SetupAABBs();
 
 		public virtual void OnBeginRender() {
 			
 		}
-
-		//public abstract AABB SetupAABB();
 
 		public abstract float GetSurfaceProximity(Vector3 worldPos);
 

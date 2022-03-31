@@ -19,7 +19,7 @@ namespace Raytracer
 		{
 			get
 			{
-				return progressiveUpdates && RaytracerEngine.instance.IsFullRendering ? progressiveRenderer : stripRenderer;
+				return progressiveUpdates && RaytracerEngine.instance.IsRendering ? progressiveRenderer : stripRenderer;
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace Raytracer
 
 		public static Color TraceRay(Scene scene, Ray ray, Shape excludeShape = null)
 		{
-			if (ray.reflectionIteration >= RaytracerEngine.CurrentSettings.maxBounces + 1) return Color.Black;
+			if (ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
 			Vector3? hit = TraceRay(scene, ref ray, out var intersection, excludeShape);
 			if (hit != null)
 			{
@@ -126,7 +126,7 @@ namespace Raytracer
 					if (intersecting.Length == 0)
 					{
 						//No AABB collision detected
-						if (!ray.Advance(RaytracerEngine.CurrentSettings.rayMarchDistanceInVoid + ray.travelDistance * RaytracerEngine.CurrentSettings.rayDistanceDegradation))
+						if (!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
 						{
 							return null;
 						}
@@ -144,7 +144,7 @@ namespace Raytracer
 							}
 						}
 						//If Advance returns false, we have reached the ray's maximum distance without hitting any surface
-						if (!ray.Advance(RaytracerEngine.CurrentSettings.rayMarchDistanceInObject + ray.travelDistance * RaytracerEngine.CurrentSettings.rayDistanceDegradation))
+						if (!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInObject + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
 						{
 							return null;
 						}

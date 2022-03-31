@@ -84,7 +84,7 @@ namespace Raytracer {
 			} else if(lighting == LightingType.RaytracedHardShadows) {
 				shadowed = false;
 				//return new Color(point.X - (int)point.X, point.Y - (int)point.Y, point.Z - (int)point.Z);
-				if(RaytracerEngine.CurrentSettings.allowSelfShadowing) {
+				if(RaytracerEngine.CurrentRenderSettings.allowSelfShadowing) {
 					//Depenetrate surface to allow self shadowing
 					point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
 					sourceShape = null;

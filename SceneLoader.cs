@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Raytracer {
-	public class SceneBuilder {
+	public class SceneLoader {
 
 		public static Color[] randomColors = new Color[] {
 			System.Drawing.Color.Red,
@@ -35,15 +37,20 @@ namespace Raytracer {
 			System.Drawing.Color.DarkGray
 		};
 
-		public static Scene Generate(int index) {
+		public static Scene LoadSceneFromFile(string filePath)
+		{
+			return new SceneFileLoader().CreateFromFile(Path.GetFileNameWithoutExtension(filePath), File.ReadAllLines(filePath), 0);
+		}
+
+		public static Scene GeneratePreset(int index) {
 			if(index == 0) {
-				return new SceneFileLoader().CreateFromFile(System.IO.File.ReadAllLines(System.IO.Path.Combine(RaytracerEngine.rootPath, "scene_4.txt")), 0);
+				return new SceneFileLoader().CreateFromFile("Scene 4", File.ReadAllLines(System.IO.Path.Combine(RaytracerEngine.rootPath, "scene_4.txt")), 0);
 			} else if(index == 1) {
 				return GenerateSphereWorld();
 			} else if(index == 2) {
 				return GenerateRandomWorld();
 			} else if(index == 3) {
-				var sn = new Scene(index);
+				var sn = new Scene("Group Lighting Test");
 				sn.AddObject(new Cuboid("floor", new Vector3(-10, -1, -10), new Vector3(20, 1, 20)));
 				sn.AddObject(new Cuboid("cube", new Vector3(-2, 0, 4), Vector3.One));
 				sn.AddObject(new Cuboid("cube", new Vector3(-1, 0, 2), Vector3.One));
@@ -60,7 +67,7 @@ namespace Raytracer {
 				sn.remoteControlledObject = group;
 				return sn;
 			} else if(index == 4) {
-				var sn = new Scene(index);
+				var sn = new Scene("Buildings + Lights");
 				float fr = 0f;
 				float fs = 0f;
 				Material roadMaterial = Material.CreateTexturedMaterial("road", fr, fs, new TilingVector(0, 0, 0.2f, 0.2f, 90f));
@@ -146,9 +153,34 @@ namespace Raytracer {
 			}
 		}
 
+		internal static void LoadSceneFilePrompt()
+		{
+			var d = new OpenFileDialog()
+			{
+				DefaultExt = ".txt",
+				CheckFileExists = true,
+				Multiselect = false,
+				InitialDirectory = RaytracerEngine.rootPath
+			};
+			var result = d.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				try
+				{
+					var scene = SceneLoader.LoadSceneFromFile(d.FileName);
+					RaytracerEngine.Scene = scene;
+					MessageBox.Show("Scene loaded " + d.FileName);
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show($"Failed to load scene file '{Path.GetFileName(d.FileName)}':\n{e.Message}", "Open Scene", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+		}
+
 		static Scene GenerateRandomWorld() {
 			var rand = new Random();
-			var scene = new Scene(2);
+			var scene = new Scene("Random Cube World");
 			var materials = new Material[] {
 				new Material(Color.White, 0.1f, 1) {
 					mainTexture = Sampler2D.Create("texture_1.png")
@@ -172,7 +204,7 @@ namespace Raytracer {
 		}
 
 		static Scene GenerateSphereWorld() {
-			var scene = new Scene(1);
+			var scene = new Scene("Random Sphere World");
 			scene.AddObject(new Sphere("sphere1", new Vector3(2, 2, 5), 2) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
 					mainTexture = Sampler2D.Create("texture_1.png")

@@ -75,14 +75,14 @@ namespace Raytracer {
 		private readonly object locker = new object();
 		public bool rendering;
 
-		public void Render(Scene scene, Bitmap buffer) {
+		public void Render(Scene scene, RenderTarget target) {
 			if(rendering) return;
 			rendering = true;
-			scene.OnBeginRender(CurrentSettings.rayMarchDistanceInVoid);
-			SetScreenParams(buffer.Width, buffer.Height);
+			scene.OnBeginRender(CurrentRenderSettings.rayMarchDistanceInVoid);
+			SetScreenParams(target.width, target.height);
 			lock(locker)
 			{
-				SceneRenderer.RenderScene(this, scene, buffer);
+				SceneRenderer.RenderScene(this, scene, target.RenderBuffer);
 			}
 			rendering = false;
 		}

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public class Scene {
 
-		public int sceneIndex = -1;
+		public string sceneName;
 
 		public Gradient skyboxGradient;
 		public Sampler2D skyboxTexture;
@@ -33,8 +33,8 @@ namespace Raytracer {
 
 		//public Dictionary<Shape, AABB[]> shapeAABBs = new Dictionary<Shape, AABB[]>();
 
-		public Scene(int index) {
-			sceneIndex = index;
+		public Scene(string name) {
+			sceneName = name;
 			skyboxGradient = new Gradient(
 				(0, System.Drawing.Color.Black),
 				(0.49f, System.Drawing.Color.DarkOliveGreen),

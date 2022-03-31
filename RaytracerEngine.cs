@@ -22,10 +22,10 @@ namespace Raytracer {
 
 		public string name => "Raytracer";
 
-		bool render = false;
-		bool maxRender = false;
+		static bool render = false;
+		static bool toScreenshot = false;
 
-		public bool IsFullRendering => render || maxRender;
+		public bool IsRendering => render;
 
 		static Scene scene;
 		public static Scene Scene {
@@ -35,7 +35,7 @@ namespace Raytracer {
 			set {
 				scene = value;
 				redrawScreen = true;
-				SceneLoaded();
+				SceneLoaded.Invoke();
 			}
 		}
 		public Camera camera;
@@ -46,43 +46,28 @@ namespace Raytracer {
 
 		public static RaytracerForm infoWindow;
 
-		RenderSettings previewRenderSettings;
-		RenderSettings hqRenderSettings;
-		RenderSettings maxRenderSettings;
+		public static List<RenderSettings> renderSettings;
 
-		public static RenderSettings CurrentSettings => instance.maxRender ? instance.maxRenderSettings : instance.render ? instance.hqRenderSettings : instance.previewRenderSettings;
+		public static List<RenderTarget> renderTargets;
+
+		static RenderSettings previewRenderSettings;
+		static RenderTarget previewRenderTarget;
+
+		public static int currentRenderSettingsIndex = 0;
+		public static int currentRenderTargetIndex = 0;
+
+		public static RenderSettings CurrentRenderSettings => render ? renderSettings[currentRenderSettingsIndex] : previewRenderSettings;
+		public static RenderTarget CurrentRenderTarget => render ? renderTargets[currentRenderTargetIndex] : previewRenderTarget;
 
 		bool exit = false;
 		bool animating = false;
 		Thread loopthread;
 
 		public void Run() {
-			exit = false;
-			hqRenderSettings = new RenderSettings(1280, 720) {
-				rayMarchDistanceInVoid = 0.1f,
-				rayMarchDistanceInObject = 0.01f,
-				rayDistanceDegradation = 0f,
-				maxBounces = 2,
-				lightingType = LightingType.RaytracedHardShadows
-			};
-			previewRenderSettings = new RenderSettings(240, 135) {
-				rayMarchDistanceInVoid = 0.5f,
-				rayMarchDistanceInObject = 0.1f,
-				rayDistanceDegradation = 0.05f,
-				maxBounces = 0,
-				lightingType = LightingType.RaytracedNoShadows,
-				allowSelfShadowing = false,
-				specularHighlights = false
-			};
-			maxRenderSettings = new RenderSettings(1920, 1080) {
-				rayMarchDistanceInVoid = 0.1f,
-				rayMarchDistanceInObject = 0.01f,
-				rayDistanceDegradation = 0f,
-				maxBounces = 3,
-				lightingType = LightingType.RaytracedHardShadows
-			};
-
 			instance = this;
+			exit = false;
+			SetupSettingsAndTargets();
+
 			int sceneIndex = 0;
 			redrawScreen = true;
 			MakeWinforms();
@@ -91,7 +76,7 @@ namespace Raytracer {
 				rotation = Vector3.Zero,
 				fieldOfView = 60
 			};
-			Scene = SceneBuilder.Generate(sceneIndex);
+			Scene = SceneLoader.GeneratePreset(sceneIndex);
 			var ts = new ThreadStart(LoopThread);
 			loopthread = new Thread(ts);
 			loopthread.SetApartmentState(ApartmentState.STA);
@@ -103,6 +88,49 @@ namespace Raytracer {
 			}
 		}
 
+		void SetupSettingsAndTargets()
+		{
+			previewRenderSettings = new RenderSettings("Preview")
+			{
+				rayMarchDistanceInVoid = 0.5f,
+				rayMarchDistanceInObject = 0.1f,
+				rayDistanceDegradation = 0.05f,
+				maxBounces = 0,
+				lightingType = LightingType.RaytracedNoShadows,
+				allowSelfShadowing = false,
+				specularHighlights = false
+			};
+			var hqRenderSettings = new RenderSettings("Normal")
+			{
+				rayMarchDistanceInVoid = 0.1f,
+				rayMarchDistanceInObject = 0.01f,
+				rayDistanceDegradation = 0f,
+				maxBounces = 2,
+				lightingType = LightingType.RaytracedHardShadows
+			};
+			var maxRenderSettings = new RenderSettings("High")
+			{
+				rayMarchDistanceInVoid = 0.1f,
+				rayMarchDistanceInObject = 0.01f,
+				rayDistanceDegradation = 0f,
+				maxBounces = 3,
+				lightingType = LightingType.RaytracedHardShadows
+			};
+			renderSettings = new List<RenderSettings>();
+			renderSettings.Add(hqRenderSettings);
+			renderSettings.Add(maxRenderSettings);
+
+			previewRenderTarget = new RenderTarget("Preview", 240, 135);
+			renderTargets = new List<RenderTarget>();
+			renderTargets.Add(new RenderTarget("SD", 640, 360));
+			renderTargets.Add(new RenderTarget("HD", 1280, 720));
+			renderTargets.Add(new RenderTarget("FHD", 1920, 1080));
+			renderTargets.Add(new RenderTarget("WQHD", 2560, 1440));
+			renderTargets.Add(new RenderTarget("3.2K", 3200, 1800));
+			renderTargets.Add(new RenderTarget("4K", 3840, 2160));
+			renderTargets.Add(new RenderTarget("8K", 7680, 4320));
+		}
+
 		void DrawScreenOnWinform() {
 			redrawScreen = false;
 			/*if(winform == null) return;
@@ -111,13 +139,13 @@ namespace Raytracer {
 			if(animating) {
 				animating = Animator.Animate();
 			}
-			camera.Render(Scene, CurrentSettings.renderBuffer);
+			camera.Render(Scene, CurrentRenderTarget);
 			//graphics.DrawImage(CurrentSettings.renderBuffer, 0, 0, winform.Width, winform.Height);
 			var str = $"Pos {camera.localPosition}\nRot {camera.rotation}\nRot dir {MathUtils.EulerToDir(camera.rotation)}\nFOV {camera.fieldOfView}\nFullrender: {render}";
 			//graphics.DrawString(str, SystemFonts.MessageBoxFont, new SolidBrush(System.Drawing.Color.DarkRed), new PointF(0, 0));
-			if(maxRender) {
+			if(toScreenshot) {
 				SaveScreenshot();
-				maxRender = false;
+				toScreenshot = false;
 			}
 			if(animating) {
 				SaveScreenshot("anim");
@@ -132,33 +160,120 @@ namespace Raytracer {
 			{
 				infoWindow.Invoke((Action)delegate
 				{
-					infoWindow.imageViewer.Image = CurrentSettings.renderBuffer;
+					infoWindow.imageViewer.Image = CurrentRenderTarget.RenderBuffer;
 				});
 			}
 		}
 
 		void MakeWinforms() {
 			Application.EnableVisualStyles();
-			infoWindow = new RaytracerForm();
 			Thread t2 = new Thread(new ThreadStart(RunInfoWindowThread));
 			t2.SetApartmentState(ApartmentState.STA);
 			t2.Start();
 		}
 
 		void RunInfoWindowThread() {
-			Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-			if(infoWindow != null) {
-				BackgroundWorker worker = new BackgroundWorker();
-				worker.DoWork += new DoWorkEventHandler(WindowUpdateWorker);
-				worker.RunWorkerAsync();
-				infoWindow.ShowDialog();
+			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+			infoWindow = new RaytracerForm();
+			SetupMenuStrip();
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.DoWork += new DoWorkEventHandler(WindowUpdateWorker);
+			worker.RunWorkerAsync();
+			infoWindow.ShowDialog();
+		}
+
+		void SetupMenuStrip()
+		{
+			
+			var qList = infoWindow.qualityMenuItem.DropDownItems;
+			qList.Clear();
+			for (int i = 0; i < renderSettings.Count; i++)
+			{
+				var item = new ToolStripMenuItem
+				{
+					Name = "q" + i,
+					Text = renderSettings[i].name,
+					Tag = i
+				};
+				item.Click += OnRenderSettingsMenuItemClick;
+				qList.Add(item);
+			}
+
+			var tList = infoWindow.resolutionMenuItem.DropDownItems;
+			tList.Clear();
+			for (int i = 0; i < renderTargets.Count; i++)
+			{
+				var rt = renderTargets[i];
+				string text = $"{rt.name} ({rt.width}x{rt.height} - {(rt.PixelCount / 1000000f):F1} MP)";
+				var item = new ToolStripMenuItem
+				{
+					Name = "r" + i,
+					Text = text,
+					Tag = i
+				};
+				item.Click += OnResolutionMenuItemClick;
+				tList.Add(item);
 			}
 		}
 
+		void UpdateRenderMenuItems()
+		{
+			infoWindow.Invoke((Action)delegate
+			{
+				for (int i = 0; i < renderSettings.Count; i++)
+				{
+					var item = infoWindow.qualityMenuItem.DropDownItems[i] as ToolStripMenuItem;
+					item.Checked = i == currentRenderSettingsIndex;
+				}
+				for (int i = 0; i < renderTargets.Count; i++)
+				{
+					var item = infoWindow.resolutionMenuItem.DropDownItems[i] as ToolStripMenuItem;
+					item.Checked = i == currentRenderTargetIndex;
+				}
+			});
+		}
+
+		private void OnRenderSettingsMenuItemClick(object sender, EventArgs e)
+		{
+			if(sender is ToolStripMenuItem mi)
+			{
+				SetRenderSettings((int)mi.Tag);
+			}
+			else
+			{
+				MessageBox.Show("wtf 1");
+			}
+		}
+
+		private void OnResolutionMenuItemClick(object sender, EventArgs e)
+		{
+			if(sender is ToolStripMenuItem mi)
+			{
+				SetRenderResolution((int)mi.Tag);
+			}
+			else
+			{
+				MessageBox.Show("wtf 2");
+			}
+		}
+
+		public void SetRenderSettings(int settingsIndex)
+		{
+			currentRenderSettingsIndex = settingsIndex;
+			UpdateRenderMenuItems();
+		}
+
+		public void SetRenderResolution(int resolutionIndex)
+		{
+			currentRenderTargetIndex = resolutionIndex;
+			UpdateRenderMenuItems();
+		}
+
 		void WindowUpdateWorker(object sender, EventArgs e) {
-			Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 			Thread.Sleep(100);
 			try {
+				UpdateRenderMenuItems();
 				while(!exit && infoWindow != null) {
 					if(infoWindow.IsInitialized) {
 						infoWindow.Invoke((Action)delegate {
@@ -178,7 +293,7 @@ namespace Raytracer {
 							movementSpeedScale = infoWindow.cameraSpeedScale.Value / 10f;
 							BuildSceneTree();
 						});
-						if(SceneRenderer.IsRendering && IsFullRendering)
+						if(SceneRenderer.IsRendering && IsRendering)
 						{
 							SceneRenderer.RequestImageRefresh();
 							RefreshImageView();
@@ -225,14 +340,14 @@ namespace Raytracer {
 		}
 
 		void LoopThread() {
-			while(true) {
+			while(!exit) {
 				Thread.Sleep(50);
 				Update();
 			}
 		}
 
 		public static void RedrawScreen(bool ignoreRenderStatus) {
-			if(!ignoreRenderStatus && (instance.render || instance.maxRender)) {
+			if(!ignoreRenderStatus && render) {
 				return;
 			}
 			redrawScreen = true;
@@ -317,10 +432,6 @@ namespace Raytracer {
 			if(Input.p.isDown) {
 				SaveScreenshot();
 			}
-			if(Input.space.isDown) {
-				maxRender = true;
-				redrawScreen = true;
-			}
 		}
 
 		void KeyPress(int x, int y, int z, bool arrowKey) {
@@ -341,13 +452,14 @@ namespace Raytracer {
 		}
 
 		void SaveScreenshot(string prefix = "screenshot") {
-			if(CurrentSettings.renderBuffer != null) {
+			var buffer = CurrentRenderTarget.RenderBuffer;
+			if(buffer != null) {
 				int num = 1;
 				var path = Path.Combine(rootPath, "Screenshots", prefix + "_");
 				while(File.Exists(path + num.ToString("D4") + ".png")) {
 					num++;
 				}
-				CurrentSettings.renderBuffer.Save(path + num.ToString("D4") + ".png");
+				buffer.Save(path + num.ToString("D4") + ".png");
 			}
 		}
 	}

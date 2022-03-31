@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Raytracer {
 		public RaytracerForm() {
 			InitializeComponent();
 			for(int i = 0; i <= 5; i++) {
-				sceneSelection.Items.Add("Scene #: " + i);
+				//sceneSelection.Items.Add("Scene #: " + i);
 			}
 			RaytracerEngine.SceneLoaded += OnSceneLoaded;
 		}
@@ -24,9 +25,9 @@ namespace Raytracer {
 		void OnSceneLoaded() {
 			Invoke((Action)delegate {
 				if(RaytracerEngine.Scene != null) {
-					sceneSelection.SelectedIndex = RaytracerEngine.Scene.sceneIndex;
+					Text = $"Raytracer - {RaytracerEngine.Scene.sceneName}";
 				} else {
-					sceneSelection.SelectedIndex = 0;
+					Text = $"Raytracer - (no scene loaded)";
 				}
 			});
 		}
@@ -55,12 +56,6 @@ namespace Raytracer {
 
 		}
 
-		private void OnChange(object sender, EventArgs e) {
-			var selection = sceneSelection.SelectedItem.ToString();
-			var value = int.Parse(selection.Split(':')[1].Trim());
-			RaytracerEngine.Scene = SceneBuilder.Generate(value);
-		}
-
 		private void OnFocusEnter(object sender, EventArgs e) {
 			
 		}
@@ -69,8 +64,24 @@ namespace Raytracer {
 			
 		}
 
-		private void OnDropdownClosed(object sender, EventArgs e) {
-			splitContainer1.Select();
+		private void OnOpenSceneMenuItemClick(object sender, EventArgs args)
+		{
+			SceneLoader.LoadSceneFilePrompt();
+		}
+
+		private void OnRenderMenuItemClick(object sender, EventArgs e)
+		{
+
+		}
+
+		private void OnRenderToFileMenuItemClick(object sender, EventArgs e)
+		{
+
+		}
+
+		private void OnOpenSampleSceneMenuItemClick(object sender, EventArgs e)
+		{
+
 		}
 	}
 }

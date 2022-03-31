@@ -34,6 +34,7 @@ namespace Raytracer {
 			Unknown,
 			SceneObject,
 			Material,
+			Skybox
 			Data
 		}
 
@@ -100,6 +101,11 @@ namespace Raytracer {
 
 		public static AttributeTypeInfo GetInstanceType(string identifier) {
 			identifier = identifier.Split(' ')[0].Split('_')[0].Trim();
+			if(identifier == "SKYBOX")
+			{
+				//TODO: find a better way to do this
+				return AttributeTypeInfo.Skybox;
+			}
 			foreach(var a in objects) {
 				if(a.Key == identifier) {
 					var t = a.Value.type;

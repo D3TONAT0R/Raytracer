@@ -11,10 +11,10 @@ namespace Raytracer {
 
 	public enum ShaderType {
 		Default,
-		SolidColor,
+		Unlit,
 		DefaultCheckered,
 		ReflectiveDebug,
-		NormalsDebug
+		NormalsDebug,
 	}
 
 	public enum LightingType {
@@ -76,6 +76,8 @@ namespace Raytracer {
 	[ObjectIdentifier("MATERIAL")]
 	public class Material {
 
+		public static Material ErrorMaterial = new Material(Color.Magenta, 0, 0, ShaderType.Unlit);
+
 		public static Material DefaultMaterial = new Material(Color.White, 0, 0, ShaderType.Default);
 
 		public ShaderType shader;
@@ -92,9 +94,9 @@ namespace Raytracer {
 		public TextureMappingType mappingType;
 
 		[DataIdentifier("REFL")]
-		public float reflectivity = 0.5f;
+		public float reflectivity = 0;
 		[DataIdentifier("SMOOTH")]
-		public float smoothness = 1;
+		public float smoothness = 0;
 		public float? transparencyCutout = null;
 		[DataIdentifier("REFRACTION")]
 		public float refraction = 1f;
@@ -134,35 +136,38 @@ namespace Raytracer {
 			};
 		}
 
-		public Color GetColor(Shape shape, Vector3 pos, Vector3 nrm, Ray ray) {
+		public Color GetColor(Shape shape, Vector3 pos, Vector3 nrm, Ray ray)
+		{
 			float distance = ray.travelDistance;
 			Color output;
-			Color texColor;
-			if(mainTexture != null) {
-				var coords = GetTextureCoords(shape, pos, nrm, ray);
-				coords = textureTiling.Apply(coords);
-				texColor = mainTexture.Sample(coords.X, coords.Y);
-			} else {
-				texColor = Color.White;
+			if (shader == ShaderType.Default)
+			{
+				output = ReflectiveShader(mainColor * SampleMainTex(shape, pos, nrm, ray), shape, nrm, ray);
 			}
-			if(shader == ShaderType.Default) {
-				output = ReflectiveShader(texColor * mainColor, shape, nrm, ray);
-			} else if(shader == ShaderType.DefaultCheckered) {
-				var c = pos * textureTiling.width;
-				bool alternate = c.Z % 2 == 1;
-				Color col = texColor * ((c.X % 2 == c.Y % 2) ^ alternate ? secColor : mainColor);
+			else if (shader == ShaderType.DefaultCheckered)
+			{
+				Color col = GetCheckerColor(shape, pos, nrm, ray);
 				output = ReflectiveShader(col, shape, nrm, ray);
-			} else if(shader == ShaderType.SolidColor) {
-				output = mainColor;
-			} else if(shader == ShaderType.ReflectiveDebug) {
+			}
+			else if (shader == ShaderType.Unlit)
+			{
+				output = mainColor * SampleMainTex(shape, pos, nrm, ray); ;
+			}
+			else if (shader == ShaderType.ReflectiveDebug)
+			{
 				var b = MathUtils.Bounce(ray.Direction, nrm);
 				output = new Color(b.X, b.Y, b.Z, 1);
-			} else if(shader == ShaderType.NormalsDebug) {
+			}
+			else if (shader == ShaderType.NormalsDebug)
+			{
 				output = new Color(Math.Abs(nrm.X), Math.Abs(nrm.Y), Math.Abs(nrm.Z), 1);
-			} else {
+			}
+			else
+			{
 				output = Color.Black;
 			}
-			if(RaytracerEngine.Scene.fogDistance != null) {
+			if (RaytracerEngine.Scene.fogDistance != null)
+			{
 				//Apply fog
 				float fogDensity = Math.Min(1, distance / (float)RaytracerEngine.Scene.fogDistance);
 				output = Color.Lerp(output, RaytracerEngine.Scene.fogColor, fogDensity);
@@ -170,12 +175,36 @@ namespace Raytracer {
 			return output;
 		}
 
+		private Color GetCheckerColor(Shape shape, Vector3 pos, Vector3 nrm, Ray ray)
+		{
+			var c = pos * textureTiling.width;
+			bool alternate = c.Z % 2 == 1;
+			Color col = ((c.X % 2 == c.Y % 2) ^ alternate ? secColor : mainColor) * SampleMainTex(shape, pos, nrm, ray);
+			return col;
+		}
+
+		private Color SampleMainTex(Shape shape, Vector3 pos, Vector3 nrm, Ray ray)
+		{
+			Color texColor;
+			if (mainTexture != null)
+			{
+				var coords = GetTextureCoords(shape, pos, nrm, ray);
+				coords = textureTiling.Apply(coords);
+				texColor = mainTexture.Sample(coords.X, coords.Y);
+			}
+			else
+			{
+				texColor = Color.White;
+			}
+			return texColor;
+		}
+
 		private Color ReflectiveShader(Color baseColor, Shape shape, Vector3 nrm, Ray ray) {
 			baseColor *= 0.75f;
 			Color final = baseColor;
 			var reflNrm = MathUtils.Bounce(ray.Direction, nrm);
 
-			var shade = CalculateLighting(CurrentSettings.lightingType, ray.position, shape, nrm, reflNrm);
+			var shade = CalculateLighting(CurrentRenderSettings.lightingType, ray.position, shape, nrm, reflNrm);
 			final *= shade;
 			//Apply transparency
 			if(mainColor.a < 1) {
@@ -184,7 +213,7 @@ namespace Raytracer {
 				final = Color.Lerp(backColor, final, mainColor.a);
 			}
 			//Apply reflections
-			if(reflectivity > 0 && ray.reflectionIteration <= CurrentSettings.maxBounces) {
+			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {
 				var newray = new Ray(ray.position, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
 				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * reflectivity;
 				final += reflColor;
@@ -194,18 +223,18 @@ namespace Raytracer {
 
 		private Color CalculateLighting(LightingType lighting, Vector3 point, Shape shape, Vector3 nrm, Vector3 reflNrm) {
 			if(lighting == LightingType.SimpleNormalBased) {
-				//Apply simple shading
+				//Apply simple shading based on normals
 				float x = 0.5f + nrm.X * 0.5f;
 				float y = 0.5f + nrm.Y * 0.5f;
 				float z = 0.5f + nrm.Z * -0.5f;
 				float brightness = MathUtils.Step(Math.Max(0, Math.Min(1, y * 0.6f + z * 0.25f + x * 0.15f)), 0.33f);
 				return Color.Lerp(RaytracerEngine.Scene.ambientColor, RaytracerEngine.Scene.simpleSunColor, brightness);
 			} else {
-				//Apply "complex" lighting
+				//Apply correct lighting using the light sources from the scene
 				Color lightCol = RaytracerEngine.Scene.ambientColor;
 				foreach(var l in RaytracerEngine.Scene.GetContributingLights(point)) {
 					lightCol += l.GetLightAtPoint(RaytracerEngine.Scene, point, nrm, lighting, shape, out bool shadow);
-					if(CurrentSettings.specularHighlights && !shadow) {
+					if(CurrentRenderSettings.specularHighlights && !shadow) {
 						lightCol += l.GetSpecularHighlight(point, reflNrm, smoothness);
 					}
 				}
