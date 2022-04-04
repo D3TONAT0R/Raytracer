@@ -89,6 +89,7 @@ namespace Raytracer {
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveSceneAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).BeginInit();
@@ -362,7 +363,8 @@ namespace Raytracer {
 			// 
 			this.asasToolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openSceneMenuItem,
-            this.openSampleSceneMenuItem});
+            this.openSampleSceneMenuItem,
+            this.saveSceneAsToolStripMenuItem});
 			this.asasToolStripMenuItem2.Name = "asasToolStripMenuItem2";
 			this.asasToolStripMenuItem2.Size = new System.Drawing.Size(37, 20);
 			this.asasToolStripMenuItem2.Text = "File";
@@ -511,6 +513,15 @@ namespace Raytracer {
 			this.test11ToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
 			this.test11ToolStripMenuItem.Text = "test11";
 			// 
+			// saveSceneAsToolStripMenuItem
+			// 
+			this.saveSceneAsToolStripMenuItem.Name = "saveSceneAsToolStripMenuItem";
+			this.saveSceneAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+			this.saveSceneAsToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.saveSceneAsToolStripMenuItem.Text = "Save Scene As ...";
+			this.saveSceneAsToolStripMenuItem.Click += new System.EventHandler(this.OnSaveSceneAsMenuItemClick);
+			// 
 			// RaytracerForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -586,5 +597,6 @@ namespace Raytracer {
 		private ToolStripMenuItem dToolStripMenuItem;
 		private ToolStripMenuItem eToolStripMenuItem;
 		private ToolStripMenuItem fToolStripMenuItem;
+		private ToolStripMenuItem saveSceneAsToolStripMenuItem;
 	}
 }

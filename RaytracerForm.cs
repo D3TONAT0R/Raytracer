@@ -83,5 +83,10 @@ namespace Raytracer {
 		{
 
 		}
+
+		private void OnSaveSceneAsMenuItemClick(object sender, EventArgs e)
+		{
+			SceneFileWriter.SaveSceneAsPrompt();
+		}
 	}
 }
