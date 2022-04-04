@@ -71,6 +71,26 @@ namespace Raytracer {
 			}
 			return uv;
 		}
+
+		public static TilingVector Parse(string s)
+		{
+			var comps = s.Split(' ');
+			var tv = new TilingVector();
+			for (int i = 0; i < comps.Length; i++)
+			{
+				if (i == 0) tv.x = float.Parse(comps[i]);
+				else if (i == 1) tv.y = float.Parse(comps[i]);
+				else if (i == 2) tv.width = float.Parse(comps[i]);
+				else if (i == 3) tv.height = float.Parse(comps[i]);
+				else if (i == 4) tv.angle = float.Parse(comps[i]);
+			}
+			return tv;
+		}
+
+		public override string ToString()
+		{
+			return $"{x} {y} {width} {height}";
+		}
 	}
 
 	[ObjectIdentifier("MATERIAL")]
@@ -91,7 +111,7 @@ namespace Raytracer {
 		[DataIdentifier("TILING")]
 		public TilingVector textureTiling = new TilingVector();
 		[DataIdentifier("MAPPING")]
-		public TextureMappingType mappingType;
+		public TextureMappingType mappingType = TextureMappingType.WorldXYZ;
 
 		[DataIdentifier("REFL")]
 		public float reflectivity = 0;
@@ -99,7 +119,9 @@ namespace Raytracer {
 		public float smoothness = 0;
 		public float? transparencyCutout = null;
 		[DataIdentifier("REFRACTION")]
-		public float refraction = 1f;
+		public float refraction = 0f;
+
+		public bool isGlobalMaterial = false;
 
 		public Material() {
 		}
@@ -166,11 +188,11 @@ namespace Raytracer {
 			{
 				output = Color.Black;
 			}
-			if (RaytracerEngine.Scene.fogDistance != null)
+			if (RaytracerEngine.Scene.environment.fogDistance > 0)
 			{
 				//Apply fog
-				float fogDensity = Math.Min(1, distance / (float)RaytracerEngine.Scene.fogDistance);
-				output = Color.Lerp(output, RaytracerEngine.Scene.fogColor, fogDensity);
+				float fogDensity = Math.Min(1, distance / (float)RaytracerEngine.Scene.environment.fogDistance);
+				output = Color.Lerp(output, RaytracerEngine.Scene.environment.fogColor, fogDensity);
 			}
 			return output;
 		}
@@ -228,10 +250,10 @@ namespace Raytracer {
 				float y = 0.5f + nrm.Y * 0.5f;
 				float z = 0.5f + nrm.Z * -0.5f;
 				float brightness = MathUtils.Step(Math.Max(0, Math.Min(1, y * 0.6f + z * 0.25f + x * 0.15f)), 0.33f);
-				return Color.Lerp(RaytracerEngine.Scene.ambientColor, RaytracerEngine.Scene.simpleSunColor, brightness);
+				return Color.Lerp(RaytracerEngine.Scene.environment.ambientColor, RaytracerEngine.Scene.environment.simpleSunColor, brightness);
 			} else {
 				//Apply correct lighting using the light sources from the scene
-				Color lightCol = RaytracerEngine.Scene.ambientColor;
+				Color lightCol = RaytracerEngine.Scene.environment.ambientColor;
 				foreach(var l in RaytracerEngine.Scene.GetContributingLights(point)) {
 					lightCol += l.GetLightAtPoint(RaytracerEngine.Scene, point, nrm, lighting, shape, out bool shadow);
 					if(CurrentRenderSettings.specularHighlights && !shadow) {

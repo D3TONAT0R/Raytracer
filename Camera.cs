@@ -78,11 +78,21 @@ namespace Raytracer {
 		public void Render(Scene scene, RenderTarget target) {
 			if(rendering) return;
 			rendering = true;
-			scene.OnBeginRender(CurrentRenderSettings.rayMarchDistanceInVoid);
+			if (scene != null)
+			{
+				scene.OnBeginRender(CurrentRenderSettings.rayMarchDistanceInVoid);
+			}
 			SetScreenParams(target.width, target.height);
 			lock(locker)
 			{
-				SceneRenderer.RenderScene(this, scene, target.RenderBuffer);
+				if (scene != null)
+				{
+					SceneRenderer.RenderScene(this, scene, target.RenderBuffer);
+				}
+				else
+				{
+					//Draw empty screen
+				}
 			}
 			rendering = false;
 		}

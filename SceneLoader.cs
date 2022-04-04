@@ -39,12 +39,12 @@ namespace Raytracer {
 
 		public static Scene LoadSceneFromFile(string filePath)
 		{
-			return new SceneFileLoader().CreateFromFile(Path.GetFileNameWithoutExtension(filePath), File.ReadAllLines(filePath), 0);
+			return SceneFileLoader.CreateFromFile(filePath);
 		}
 
 		public static Scene GeneratePreset(int index) {
 			if(index == 0) {
-				return new SceneFileLoader().CreateFromFile("Scene 4", File.ReadAllLines(System.IO.Path.Combine(RaytracerEngine.rootPath, "scene_4.txt")), 0);
+				return SceneFileLoader.CreateFromFile(System.IO.Path.Combine(RaytracerEngine.rootPath, "scene_4.txt"));
 			} else if(index == 1) {
 				return GenerateSphereWorld();
 			} else if(index == 2) {
@@ -107,7 +107,7 @@ namespace Raytracer {
 				cL.shadowStartOffset = 0.26f;
 				sn.AddObject(new Group("group", new Vector3(0, 0, 0), c1, c2, c3, cL));
 				sn.AddDefaultDirectionalLight();
-				sn.fogDistance = 160f;
+				sn.environment.fogDistance = 160f;
 
 				//Animation
 				var prop = new AnimatedProperty(RaytracerEngine.instance.camera, "POSITION",
@@ -255,7 +255,7 @@ namespace Raytracer {
 					mainTexture = Sampler2D.Create("texture_1.png")
 				}
 			};
-			scene.AddObject(new BooleanSolid("cut_house", BooleanSolid.BooleanOperation.Difference, b1cube, b2sphere, b3prism));
+			scene.AddObject(new BooleanSolid("cut_house", BooleanSolid.BooleanOperation.Subtract, b1cube, b2sphere, b3prism));
 			scene.AddObject(house[1]);
 			var house2 = CreateHouse("tower", new Vector3(-0.5f, 1, 2), new Vector3(1.5f, 2, 1.5f), 2, Roof.RoofType.Pyramid, wallMaterial, roofMaterial);
 			scene.AddObjects(house2);
@@ -278,7 +278,7 @@ namespace Raytracer {
 			var blueSphere = new Sphere("bsphere", new Vector3(2, -1.5f, 1.5f), 0.25f) {
 				material = new Material(new Color(0.25f, 0.25f, 1f), 0.75f, 1)
 			};
-			scene.AddObject(new BooleanSolid("cutsphere", BooleanSolid.BooleanOperation.Difference, redSphere, blueSphere));
+			scene.AddObject(new BooleanSolid("cutsphere", BooleanSolid.BooleanOperation.Subtract, redSphere, blueSphere));
 
 			scene.AddObject(new Cylinder("cyl_y", new Vector3(5, 0, 1), 0.5f, 2f, Cylinder.CylinderAxis.Y) {
 				material = new Material(Color.Green, 0.5f, 1)

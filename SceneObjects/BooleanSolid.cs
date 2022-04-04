@@ -11,9 +11,9 @@ namespace Raytracer {
 	public class BooleanSolid : SolidShape {
 
 		public enum BooleanOperation {
-			Union,
-			Difference,
-			Intersection
+			Add,
+			Subtract,
+			Intersect
 		}
 
 		[DataIdentifier("SOLIDS")]
@@ -31,30 +31,9 @@ namespace Raytracer {
 			solids = shapes;
 		}
 
-		public override void HandleExtraIdentifier(string extra) {
-			var c = extra[0];
-			if(c == '+') operation = BooleanOperation.Union;
-			else if(c == '-') operation = BooleanOperation.Difference;
-			else if(c == 'X') operation = BooleanOperation.Intersection;
-		}
-
 		protected override void OnInit() {
 			foreach(var s in solids) s.Initialize();
 		}
-
-		public override void OnBeginRender() {
-			/*shapeAABBs = new AABB[solids.Length];
-			for(int i = 0; i < solids.Length; i++) {
-				shapeAABBs[i] = solids[i].ShapeAABB.Expand(RaytracedRenderer.CurrentSettings.rayMarchDistanceInObject);
-			}*/
-		}
-
-		/*public override void SetupAABBs(Dictionary<Shape, AABB> expandedAABBs, float expansionAmount) {
-			base.SetupAABBs(expandedAABBs, expansionAmount);
-			for(int i = 0; i < solids.Length; i++) {
-				solids[i].SetupAABBs(expandedAABBs, expansionAmount);
-			}
-		}*/
 
 		public override void SetupAABBs() {
 			//expandedAABBs = new AABB[solids.Length];
@@ -63,14 +42,14 @@ namespace Raytracer {
 				//expandedAABBs[i] = solids[i].ShapeAABB.Expand(RaytracedRenderer.CurrentSettings.rayMarchDistanceInVoid);
 			}
 
-			if(operation == BooleanOperation.Difference) {
+			if(operation == BooleanOperation.Subtract) {
 				ShapeAABB = solids[0].ShapeAABB;
-			} else if(operation == BooleanOperation.Union) {
+			} else if(operation == BooleanOperation.Add) {
 				ShapeAABB = new AABB();
 				foreach(var s in solids) {
 					ShapeAABB = ShapeAABB.Join(s.ShapeAABB);
 				}
-			} else if(operation == BooleanOperation.Intersection) {
+			} else if(operation == BooleanOperation.Intersect) {
 				ShapeAABB = AABB.CreateInfinity();
 				foreach(var s in solids) {
 					ShapeAABB = ShapeAABB.Trim(s.ShapeAABB);
@@ -81,26 +60,26 @@ namespace Raytracer {
 		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
 			var closest = GetClosestSurfaceShape(pos);
 			Vector3 normal = closest.GetNormalAt(pos, ray);
-			if(operation == BooleanOperation.Difference && closest != solids[0]) {
+			if(operation == BooleanOperation.Subtract && closest != solids[0]) {
 				normal *= -1;
 			}
 			return normal;
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			if(operation == BooleanOperation.Union) {
+			if(operation == BooleanOperation.Add) {
 				bool b = false;
 				for(int i = 0; i < solids.Length; i++) {
 					b |= solids[i].Intersects(pos);
 				}
 				return b;
-			} else if(operation == BooleanOperation.Intersection) {
+			} else if(operation == BooleanOperation.Intersect) {
 				bool b = true;
 				for(int i = 0; i < solids.Length; i++) {
 					b &= solids[i].Intersects(pos);
 				}
 				return b;
-			} else if(operation == BooleanOperation.Difference) {
+			} else if(operation == BooleanOperation.Subtract) {
 				if(!solids[0].Intersects(pos)) return false;
 				for(int i = 1; i < solids.Length; i++) {
 					if(solids[i].Intersects(pos)) {

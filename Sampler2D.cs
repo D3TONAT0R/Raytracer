@@ -11,13 +11,16 @@ namespace Raytracer {
 
 		public static string defaultPath = Path.Combine(RaytracerEngine.rootPath, "Textures");
 
+		public readonly string relativeTexturePath;
+
 		public Color[,] texture;
 		public readonly int width;
 		public readonly int height;
 		public bool filtering = true;
 		public Color averageColor;
 
-		private Sampler2D(string path) {
+		private Sampler2D(string path, string relativePath) {
+			relativeTexturePath = relativePath;
 			Bitmap bmp = new Bitmap(Image.FromFile(path));
 			width = bmp.Width;
 			height = bmp.Height;
@@ -53,7 +56,7 @@ namespace Raytracer {
 			//string path = Path.Combine(defaultPath, textureName);
 			var files = Directory.GetFiles(defaultPath, Path.GetFileName(textureName));
 			if(files.Length > 0) {
-				return new Sampler2D(files[0]);
+				return new Sampler2D(files[0], textureName);
 			} else {
 				return null;
 			}
@@ -85,6 +88,11 @@ namespace Raytracer {
 				int iy = (int)Math.Round(y * height) % height;
 				return texture[ix, iy];
 			}
+		}
+
+		public override string ToString()
+		{
+			return relativeTexturePath;
 		}
 	}
 }

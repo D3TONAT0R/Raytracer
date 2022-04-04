@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Raytracer {
 	public struct Color {
+
+		public readonly string referencedGlobalColor;
 
 		public float r;
 		public float g;
@@ -31,6 +29,7 @@ namespace Raytracer {
 		}
 
 		public Color(float r, float g, float b, float a) {
+			referencedGlobalColor = null;
 			this.r = r;
 			this.g = g;
 			this.b = b;
@@ -39,6 +38,25 @@ namespace Raytracer {
 
 		public Color(float r, float g, float b) : this(r, g, b, 1) {
 
+		}
+
+		public Color(Scene scene, string globalColorName)
+		{
+			referencedGlobalColor = globalColorName;
+			if(scene.globalColors.TryGetValue(globalColorName, out var gc))
+			{
+				r = gc.r;
+				g = gc.g;
+				b = gc.b;
+				a = gc.a;
+			}
+			else
+			{
+				r = 1;
+				g = 0;
+				b = 1;
+				a = 1;
+			}
 		}
 
 		public Color SetAlpha(float alpha) {
@@ -61,6 +79,28 @@ namespace Raytracer {
 			return c;
 		}
 
+		public static Color Parse(string s)
+		{
+			var values = s.Split(' ');
+			if(values.Length == 1)
+			{
+				float v = float.Parse(s);
+				return new Color(v, v, v);
+			}
+			float r = float.Parse(values[0]);
+			float g = float.Parse(values[1]);
+			float b = float.Parse(values[2]);
+			if(values.Length > 3)
+			{
+				float a = float.Parse(values[3]);
+				return new Color(r, g, b, a);
+			}
+			else
+			{
+				return new Color(r, g, b);
+			}
+		}
+
 		public byte[] GetBytes()
 		{
 			return new byte[]
@@ -70,6 +110,22 @@ namespace Raytracer {
 				ToColorByte(b),
 				ToColorByte(a)
 			};
+		}
+
+		public override string ToString()
+		{
+			if(referencedGlobalColor != null)
+			{
+				return referencedGlobalColor;
+			}
+			else if(a != 1)
+			{
+				return $"{r} {g} {b} {a}";
+			}
+			else
+			{
+				return $"{r} {g} {b}";
+			}
 		}
 
 		public static implicit operator Color(System.Drawing.Color dc) {

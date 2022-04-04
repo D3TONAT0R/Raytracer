@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public abstract class SolidShape : Shape {
 
-		public SolidShape(string id) : base(id) {
+		public SolidShape(string name) : base(name) {
 
 		}
 

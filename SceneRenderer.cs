@@ -107,7 +107,7 @@ namespace Raytracer
 			else
 			{
 				//We didn't hit anything, render the sky instead
-				return scene.SampleSkybox(ray.Direction);
+				return scene.environment.SampleSkybox(ray.Direction);
 			}
 		}
 

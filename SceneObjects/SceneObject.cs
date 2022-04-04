@@ -35,10 +35,6 @@ namespace Raytracer {
 			identifier = name;
 		}
 
-		public virtual void HandleExtraIdentifier(string extra) {
-
-		}
-
 		public void Initialize() {
 			OnInit();
 			IsInitialized = true;

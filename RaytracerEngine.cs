@@ -14,7 +14,7 @@ using System.Windows.Forms;
 namespace Raytracer {
 	public class RaytracerEngine {
 
-		public static string rootPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Raytracer");
+		public static string rootPath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Raytracer");
 
 		public static RaytracerEngine instance;
 
@@ -76,7 +76,7 @@ namespace Raytracer {
 				rotation = Vector3.Zero,
 				fieldOfView = 60
 			};
-			Scene = SceneLoader.GeneratePreset(sceneIndex);
+			//Scene = SceneLoader.GeneratePreset(sceneIndex);
 			var ts = new ThreadStart(LoopThread);
 			loopthread = new Thread(ts);
 			loopthread.SetApartmentState(ApartmentState.STA);
@@ -329,8 +329,12 @@ namespace Raytracer {
 				}
 			} else if(obj is BooleanSolid b) {
 				newnode = new TreeNode(obj.ToString());
-				foreach(var o2 in b.solids) {
-					TraverseTree(o2, newnode);
+				if (b.solids != null)
+				{
+					foreach (var o2 in b.solids)
+					{
+						TraverseTree(o2, newnode);
+					}
 				}
 			} else {
 				newnode = new TreeNode(obj.ToString());

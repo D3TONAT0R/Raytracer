@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -8,112 +9,196 @@ using System.Threading.Tasks;
 namespace Raytracer
 {
 
-	public class SceneFileLoader
+	public static class SceneFileLoader
 	{
-
-		string[] fileContents;
-		int lineIndex = 0;
-
-		public Dictionary<string, Material> materials = new Dictionary<string, Material>();
-		public Dictionary<string, SceneObject> objectList = new Dictionary<string, SceneObject>();
-
-		public Scene CreateFromFile(string sceneName, string[] lines, int index)
+		enum DataBlockType
 		{
-			fileContents = lines;
-			for (int i = 0; i < lines.Length; i++)
+			Environment,
+			Colors,
+			Materials,
+			Objects
+		}
+
+		internal abstract class Content
+		{
+			public string keyword;
+		}
+
+		internal class StringContent : Content
+		{
+			public string data;
+
+			public StringContent(string line)
 			{
-				lines[i].Replace("    ", "\t");
+				line = TrimLine(line);
+				var split = line.Split(' ');
+				keyword = split[0];
+				data = line.Substring(split[0].Length+1);
 			}
-			Scene sn = new Scene(sceneName);
-			while (GetLine(lineIndex) != null)
+		}
+
+		internal class BlockContent : Content
+		{
+			public string name;
+			public List<Content> data = new List<Content>();
+
+			public BlockContent(string currentLine, StringReader reader, ref int lineNum)
 			{
-				if (string.IsNullOrWhiteSpace(GetLine(lineIndex)) || GetLine(lineIndex).StartsWith("#"))
+				int startLineNum = lineNum;
+				var split = TrimLine(currentLine).Split(' ');
+				if (!split[split.Length - 1].StartsWith("{")) throw new FormatException($"Missing '{{' at line {lineNum}");
+				keyword = split[0];
+				if (split.Length > 2) name = split[1];
+				while (true)
 				{
-					lineIndex++;
-					continue;
-				}
-				var list = GetBlockLines(ref lineIndex);
-				bool add = false;
-				var firstLine = list[0];
-				list.RemoveAt(0);
-				var block = list.ToArray();
-
-				if (firstLine.StartsWith("ADD "))
-				{
-					add = true;
-					firstLine = firstLine.Substring(4).TrimStart();
-				}
-
-				var type = ReflectionTest.GetInstanceType(firstLine);
-				var identifier = firstLine.Split(' ')[0];
-				if (type == ReflectionTest.AttributeTypeInfo.Material)
-				{
-					var mat = ReflectionTest.CreateMaterial(identifier, block);
-					GetName(firstLine, out var name);
-					materials.Add(name, mat);
-				}
-				else if (type == ReflectionTest.AttributeTypeInfo.Skybox)
-				{
-					//TODO: load skyboxes
-				}
-				else if (type == ReflectionTest.AttributeTypeInfo.SceneObject)
-				{
-					GetName(firstLine, out var name);
-					var so = ReflectionTest.CreateSceneObject(this, identifier, name, block);
-					if (add) sn.AddObject(so);
-					if (name != null)
+					var line = reader.ReadLine();
+					if (line == null) throw new EndOfStreamException($"Unclosed block at line {startLineNum}.");
+					if(line.Contains('}'))
 					{
-						objectList.Add(name, so);
+						//End of block reached
+						break;
+					}
+					if(line.Contains('{'))
+					{
+						data.Add(new BlockContent(line, reader, ref lineNum));
+					}
+					else if(!string.IsNullOrWhiteSpace(line))
+					{
+						data.Add(new StringContent(line));
 					}
 				}
 			}
-			fileContents = lines;
-			return sn;
-		}
 
-		private void GetName(string firstLine, out string name)
-		{
-			name = null;
-			var split = firstLine.Split(' ');
-			if (split.Length > 1)
+			public string[] StringsToArray()
 			{
-				name = split[1];
+				var arr = new string[data.Count];
+				for (int i = 0; i < data.Count; i++)
+				{
+					var sc = data[i] as StringContent;
+					arr[i] = $"{sc.keyword} {sc.data}" ?? "";
+				}
+				return arr;
 			}
 		}
 
-		private List<string> GetBlockLines(ref int i)
+		private static string TrimLine(string line)
 		{
-			List<string> list = new List<string>();
-			list.Add(fileContents[i].Trim());
-			int indent = GetIndent(fileContents[i]) + 1;
-			i++;
-			while (GetIndent(GetLine(i)) >= indent)
+			line = line.Trim();
+			while (line.Contains("  ")) line = line.Replace("  ", " ");
+			return line;
+		}
+
+		public static Scene CreateFromFile(string filePath)
+		{
+			string sceneName = null;
+			var reader = new StringReader(File.ReadAllText(filePath));
+			int lineNum = 0;
+			List<BlockContent> blocks = new List<BlockContent>();
+			while(true)
 			{
-				string ln = GetLine(i);
-				i++;
-				ln = ln.Trim();
-				if (ln.StartsWith("#")) continue;
-				list.Add(ln);
+				var line = reader.ReadLine();
+				lineNum++;
+				if(line != null)
+				{
+					//Skip empty lines and comments
+					if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
+
+					if(line.StartsWith("NAME"))
+					{
+						if (sceneName != null) throw new ArgumentException($"Duplicate NAME tag at line {lineNum}.");
+						sceneName = line.Substring(5);
+						continue;
+					}
+
+					blocks.Add(new BlockContent(line, reader, ref lineNum));
+				}
+				else
+				{
+					break;
+				}
+			}
+			if (string.IsNullOrWhiteSpace(sceneName)) sceneName = "Untitled";
+
+			var scene = new Scene(sceneName);
+
+			var envBlock = blocks.Find((b) => b.keyword == "ENVIRONMENT");
+			var colBlock = blocks.Find((b) => b.keyword == "COLORS");
+			var matBlock = blocks.Find((b) => b.keyword == "MATERIALS");
+			var objBlock = blocks.Find((b) => b.keyword == "OBJECTS");
+
+			if (envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock);
+			if (colBlock != null) scene.globalColors = ParseColorsBlock(colBlock);
+			if (matBlock != null) scene.globalMaterials = ParseMaterialsBlock(matBlock, scene);
+			if (objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
+
+			return scene;
+		}
+
+		static Environment ParseEnvironmentBlock(BlockContent block)
+		{
+			var env = new Environment();
+			foreach(var d in block.data)
+			{
+				var line = d as StringContent;
+				switch(line.keyword)
+				{
+					case "SKYBOX":
+						env.skyboxTexture = Sampler2D.Create(line.data);
+						break;
+					case "SKYBOX_SPHERICAL":
+						env.skyboxIsSpherical = bool.Parse(line.data);
+						break;
+					case "AMBIENT":
+						env.ambientColor = Color.Parse(line.data);
+						break;
+					case "FOG":
+						env.fogColor = Color.Parse(line.data);
+						break;
+					case "FOG_DISTANCE":
+						env.fogDistance = float.Parse(line.data);
+						break;
+					default:
+						throw new ArgumentException($"Unexpected keyword '{line.keyword}' in ENVIRONMENT block.");
+				}
+			}
+			return env;
+		}
+
+		static Dictionary<string, Color> ParseColorsBlock(BlockContent block)
+		{
+			var colors = new Dictionary<string, Color>();
+			foreach(var d in block.data)
+			{
+				var l = d as StringContent;
+				colors.Add(l.keyword, Color.Parse(l.data));
+			}
+			return colors;
+		}
+
+		static Dictionary<string, Material> ParseMaterialsBlock(BlockContent block, Scene scene)
+		{
+			var materials = new Dictionary<string, Material>();
+			foreach (var d in block.data)
+			{
+				var l = d as BlockContent;
+				var mat = ReflectionTest.CreateMaterial(l, scene);
+				mat.isGlobalMaterial = true;
+				materials.Add(l.keyword, mat);
+			}
+			return materials;
+		}
+
+		static List<SceneObject> ParseObjectsBlock(BlockContent block, Scene scene)
+		{
+			var list = new List<SceneObject>();
+			foreach(var c in block.data)
+			{
+				var b = c as BlockContent;
+
+				var so = ReflectionTest.CreateSceneObject(scene, b);
+				list.Add(so);
 			}
 			return list;
-		}
-
-		private int GetIndent(string s)
-		{
-			if (string.IsNullOrWhiteSpace(s)) return -1;
-			return s.Length - s.TrimStart('\t').Length;
-		}
-
-		private string GetLine(int i)
-		{
-			if (i < fileContents.Length)
-			{
-				return fileContents[i];
-			}
-			else
-			{
-				return null;
-			}
 		}
 	}
 }

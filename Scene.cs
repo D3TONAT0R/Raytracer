@@ -11,15 +11,10 @@ namespace Raytracer {
 
 		public string sceneName;
 
-		public Gradient skyboxGradient;
-		public Sampler2D skyboxTexture;
-		public bool skyboxIsSpherical;
+		public Environment environment;
 
-		public Color ambientColor = new Color(0.2f, 0.2f, 0.25f);
-		public Color simpleSunColor = new Color(1.00f, 0.96f, 0.88f);
-
-		public float? fogDistance = 250f;
-		public Color fogColor = System.Drawing.Color.LightSkyBlue;
+		public Dictionary<string, Color> globalColors = new Dictionary<string, Color>();
+		public Dictionary<string, Material> globalMaterials = new Dictionary<string, Material>();
 
 		public List<SceneObject> sceneContent = new List<SceneObject>();
 		public bool hasContentUpdate = true;
@@ -31,27 +26,9 @@ namespace Raytracer {
 
 		public SceneObject remoteControlledObject;
 
-		//public Dictionary<Shape, AABB[]> shapeAABBs = new Dictionary<Shape, AABB[]>();
-
 		public Scene(string name) {
 			sceneName = name;
-			skyboxGradient = new Gradient(
-				(0, System.Drawing.Color.Black),
-				(0.49f, System.Drawing.Color.DarkOliveGreen),
-				(0.51f, System.Drawing.Color.LightBlue),
-				(1f, System.Drawing.Color.White));
-			skyboxTexture = Sampler2D.Create("skybox");
-			if(skyboxTexture == null) {
-				skyboxTexture = Sampler2D.Create("skydome");
-				if(skyboxTexture != null) skyboxIsSpherical = true;
-			}
-			/*skybox = new Gradient(
-				(0, System.Drawing.Color.Red),
-				(0.3999f, System.Drawing.Color.Red),
-				(0.4f, System.Drawing.Color.Green),
-				(0.5999f, System.Drawing.Color.Green),
-				(0.6f, System.Drawing.Color.Blue),
-				(1f, System.Drawing.Color.Blue));*/
+			environment = new Environment();
 		}
 
 		public void AddObject(SceneObject obj) {
@@ -131,25 +108,6 @@ namespace Raytracer {
 				}
 			}
 			return list.ToArray();
-		}
-
-		public Color SampleSkybox(Vector3 direction) {
-			if(skyboxTexture != null) {
-				if(skyboxIsSpherical) {
-					var x = MathUtils.DirToEuler(direction).Y / 360f;
-					var y = 0.5f + direction.Y / 2f;
-					return skyboxTexture.Sample(x, y);
-				} else {
-					var euler = MathUtils.DirToEuler(direction);
-					var x = euler.Y / 90f;
-					x += 0.5f;
-					var y = euler.X / 90f;
-					y += 0.5f;
-					return skyboxTexture.Sample(x, y);
-				}
-			} else {
-				return skyboxGradient.Evaluate(direction.Y / 2f + 0.5f);
-			}
 		}
 	}
 }
