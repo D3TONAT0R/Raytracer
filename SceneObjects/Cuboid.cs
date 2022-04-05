@@ -31,7 +31,7 @@ namespace Raytracer {
 		}
 
 		public override void SetupAABBs() {
-			ShapeAABB = new AABB(localPosition, localPosition + size);
+			ShapeAABB = new AABB(WorldPosition, WorldPosition + size);
 		}
 
 		public override bool Intersects(Vector3 pos) {

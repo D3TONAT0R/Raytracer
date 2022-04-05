@@ -16,10 +16,10 @@ namespace Raytracer {
 			Intersect
 		}
 
+		[DataIdentifier("TYPE")]
+		public BooleanOperation operation;
 		[DataIdentifier("SOLIDS")]
 		public readonly SolidShape[] solids;
-		[DataIdentifier("OPERATION")]
-		public BooleanOperation operation;
 
 		//public AABB[] shapeAABBs;
 		//private AABB[] expandedAABBs;

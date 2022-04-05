@@ -79,7 +79,9 @@ namespace Raytracer {
 		public List<Shape> GetIntersectingShapes(Ray ray) {
 			var list = new List<Shape>();
 			foreach(var s in shapes) {
-				if(s.ShapeAABB.Offset(s.HierarchyPositionOffset).Intersects(ray)) list.Add(s);
+				//TODO: correct?
+				//if(s.ShapeAABB.Offset(s.HierarchyPositionOffset).Intersects(ray)) list.Add(s);
+				if(s.ShapeAABB.Intersects(ray)) list.Add(s);
 			}
 			return list;
 		}

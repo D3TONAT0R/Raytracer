@@ -135,7 +135,9 @@ namespace Raytracer
 					{
 						for (int i = 0; i < intersecting.Length; i++)
 						{
-							var localpos = ray.position - intersecting[i].HierarchyPositionOffset;
+							//TODO: correct?
+							//var localpos = ray.position - intersecting[i].HierarchyPositionOffset;
+							var localpos = ray.position;
 							if (intersecting[i].Intersects(localpos))
 							{
 								//We are about to hit something

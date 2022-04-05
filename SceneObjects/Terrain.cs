@@ -44,7 +44,7 @@ namespace Raytracer {
 
 		public override void SetupAABBs() {
 			var add = Vector3.UnitY * bottomThickness;
-			ShapeAABB = new AABB(localPosition - add, localPosition + dimensions + add);
+			ShapeAABB = new AABB(WorldPosition - add, WorldPosition + dimensions + add);
 		}
 
 		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {

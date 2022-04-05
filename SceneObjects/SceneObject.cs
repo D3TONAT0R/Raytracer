@@ -7,7 +7,7 @@ namespace Raytracer {
 
 		public bool IsInitialized { get; private set; }
 		public SceneObject parent;
-		public string identifier;
+		public string name;
 		[DataIdentifier("VIS")]
 		public bool visible = true;
 		[DataIdentifier("POSITION")]
@@ -32,7 +32,7 @@ namespace Raytracer {
 		public SceneObject() { }
 
 		public SceneObject(string name) {
-			identifier = name;
+			this.name = name;
 		}
 
 		public void Initialize() {
@@ -44,7 +44,7 @@ namespace Raytracer {
 		}
 
 		public override string ToString() {
-			return $"[{identifier} ({GetType().Name.ToUpper()})]";
+			return $"[{name} ({GetType().Name.ToUpper()})]";
 		}
 	}
 }

@@ -22,20 +22,20 @@ namespace Raytracer {
 		}
 
 		public override void SetupAABBs() {
-			ShapeAABB = new AABB(localPosition - Vector3.One * radius, localPosition + Vector3.One * radius);
+			ShapeAABB = new AABB(WorldPosition - Vector3.One * radius, WorldPosition + Vector3.One * radius);
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			return Vector3.Distance(pos, localPosition) <= radius;
+			return Vector3.Distance(pos, WorldPosition) <= radius;
 		}
 
 		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
-			var nrm = Vector3.Normalize(pos - localPosition);
+			var nrm = Vector3.Normalize(pos - WorldPosition);
 			return nrm;
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos) {
-			return Math.Abs(Vector3.Distance(localPosition, worldPos) - radius);
+			return Math.Abs(Vector3.Distance(WorldPosition, worldPos) - radius);
 		}
 	}
 }

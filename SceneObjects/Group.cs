@@ -11,7 +11,7 @@ namespace Raytracer {
 	public class Group : SceneObject {
 
 		[DataIdentifier("CHILDREN")]
-		public SceneObject[] children;
+		public SceneObject[] children = new SceneObject[0];
 
 		public Group() : base(null) { }
 
