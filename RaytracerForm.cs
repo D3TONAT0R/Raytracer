@@ -36,18 +36,6 @@ namespace Raytracer {
 
 		}
 
-		private void label2_Click(object sender, EventArgs e) {
-
-		}
-
-		private void checkBox1_CheckedChanged(object sender, EventArgs e) {
-
-		}
-
-		private void splitter1_SplitterMoved(object sender, SplitterEventArgs e) {
-
-		}
-
 		private void OnSceneTreeSelect(object sender, TreeViewEventArgs e) {
 			SceneEditor.InspectedObject = sceneTree.SelectedNode.Tag as SceneObject;
 		}
@@ -71,12 +59,12 @@ namespace Raytracer {
 
 		private void OnRenderMenuItemClick(object sender, EventArgs e)
 		{
-
+			RaytracerEngine.BeginRender(false);
 		}
 
 		private void OnRenderToFileMenuItemClick(object sender, EventArgs e)
 		{
-
+			RaytracerEngine.BeginRender(true);
 		}
 
 		private void OnOpenSampleSceneMenuItemClick(object sender, EventArgs e)
@@ -87,6 +75,21 @@ namespace Raytracer {
 		private void OnSaveSceneAsMenuItemClick(object sender, EventArgs e)
 		{
 			SceneFileWriter.SaveSceneAsPrompt();
+		}
+
+		private void OnCancelRenderMenuItemClick(object sender, EventArgs e)
+		{
+			RaytracerEngine.CancelRender();
+		}
+
+		private void OnQuitMenuItemClick(object sender, EventArgs e)
+		{
+			RaytracerEngine.QuitApplication();
+		}
+
+		private void OnSaveViewMenuItemClick(object sender, EventArgs e)
+		{
+			RaytracerEngine.SaveScreenshot();
 		}
 	}
 }

@@ -53,8 +53,6 @@ namespace Raytracer {
 			System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Node7");
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.progressInfo = new System.Windows.Forms.RichTextBox();
-			this.button_maxrender = new System.Windows.Forms.Button();
-			this.button_screenshot = new System.Windows.Forms.Button();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.label2 = new System.Windows.Forms.Label();
@@ -72,24 +70,21 @@ namespace Raytracer {
 			this.asasToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.openSceneMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openSampleSceneMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveSceneAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.startRenderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renderToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.saveCurrentViewToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.cancelCurrentRenderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.resolutionMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.defaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.aToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.bToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.cToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.dToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.eToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.fToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.qualityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.defaultToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveSceneAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).BeginInit();
@@ -122,34 +117,12 @@ namespace Raytracer {
 			this.progressInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.progressInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.progressInfo.Location = new System.Drawing.Point(3, 317);
+			this.progressInfo.Location = new System.Drawing.Point(3, 305);
 			this.progressInfo.Name = "progressInfo";
 			this.progressInfo.ReadOnly = true;
-			this.progressInfo.Size = new System.Drawing.Size(143, 41);
+			this.progressInfo.Size = new System.Drawing.Size(143, 53);
 			this.progressInfo.TabIndex = 4;
-			this.progressInfo.Text = "Render Info\n...\n...";
-			// 
-			// button_maxrender
-			// 
-			this.button_maxrender.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.button_maxrender.Location = new System.Drawing.Point(3, 259);
-			this.button_maxrender.Name = "button_maxrender";
-			this.button_maxrender.Size = new System.Drawing.Size(143, 23);
-			this.button_maxrender.TabIndex = 5;
-			this.button_maxrender.Text = "Render 1280x720";
-			this.button_maxrender.UseVisualStyleBackColor = true;
-			// 
-			// button_screenshot
-			// 
-			this.button_screenshot.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.button_screenshot.Location = new System.Drawing.Point(3, 288);
-			this.button_screenshot.Name = "button_screenshot";
-			this.button_screenshot.Size = new System.Drawing.Size(143, 23);
-			this.button_screenshot.TabIndex = 6;
-			this.button_screenshot.Text = "Save Result to File";
-			this.button_screenshot.UseVisualStyleBackColor = true;
+			this.progressInfo.Text = "Render Info\n...\n...\n...";
 			// 
 			// tabControl1
 			// 
@@ -161,7 +134,7 @@ namespace Raytracer {
 			this.tabControl1.Location = new System.Drawing.Point(3, 3);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(146, 250);
+			this.tabControl1.Size = new System.Drawing.Size(146, 296);
 			this.tabControl1.TabIndex = 14;
 			// 
 			// tabPage1
@@ -173,7 +146,7 @@ namespace Raytracer {
 			this.tabPage1.Location = new System.Drawing.Point(4, 22);
 			this.tabPage1.Name = "tabPage1";
 			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage1.Size = new System.Drawing.Size(138, 224);
+			this.tabPage1.Size = new System.Drawing.Size(138, 270);
 			this.tabPage1.TabIndex = 0;
 			this.tabPage1.Text = "Camera";
 			this.tabPage1.UseVisualStyleBackColor = true;
@@ -228,7 +201,7 @@ namespace Raytracer {
 			this.tabPage2.Location = new System.Drawing.Point(4, 22);
 			this.tabPage2.Name = "tabPage2";
 			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage2.Size = new System.Drawing.Size(138, 224);
+			this.tabPage2.Size = new System.Drawing.Size(138, 260);
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "Scene";
 			this.tabPage2.UseVisualStyleBackColor = true;
@@ -249,8 +222,8 @@ namespace Raytracer {
 			// splitContainer2.Panel2
 			// 
 			this.splitContainer2.Panel2.Controls.Add(this.groupBox1);
-			this.splitContainer2.Size = new System.Drawing.Size(138, 224);
-			this.splitContainer2.SplitterDistance = 128;
+			this.splitContainer2.Size = new System.Drawing.Size(138, 260);
+			this.splitContainer2.SplitterDistance = 148;
 			this.splitContainer2.TabIndex = 1;
 			// 
 			// sceneTree
@@ -282,7 +255,7 @@ namespace Raytracer {
             treeNode3,
             treeNode8,
             treeNode9});
-			this.sceneTree.Size = new System.Drawing.Size(132, 122);
+			this.sceneTree.Size = new System.Drawing.Size(132, 142);
 			this.sceneTree.TabIndex = 0;
 			this.sceneTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnSceneTreeSelect);
 			// 
@@ -294,7 +267,7 @@ namespace Raytracer {
 			this.groupBox1.Controls.Add(this.propertiesPanel);
 			this.groupBox1.Location = new System.Drawing.Point(0, -1);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(138, 93);
+			this.groupBox1.Size = new System.Drawing.Size(138, 109);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Properties";
@@ -307,7 +280,7 @@ namespace Raytracer {
 			this.propertiesPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
 			this.propertiesPanel.Location = new System.Drawing.Point(3, 19);
 			this.propertiesPanel.Name = "propertiesPanel";
-			this.propertiesPanel.Size = new System.Drawing.Size(132, 71);
+			this.propertiesPanel.Size = new System.Drawing.Size(132, 87);
 			this.propertiesPanel.TabIndex = 0;
 			this.propertiesPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.propertiesPanel_Paint);
 			// 
@@ -322,9 +295,7 @@ namespace Raytracer {
 			// splitContainer1.Panel1
 			// 
 			this.splitContainer1.Panel1.Controls.Add(this.progressBar);
-			this.splitContainer1.Panel1.Controls.Add(this.button_maxrender);
 			this.splitContainer1.Panel1.Controls.Add(this.tabControl1);
-			this.splitContainer1.Panel1.Controls.Add(this.button_screenshot);
 			this.splitContainer1.Panel1.Controls.Add(this.progressInfo);
 			// 
 			// splitContainer1.Panel2
@@ -364,7 +335,8 @@ namespace Raytracer {
 			this.asasToolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openSceneMenuItem,
             this.openSampleSceneMenuItem,
-            this.saveSceneAsToolStripMenuItem});
+            this.saveSceneAsToolStripMenuItem,
+            this.quitToolStripMenuItem});
 			this.asasToolStripMenuItem2.Name = "asasToolStripMenuItem2";
 			this.asasToolStripMenuItem2.Size = new System.Drawing.Size(37, 20);
 			this.asasToolStripMenuItem2.Text = "File";
@@ -386,11 +358,29 @@ namespace Raytracer {
 			this.openSampleSceneMenuItem.Text = "Open Sample Scene";
 			this.openSampleSceneMenuItem.Click += new System.EventHandler(this.OnOpenSampleSceneMenuItemClick);
 			// 
+			// saveSceneAsToolStripMenuItem
+			// 
+			this.saveSceneAsToolStripMenuItem.Name = "saveSceneAsToolStripMenuItem";
+			this.saveSceneAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+			this.saveSceneAsToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.saveSceneAsToolStripMenuItem.Text = "Save Scene As ...";
+			this.saveSceneAsToolStripMenuItem.Click += new System.EventHandler(this.OnSaveSceneAsMenuItemClick);
+			// 
+			// quitToolStripMenuItem
+			// 
+			this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
+			this.quitToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.quitToolStripMenuItem.Text = "Quit";
+			this.quitToolStripMenuItem.Click += new System.EventHandler(this.OnQuitMenuItemClick);
+			// 
 			// renderToolStripMenuItem
 			// 
 			this.renderToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startRenderToolStripMenuItem,
             this.renderToFileToolStripMenuItem,
+            this.saveCurrentViewToFileToolStripMenuItem,
+            this.cancelCurrentRenderToolStripMenuItem,
             this.toolStripMenuItem1,
             this.resolutionMenuItem,
             this.qualityMenuItem});
@@ -403,7 +393,7 @@ namespace Raytracer {
 			// 
 			this.startRenderToolStripMenuItem.Name = "startRenderToolStripMenuItem";
 			this.startRenderToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-			this.startRenderToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.startRenderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
 			this.startRenderToolStripMenuItem.Text = "Render to Screen";
 			this.startRenderToolStripMenuItem.Click += new System.EventHandler(this.OnRenderMenuItemClick);
 			// 
@@ -412,27 +402,37 @@ namespace Raytracer {
 			this.renderToFileToolStripMenuItem.Name = "renderToFileToolStripMenuItem";
 			this.renderToFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.R)));
-			this.renderToFileToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.renderToFileToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
 			this.renderToFileToolStripMenuItem.Text = "Render to File";
 			this.renderToFileToolStripMenuItem.Click += new System.EventHandler(this.OnRenderToFileMenuItemClick);
+			// 
+			// saveCurrentViewToFileToolStripMenuItem
+			// 
+			this.saveCurrentViewToFileToolStripMenuItem.Name = "saveCurrentViewToFileToolStripMenuItem";
+			this.saveCurrentViewToFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+			this.saveCurrentViewToFileToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.saveCurrentViewToFileToolStripMenuItem.Text = "Save Current View To File";
+			this.saveCurrentViewToFileToolStripMenuItem.Click += new System.EventHandler(this.OnSaveViewMenuItemClick);
+			// 
+			// cancelCurrentRenderToolStripMenuItem
+			// 
+			this.cancelCurrentRenderToolStripMenuItem.Name = "cancelCurrentRenderToolStripMenuItem";
+			this.cancelCurrentRenderToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+			this.cancelCurrentRenderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.cancelCurrentRenderToolStripMenuItem.Text = "Cancel Current Render";
+			this.cancelCurrentRenderToolStripMenuItem.Click += new System.EventHandler(this.OnCancelRenderMenuItemClick);
 			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-			this.toolStripMenuItem1.Size = new System.Drawing.Size(216, 6);
+			this.toolStripMenuItem1.Size = new System.Drawing.Size(243, 6);
 			// 
 			// resolutionMenuItem
 			// 
 			this.resolutionMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.defaultToolStripMenuItem,
-            this.aToolStripMenuItem,
-            this.bToolStripMenuItem,
-            this.cToolStripMenuItem,
-            this.dToolStripMenuItem,
-            this.eToolStripMenuItem,
-            this.fToolStripMenuItem});
+            this.defaultToolStripMenuItem});
 			this.resolutionMenuItem.Name = "resolutionMenuItem";
-			this.resolutionMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.resolutionMenuItem.Size = new System.Drawing.Size(246, 22);
 			this.resolutionMenuItem.Text = "Resolution";
 			// 
 			// defaultToolStripMenuItem
@@ -441,48 +441,12 @@ namespace Raytracer {
 			this.defaultToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
 			this.defaultToolStripMenuItem.Text = "Default";
 			// 
-			// aToolStripMenuItem
-			// 
-			this.aToolStripMenuItem.Name = "aToolStripMenuItem";
-			this.aToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-			this.aToolStripMenuItem.Text = "a";
-			// 
-			// bToolStripMenuItem
-			// 
-			this.bToolStripMenuItem.Name = "bToolStripMenuItem";
-			this.bToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-			this.bToolStripMenuItem.Text = "b";
-			// 
-			// cToolStripMenuItem
-			// 
-			this.cToolStripMenuItem.Name = "cToolStripMenuItem";
-			this.cToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-			this.cToolStripMenuItem.Text = "c";
-			// 
-			// dToolStripMenuItem
-			// 
-			this.dToolStripMenuItem.Name = "dToolStripMenuItem";
-			this.dToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-			this.dToolStripMenuItem.Text = "d";
-			// 
-			// eToolStripMenuItem
-			// 
-			this.eToolStripMenuItem.Name = "eToolStripMenuItem";
-			this.eToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-			this.eToolStripMenuItem.Text = "e";
-			// 
-			// fToolStripMenuItem
-			// 
-			this.fToolStripMenuItem.Name = "fToolStripMenuItem";
-			this.fToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-			this.fToolStripMenuItem.Text = "f";
-			// 
 			// qualityMenuItem
 			// 
 			this.qualityMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.defaultToolStripMenuItem1});
 			this.qualityMenuItem.Name = "qualityMenuItem";
-			this.qualityMenuItem.Size = new System.Drawing.Size(219, 22);
+			this.qualityMenuItem.Size = new System.Drawing.Size(246, 22);
 			this.qualityMenuItem.Text = "Quality Preset";
 			// 
 			// defaultToolStripMenuItem1
@@ -512,15 +476,6 @@ namespace Raytracer {
 			this.test11ToolStripMenuItem.Name = "test11ToolStripMenuItem";
 			this.test11ToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
 			this.test11ToolStripMenuItem.Text = "test11";
-			// 
-			// saveSceneAsToolStripMenuItem
-			// 
-			this.saveSceneAsToolStripMenuItem.Name = "saveSceneAsToolStripMenuItem";
-			this.saveSceneAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.S)));
-			this.saveSceneAsToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
-			this.saveSceneAsToolStripMenuItem.Text = "Save Scene As ...";
-			this.saveSceneAsToolStripMenuItem.Click += new System.EventHandler(this.OnSaveSceneAsMenuItemClick);
 			// 
 			// RaytracerForm
 			// 
@@ -562,8 +517,6 @@ namespace Raytracer {
 		public SceneViewerPictureBox imageViewer;
 		public ProgressBar progressBar;
 		public RichTextBox progressInfo;
-		public Button button_maxrender;
-		public Button button_screenshot;
 		public TabControl tabControl1;
 		public TabPage tabPage1;
 		public Label label2;
@@ -591,12 +544,9 @@ namespace Raytracer {
 		internal ToolStripMenuItem resolutionMenuItem;
 		internal ToolStripMenuItem qualityMenuItem;
 		internal MenuStrip menuStrip;
-		private ToolStripMenuItem aToolStripMenuItem;
-		private ToolStripMenuItem bToolStripMenuItem;
-		private ToolStripMenuItem cToolStripMenuItem;
-		private ToolStripMenuItem dToolStripMenuItem;
-		private ToolStripMenuItem eToolStripMenuItem;
-		private ToolStripMenuItem fToolStripMenuItem;
 		private ToolStripMenuItem saveSceneAsToolStripMenuItem;
+		private ToolStripMenuItem cancelCurrentRenderToolStripMenuItem;
+		private ToolStripMenuItem quitToolStripMenuItem;
+		private ToolStripMenuItem saveCurrentViewToFileToolStripMenuItem;
 	}
 }

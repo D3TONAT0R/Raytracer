@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +37,7 @@ namespace Raytracer {
 			set {
 				scene = value;
 				redrawScreen = true;
-				SceneLoaded.Invoke();
+				SceneLoaded?.Invoke();
 			}
 		}
 		public Camera camera;
@@ -59,16 +61,18 @@ namespace Raytracer {
 		public static RenderSettings CurrentRenderSettings => render ? renderSettings[currentRenderSettingsIndex] : previewRenderSettings;
 		public static RenderTarget CurrentRenderTarget => render ? renderTargets[currentRenderTargetIndex] : previewRenderTarget;
 
-		bool exit = false;
+		static bool exit = false;
 		bool animating = false;
 		Thread loopthread;
+
+		static Stopwatch renderTimer;
+		static RenderTarget lastRenderTarget;
 
 		public void Run() {
 			instance = this;
 			exit = false;
 			SetupSettingsAndTargets();
 
-			int sceneIndex = 0;
 			redrawScreen = true;
 			MakeWinforms();
 			camera = new Camera() {
@@ -76,13 +80,13 @@ namespace Raytracer {
 				rotation = Vector3.Zero,
 				fieldOfView = 60
 			};
-			//Scene = SceneLoader.GeneratePreset(sceneIndex);
 			var ts = new ThreadStart(LoopThread);
 			loopthread = new Thread(ts);
 			loopthread.SetApartmentState(ApartmentState.STA);
 			loopthread.Start();
 			while(!exit) {
 				Thread.Sleep(250);
+				if (infoWindow == null) exit = true;
 				//DrawInfoWindow();
 				if(redrawScreen) DrawScreenOnWinform();
 			}
@@ -122,6 +126,7 @@ namespace Raytracer {
 
 			previewRenderTarget = new RenderTarget("Preview", 240, 135);
 			renderTargets = new List<RenderTarget>();
+			renderTargets.Add(new RenderTarget("LD", 480, 270));
 			renderTargets.Add(new RenderTarget("SD", 640, 360));
 			renderTargets.Add(new RenderTarget("HD", 1280, 720));
 			renderTargets.Add(new RenderTarget("FHD", 1920, 1080));
@@ -139,29 +144,56 @@ namespace Raytracer {
 			if(animating) {
 				animating = Animator.Animate();
 			}
+
+			if (render)
+			{
+				if (renderTimer == null) renderTimer = new Stopwatch();
+				lastRenderTarget = CurrentRenderTarget;
+
+				renderTimer.Restart();
+			}
+
 			camera.Render(Scene, CurrentRenderTarget);
-			//graphics.DrawImage(CurrentSettings.renderBuffer, 0, 0, winform.Width, winform.Height);
-			var str = $"Pos {camera.localPosition}\nRot {camera.rotation}\nRot dir {MathUtils.EulerToDir(camera.rotation)}\nFOV {camera.fieldOfView}\nFullrender: {render}";
-			//graphics.DrawString(str, SystemFonts.MessageBoxFont, new SolidBrush(System.Drawing.Color.DarkRed), new PointF(0, 0));
+
+			if (render) renderTimer.Stop();
+
 			if(toScreenshot) {
 				SaveScreenshot();
 				toScreenshot = false;
 			}
-			if(animating) {
+
+			if (animating)
+			{
 				SaveScreenshot("anim");
 				redrawScreen = true;
 			}
+
 			RefreshImageView();
+
+			if (render && !animating && renderTimer.ElapsedMilliseconds > 10000)
+			{
+				MessageBox.Show($"Time elapsed: {renderTimer.Elapsed:mm\\:ss}\nResolution: {lastRenderTarget}\nRender Settings: {CurrentRenderSettings.name}", "Render Finished", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+			}
+
+			render = false;
 		}
 
 		public void RefreshImageView()
 		{
+			if (infoWindow == null) return;
 			lock (SceneRenderer.bufferLock)
 			{
-				infoWindow.Invoke((Action)delegate
+				try
 				{
-					infoWindow.imageViewer.Image = CurrentRenderTarget.RenderBuffer;
-				});
+					infoWindow.Invoke((Action)delegate
+					{
+						infoWindow.imageViewer.Image = CurrentRenderTarget.RenderBuffer;
+					});
+				}
+				catch
+				{
+
+				}
 			}
 		}
 
@@ -239,10 +271,6 @@ namespace Raytracer {
 			{
 				SetRenderSettings((int)mi.Tag);
 			}
-			else
-			{
-				MessageBox.Show("wtf 1");
-			}
 		}
 
 		private void OnResolutionMenuItemClick(object sender, EventArgs e)
@@ -250,10 +278,6 @@ namespace Raytracer {
 			if(sender is ToolStripMenuItem mi)
 			{
 				SetRenderResolution((int)mi.Tag);
-			}
-			else
-			{
-				MessageBox.Show("wtf 2");
 			}
 		}
 
@@ -269,6 +293,26 @@ namespace Raytracer {
 			UpdateRenderMenuItems();
 		}
 
+		public static void BeginRender(bool directlyToFile)
+		{
+			if (render) return;
+			render = true;
+			redrawScreen = true;
+			toScreenshot = directlyToFile;
+		}
+
+		public static void CancelRender()
+		{
+			render = false;
+			renderTimer.Reset();
+			redrawScreen = true;
+		}
+
+		public static void QuitApplication()
+		{
+			exit = true;
+		}
+
 		void WindowUpdateWorker(object sender, EventArgs e) {
 			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 			Thread.Sleep(100);
@@ -279,12 +323,22 @@ namespace Raytracer {
 						infoWindow.Invoke((Action)delegate {
 							StringBuilder sb = new StringBuilder();
 							float progress = 1;
-							if(camera.rendering) {
+							if(render && camera.rendering) {
 								sb.AppendLine("Rendering...");
 								SceneRenderer.ActiveScreenRenderer.GetProgressInfo(out string progressString, out progress);
 								sb.AppendLine(progressString);
+								if (render && lastRenderTarget != null)
+								{
+									sb.AppendLine(lastRenderTarget.ToString());
+									sb.Append($"Time: {renderTimer.Elapsed:mm\\:ss}");
+								}
 							} else {
 								sb.AppendLine("Idle.");
+								if (lastRenderTarget != null)
+								{
+									sb.AppendLine($"Last Render: {renderTimer.Elapsed:mm\\:ss}");
+									sb.Append("  @ " + lastRenderTarget.ToString());
+								}
 							}
 							progress = float.IsNaN(progress) ? 0 : Math.Min(1, Math.Max(0, progress));
 							infoWindow.progressInfo.Text = sb.ToString();
@@ -359,8 +413,7 @@ namespace Raytracer {
 
 		void Update() {
 			if(exit) return;
-			bool hasFocus = Form.ActiveForm != null;
-			if(!hasFocus) return;
+			if(!AppHasFocus() || Form.ActiveForm != infoWindow) return;
 			Input.Update();
 			if(Input.esc.isDown) {
 				exit = true;
@@ -372,7 +425,7 @@ namespace Raytracer {
 					Animator.time = 0;
 				}
 			}
-			if(animating) return;
+			if(animating || render) return;
 			if(Input.w.isPressed) {
 				KeyPress(0, 0, 1, false);
 			}
@@ -429,13 +482,6 @@ namespace Raytracer {
 				redrawScreen = true;
 				camera.fieldOfView -= 5;
 			}
-			if(Input.r.isDown) {
-				redrawScreen = true;
-				render = !render;
-			}
-			if(Input.p.isDown) {
-				SaveScreenshot();
-			}
 		}
 
 		void KeyPress(int x, int y, int z, bool arrowKey) {
@@ -455,7 +501,7 @@ namespace Raytracer {
 			}
 		}
 
-		void SaveScreenshot(string prefix = "screenshot") {
+		public static void SaveScreenshot(string prefix = "screenshot") {
 			var buffer = CurrentRenderTarget.RenderBuffer;
 			if(buffer != null) {
 				int num = 1;
@@ -466,5 +512,28 @@ namespace Raytracer {
 				buffer.Save(path + num.ToString("D4") + ".png");
 			}
 		}
+
+		/// <summary>Returns true if the current application has focus, false otherwise</summary>
+		public static bool AppHasFocus()
+		{
+			var activatedHandle = GetForegroundWindow();
+			if (activatedHandle == IntPtr.Zero)
+			{
+				return false;       // No window is currently activated
+			}
+
+			var procId = Process.GetCurrentProcess().Id;
+			int activeProcId;
+			GetWindowThreadProcessId(activatedHandle, out activeProcId);
+
+			return activeProcId == procId;
+		}
+
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+		private static extern IntPtr GetForegroundWindow();
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
 	}
 }

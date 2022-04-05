@@ -34,5 +34,10 @@ namespace Raytracer
 				return _renderBuffer;
 			}
 		}
+
+		public override string ToString()
+		{
+			return $"{name} ({width}x{height})";
+		}
 	}
 }
