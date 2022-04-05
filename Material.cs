@@ -89,7 +89,9 @@ namespace Raytracer {
 
 		public override string ToString()
 		{
-			return $"{x} {y} {width} {height}";
+			string s = $"{x} {y} {width} {height}";
+			if (angle != 0) s += $" {angle}";
+			return s;
 		}
 	}
 
@@ -99,6 +101,8 @@ namespace Raytracer {
 		public static Material ErrorMaterial = new Material(Color.Magenta, 0, 0, ShaderType.Unlit);
 
 		public static Material DefaultMaterial = new Material(Color.White, 0, 0, ShaderType.Default);
+
+		public string globalMaterialName;
 
 		public ShaderType shader;
 		[DataIdentifier("COLOR")]

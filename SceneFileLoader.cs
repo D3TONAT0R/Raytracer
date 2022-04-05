@@ -181,7 +181,8 @@ namespace Raytracer
 			foreach (var d in block.data)
 			{
 				var l = d as BlockContent;
-				var mat = ReflectionTest.CreateMaterial(l, scene);
+				var mat = Reflection.CreateMaterial(l, scene);
+				mat.globalMaterialName = l.keyword;
 				mat.isGlobalMaterial = true;
 				materials.Add(l.keyword, mat);
 			}
@@ -195,7 +196,7 @@ namespace Raytracer
 			{
 				var b = c as BlockContent;
 
-				var so = ReflectionTest.CreateSceneObject(scene, b);
+				var so = Reflection.CreateSceneObject(scene, b);
 				list.Add(so);
 			}
 			return list;

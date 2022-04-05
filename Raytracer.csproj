@@ -99,7 +99,7 @@
     <Compile Include="RaytracerForm.designer.cs">
       <DependentUpon>RaytracerForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ReflectionTest.cs" />
+    <Compile Include="Reflection.cs" />
     <Compile Include="RenderSettings.cs" />
     <Compile Include="Sampler2D.cs" />
     <Compile Include="Scene.cs" />

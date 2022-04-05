@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +15,8 @@ namespace Raytracer
 		static StringBuilder file;
 		static int indentLevel = 0;
 		static Scene scene;
+
+		static Dictionary<Type, SceneObject> defaultInstances = new Dictionary<Type, SceneObject>();
 
 		internal static void SaveSceneAsPrompt()
 		{
@@ -119,9 +123,79 @@ namespace Raytracer
 			BeginBlock("OBJECTS");
 			foreach(var obj in scene.sceneContent)
 			{
-				//TODO write objects
+				WriteObject(obj);
+				Blank();
 			}
 			EndBlock();
+		}
+
+		static void WriteObject(SceneObject obj)
+		{
+			var objType = obj.GetType();
+			var keyword = objType.GetCustomAttribute<ObjectIdentifierAttribute>().identifier;
+			BeginBlock(keyword, obj.name);
+			var set = Reflection.GetExposedFieldSet(obj.GetType());
+			foreach(var f in set.fields)
+			{
+				var value = objType.GetField(f.Value.fieldName).GetValue(obj);
+				if (value != null) {
+					if (value.Equals(GetInitialValue(objType, f.Value.fieldName)))
+					{
+						//Skip values that match an object's initial value
+						continue;
+					}
+					string key = f.Key;
+					if(value is Vector3 vec)
+					{
+						Write(key, $"{vec.X} {vec.Y} {vec.Z}");
+					}
+					else if(value is Material mat)
+					{
+						if(mat.isGlobalMaterial)
+						{
+							Write(key, mat.globalMaterialName);
+						}
+						else
+						{
+							WriteMaterial(key, mat);
+						}
+					}
+					else if(value is SolidShape[] arr)
+					{
+						BeginBlock(key);
+						foreach(var solid in arr)
+						{
+							WriteObject(solid);
+						}
+						EndBlock();
+					}
+					else if(value is SceneObject[] children)
+					{
+						BeginBlock(key);
+						foreach(var child in children)
+						{
+							WriteObject(child);
+						}
+						EndBlock();
+					}
+					else
+					{
+						Write(key, value);
+					}
+				}
+			}
+			EndBlock();
+		}
+
+		static object GetInitialValue(Type objType, string fieldName)
+		{
+			SceneObject obj;
+			if(!defaultInstances.TryGetValue(objType, out obj))
+			{
+				obj = Activator.CreateInstance(objType) as SceneObject;
+				defaultInstances.Add(objType, obj);
+			}
+			return objType.GetField(fieldName).GetValue(obj);
 		}
 
 		static void BeginBlock(string keyword, string name = null)

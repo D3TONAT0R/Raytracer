@@ -27,7 +27,7 @@ namespace Raytracer {
 					var inspector = RaytracerEngine.infoWindow.propertiesPanel;
 					inspector.Controls.Clear();
 					if(inspectedObject == null) return;
-					var set = ReflectionTest.GetExposedFieldSet(inspectedObject.GetType());
+					var set = Reflection.GetExposedFieldSet(inspectedObject.GetType());
 					foreach(var prop in set.fields) {
 						DrawItem(prop.Key, prop.Value, inspector);
 					}
@@ -35,7 +35,7 @@ namespace Raytracer {
 			}
 		}
 
-		static void DrawItem(string identifier, ReflectionTest.ExposedFieldSet.ExposedField field, FlowLayoutPanel inspector) {
+		static void DrawItem(string identifier, Reflection.ExposedFieldSet.ExposedField field, FlowLayoutPanel inspector) {
 
 			var panel = new FlowLayoutPanel();
 			panel.Name = identifier;
@@ -51,7 +51,7 @@ namespace Raytracer {
 			inspector.Controls.Add(panel);
 		}
 
-		static void DrawValue(Panel panel, ReflectionTest.ExposedFieldSet.ExposedField value) {
+		static void DrawValue(Panel panel, Reflection.ExposedFieldSet.ExposedField value) {
 			var v = value.GetValue(inspectedObject);
 			if(v == null) return;
 			if(v is float f) {
@@ -74,7 +74,7 @@ namespace Raytracer {
 			}
 		}
 
-		static void SetComponent(object inspected, ReflectionTest.ExposedFieldSet.ExposedField field, int index, float newvalue) {
+		static void SetComponent(object inspected, Reflection.ExposedFieldSet.ExposedField field, int index, float newvalue) {
 			var v = field.GetValue(inspected);
 			if(v is Vector3 v3) {
 				v3 = v3.SetAxisValue(index, newvalue);

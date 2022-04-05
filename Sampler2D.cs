@@ -92,7 +92,9 @@ namespace Raytracer {
 
 		public override string ToString()
 		{
-			return relativeTexturePath;
+			string s = relativeTexturePath;
+			if (s.EndsWith(".*")) s = s.Substring(0, s.Length - 2);
+			return s;
 		}
 	}
 }

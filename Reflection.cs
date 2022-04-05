@@ -34,7 +34,7 @@ namespace Raytracer
 		}
 	}
 
-	public static class ReflectionTest
+	public static class Reflection
 	{
 
 		public enum AttributeTypeInfo
@@ -81,7 +81,7 @@ namespace Raytracer
 
 		static Dictionary<string, ExposedFieldSet> objects;
 
-		static ReflectionTest()
+		static Reflection()
 		{
 			objects = new Dictionary<string, ExposedFieldSet>();
 			var attrs = Assembly.GetCallingAssembly().GetTypes()
@@ -165,7 +165,7 @@ namespace Raytracer
 		{
 			var fieldSet = objects[block.keyword.ToUpper()];
 			SceneObject obj = (SceneObject)Activator.CreateInstance(fieldSet.type);
-			obj.identifier = !string.IsNullOrWhiteSpace(block.name) ? block.name : null;
+			obj.name = !string.IsNullOrWhiteSpace(block.name) ? block.name : null;
 			foreach(var d in block.data)
 			{
 				foreach (var f in fieldSet.fields)
@@ -268,7 +268,7 @@ namespace Raytracer
 					return scene.globalMaterials[((StringContent)data).data];
 				}
 			}
-			if (targetType.IsAssignableFrom(typeof(SceneObject)))
+			else if (targetType.IsAssignableFrom(typeof(SceneObject)))
 			{
 				if (data is BlockContent bc)
 				{
@@ -280,7 +280,7 @@ namespace Raytracer
 					throw new NotImplementedException();
 				}
 			}
-			if(targetType == typeof(SolidShape[]))
+			else if(targetType == typeof(SolidShape[]))
 			{
 				var solids = new List<SolidShape>();
 				foreach(var d in ((BlockContent)data).data)
@@ -291,7 +291,17 @@ namespace Raytracer
 				}
 				return solids.ToArray();
 			}
-			if(targetType == typeof(Color))
+			else if(targetType == typeof(SceneObject[]))
+			{
+				var children = new List<SceneObject>();
+				foreach(var d in ((BlockContent)data).data)
+				{
+					var so = (SceneObject)ParseData(scene, typeof(SceneObject), d);
+					children.Add(so);
+				}
+				return children.ToArray();
+			}
+			else if(targetType == typeof(Color))
 			{
 				var sc = (StringContent)data;
 				if(char.IsLetter(sc.data[0]))
