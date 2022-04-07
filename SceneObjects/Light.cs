@@ -73,8 +73,9 @@ namespace Raytracer {
 		}
 
 		public Color GetLightAtPoint(Scene scene, Vector3 point, Vector3 normal, LightingType lighting, Shape sourceShape, out bool shadowed) {
+			var targetPoint = point;
 			//var localPoint = point - HierarchyPositionOffset;
-			point -= HierarchyPositionOffset;
+			//point -= HierarchyPositionOffset;
 			if(lighting == LightingType.SimpleNormalBased) {
 				shadowed = false;
 				return Color.Black;
@@ -82,20 +83,42 @@ namespace Raytracer {
 				shadowed = false;
 				return color * GetIlluminationAtPoint(point, normal, GetLightNormal(point));
 			} else if(lighting == LightingType.RaytracedHardShadows) {
-				shadowed = false;
 				//return new Color(point.X - (int)point.X, point.Y - (int)point.Y, point.Z - (int)point.Z);
+				var lightNormal = GetLightNormal(point);
 				if(RaytracerEngine.CurrentRenderSettings.allowSelfShadowing) {
+					//TODO: may break lighting, rewrite needed
 					//Depenetrate surface to allow self shadowing
-					point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
+					//point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
 					sourceShape = null;
 				}
-				var lightNormal = GetLightNormal(point);
 				var illum = GetIlluminationAtPoint(point, normal, lightNormal);
-				var ray = new Ray(point + HierarchyPositionOffset, lightNormal, 0, Vector2.Zero, Vector3.Distance(WorldPosition, point));
 				Vector3? caster = null;
-				if(Vector3.Distance(WorldPosition, point) > shadowStartOffset) {
+				/*bool castShadowRay;
+				if(type == LightType.Directional)
+				{
+					castShadowRay = true;
+				}
+				else
+				{
+					castShadowRay = Vector3.Distance(WorldPosition, point) > shadowStartOffset;
+				}
+				if(castShadowRay)
+				{*/
+				Ray ray;
+				if (type == LightType.Directional)
+				{
+					ray = new Ray(point, lightNormal, 0, Vector2.Zero);
+				}
+				else
+				{
+					ray = new Ray(point, lightNormal, 0, Vector2.Zero, Vector3.Distance(WorldPosition, point) - shadowStartOffset);
+				}
+				if (ray.maxDistance > 0)
+				{
 					caster = SceneRenderer.TraceRay(scene, ref ray, out _, sourceShape);
 				}
+
+				//}
 				float shadow;
 				if(caster == null) {
 					//The point is not shadowed
@@ -124,7 +147,7 @@ namespace Raytracer {
 			if(type == LightType.Directional) {
 				return -Vector3.Normalize(lightDirection);
 			} else {
-				return Vector3.Normalize(localPosition - pos);
+				return Vector3.Normalize(WorldPosition - pos);
 			}
 		}
 

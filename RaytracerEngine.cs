@@ -110,7 +110,7 @@ namespace Raytracer {
 				rayMarchDistanceInObject = 0.01f,
 				rayDistanceDegradation = 0f,
 				maxBounces = 2,
-				lightingType = LightingType.RaytracedHardShadows
+				lightingType = LightingType.RaytracedHardShadows,
 			};
 			var maxRenderSettings = new RenderSettings("High")
 			{
@@ -484,9 +484,9 @@ namespace Raytracer {
 			}
 		}
 
-		void KeyPress(int x, int y, int z, bool arrowKey) {
+		void KeyPress(int x, int y, int z, bool rotate) {
 			redrawScreen = true;
-			if(arrowKey) {
+			if(rotate) {
 				float rmul = (float)Math.Tan((camera.fieldOfView / 2f).DegToRad()) * movementSpeedScale;
 				camera.Rotate(new Vector3(x, y, z) * 10 * rmul);
 			} else {
