@@ -88,8 +88,8 @@ namespace Raytracer {
 				if(RaytracerEngine.CurrentRenderSettings.allowSelfShadowing) {
 					//TODO: may break lighting, rewrite needed
 					//Depenetrate surface to allow self shadowing
-					//point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
-					sourceShape = null;
+					point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
+					//sourceShape = null;
 				}
 				var illum = GetIlluminationAtPoint(point, normal, lightNormal);
 				Vector3? caster = null;
