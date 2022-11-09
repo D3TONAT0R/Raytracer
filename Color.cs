@@ -52,10 +52,13 @@ namespace Raytracer {
 			}
 			else
 			{
+				throw new ArgumentException($"Attempted to read global color '{globalColorName}' which doesn't exist.");
+				/*
 				r = 1;
 				g = 0;
 				b = 1;
 				a = 1;
+				*/
 			}
 		}
 
@@ -81,7 +84,7 @@ namespace Raytracer {
 
 		public static Color Parse(string s)
 		{
-			var values = s.Split(' ');
+			var values = s.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			if(values.Length == 1)
 			{
 				float v = float.Parse(s);
