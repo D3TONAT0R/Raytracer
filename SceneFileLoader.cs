@@ -31,7 +31,7 @@ namespace Raytracer
 			public StringContent(string line)
 			{
 				line = TrimLine(line);
-				var split = line.Split(' ');
+				var split = line.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 				keyword = split[0];
 				data = line.Substring(split[0].Length+1);
 			}
@@ -45,7 +45,7 @@ namespace Raytracer
 			public BlockContent(string currentLine, StringReader reader, ref int lineNum)
 			{
 				int startLineNum = lineNum;
-				var split = TrimLine(currentLine).Split(' ');
+				var split = TrimLine(currentLine).Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 				if (!split[split.Length - 1].StartsWith("{")) throw new FormatException($"Missing '{{' at line {lineNum}");
 				keyword = split[0];
 				if (split.Length > 2) name = split[1];
@@ -84,6 +84,7 @@ namespace Raytracer
 		private static string TrimLine(string line)
 		{
 			line = line.Trim();
+			line = line.Replace('\t', ' ');
 			while (line.Contains("  ")) line = line.Replace("  ", " ");
 			return line;
 		}

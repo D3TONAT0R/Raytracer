@@ -123,7 +123,7 @@ namespace Raytracer
 
 		public static AttributeTypeInfo GetInstanceType(string identifier)
 		{
-			identifier = identifier.Split(' ')[0].Split('_')[0].Trim();
+			identifier = identifier.Split(new char[0], StringSplitOptions.RemoveEmptyEntries)[0].Split('_')[0].Trim();
 			if (identifier == "ENVIRONMENT")
 			{
 				//TODO: find a better way to do this
@@ -330,7 +330,7 @@ namespace Raytracer
 		public static Vector3 ParseVector3(string s)
 		{
 			Vector3 vec = new Vector3();
-			var comps = s.Split(' ');
+			var comps = s.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			vec.X = float.Parse(comps[0]);
 			vec.Y = float.Parse(comps[1]);
 			vec.Z = float.Parse(comps[2]);

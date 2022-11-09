@@ -74,7 +74,7 @@ namespace Raytracer {
 
 		public static TilingVector Parse(string s)
 		{
-			var comps = s.Split(' ');
+			var comps = s.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 			var tv = new TilingVector();
 			for (int i = 0; i < comps.Length; i++)
 			{
@@ -241,7 +241,7 @@ namespace Raytracer {
 			//Apply reflections
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {
 				var newray = new Ray(ray.position, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
-				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * reflectivity;
+				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, null) * reflectivity;
 				final += reflColor;
 			}
 			return final;
