@@ -7,7 +7,6 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static Raytracer.CurrentPixelRenderData;
 
 namespace Raytracer
 {
@@ -72,6 +71,10 @@ namespace Raytracer
 					Lock();
 					didLock = true;
 					Marshal.Copy(currentByteBuffer, 0, currentBitmapData.Scan0, currentByteBuffer.Length);
+				}
+				catch
+				{
+					Console.WriteLine("Failed to lock bitmap.");
 				}
 				finally
 				{
