@@ -18,7 +18,7 @@ namespace Raytracer {
 
 		public List<SceneObject> sceneContent = new List<SceneObject>();
 		public bool hasContentUpdate = true;
-		AABB worldAABB = new AABB(-Vector3.One * 20, Vector3.One * 20);
+		AABB worldAABB = new AABB(-Vector3.One * 1000, Vector3.One * 1000);
 		AABB sceneObjectsAABB = new AABB();
 
 		List<Shape> shapes = new List<Shape>();
