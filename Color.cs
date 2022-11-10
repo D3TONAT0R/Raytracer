@@ -11,7 +11,9 @@ namespace Raytracer {
 		public float a;
 
 		public static readonly Color Black = new Color(0, 0, 0, 1);
+		public static readonly Color DarkGray = new Color(0.25f, 0.25f, 0.25f, 1);
 		public static readonly Color Gray = new Color(0.5f, 0.5f, 0.5f, 1);
+		public static readonly Color LightGray = new Color(0.75f, 0.75f, 0.75f, 1);
 		public static readonly Color White = new Color(1, 1, 1, 1);
 		public static readonly Color Magenta = new Color(1, 0, 1, 1);
 		public static readonly Color Red = new Color(1, 0, 0, 1);

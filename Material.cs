@@ -100,7 +100,14 @@ namespace Raytracer {
 
 		public static Material ErrorMaterial = new Material(Color.Magenta, 0, 0, ShaderType.Unlit);
 
-		public static Material DefaultMaterial = new Material(Color.White, 0, 0, ShaderType.Default);
+		public static Material DefaultMaterial = new Material()
+		{
+			shader = ShaderType.DefaultCheckered,
+			mainColor = Color.White,
+			secColor = Color.LightGray,
+			reflectivity = 0f,
+			textureTiling = new TilingVector(0, 0, 4, 4)
+		};
 
 		public string globalMaterialName;
 
