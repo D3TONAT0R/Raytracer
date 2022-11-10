@@ -90,6 +90,7 @@
     <Compile Include="Ray.cs" />
     <Compile Include="RenderTarget.cs" />
     <Compile Include="SceneFileWriter.cs" />
+    <Compile Include="SceneObjects\ObjectInstance.cs" />
     <Compile Include="ScreenRenderer.cs" />
     <Compile Include="SceneRenderer.cs" />
     <Compile Include="RaytracerEngine.cs" />

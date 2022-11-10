@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Raytracer
@@ -40,6 +41,7 @@ namespace Raytracer
 		internal class BlockContent : Content
 		{
 			public string name;
+			public string refName;
 			public List<Content> data = new List<Content>();
 
 			public BlockContent(string currentLine, StringReader reader, ref int lineNum)
@@ -48,10 +50,20 @@ namespace Raytracer
 				var split = TrimLine(currentLine).Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 				if (!split[split.Length - 1].StartsWith("{")) throw new FormatException($"Missing '{{' at line {lineNum}");
 				keyword = split[0];
-				if (split.Length > 2) name = split[1];
+				if(keyword.Contains('('))
+				{
+					var match = Regex.Match(keyword, @"\(([^)]+)\)");
+					refName = match.Value.Substring(1, match.Value.Length - 2);
+					keyword = keyword.Split('(')[0];
+				}
+				if(split.Length > 2)
+				{
+					name = split[1];
+				}
 				while (true)
 				{
 					var line = reader.ReadLine();
+					if(line.StartsWith("#")) continue;
 					if (line == null) throw new EndOfStreamException($"Unclosed block at line {startLineNum}.");
 					if(line.Contains('}'))
 					{
@@ -125,11 +137,13 @@ namespace Raytracer
 			var envBlock = blocks.Find((b) => b.keyword == "ENVIRONMENT");
 			var colBlock = blocks.Find((b) => b.keyword == "COLORS");
 			var matBlock = blocks.Find((b) => b.keyword == "MATERIALS");
+			var prefabBlock = blocks.Find((b) => b.keyword == "PREFABS");
 			var objBlock = blocks.Find((b) => b.keyword == "OBJECTS");
 
 			if (envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock);
 			if (colBlock != null) scene.globalColors = ParseColorsBlock(colBlock);
 			if (matBlock != null) scene.globalMaterials = ParseMaterialsBlock(matBlock, scene);
+			if (prefabBlock != null) scene.prefabContent = ParseObjectsBlock(prefabBlock, scene);
 			if (objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
 
 			return scene;

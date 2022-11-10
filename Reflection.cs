@@ -168,6 +168,11 @@ namespace Raytracer
 			obj.name = !string.IsNullOrWhiteSpace(block.name) ? block.name : null;
 			foreach(var d in block.data)
 			{
+				if(obj is ObjectInstance inst)
+				{
+					if(block.refName == null) throw new NullReferenceException("ObjectInstance does not reference a scene object.");
+					inst.referencedObjectName = block.refName;
+				}
 				foreach (var f in fieldSet.fields)
 				{
 					if (d.keyword == f.Key)
@@ -335,6 +340,29 @@ namespace Raytracer
 			vec.Y = float.Parse(comps[1]);
 			vec.Z = float.Parse(comps[2]);
 			return vec;
+		}
+
+		public static void TransferFieldData(SceneObject from, SceneObject to)
+		{
+			var fromType = from.GetType();
+			var toType = to.GetType();
+			var fields = fromType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			foreach(var f in fields)
+			{
+				var v = f.GetValue(from);
+				var targetField = toType.GetField(f.Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+				if(targetField != null)
+				{
+					targetField.SetValue(to, v);
+				}
+			}
+		}
+
+		public static SceneObject CloneObject(SceneObject obj)
+		{
+			var clone = (SceneObject)Activator.CreateInstance(obj.GetType());
+			TransferFieldData(obj, clone);
+			return clone;
 		}
 
 		/*
