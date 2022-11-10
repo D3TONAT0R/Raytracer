@@ -211,8 +211,8 @@ namespace Raytracer {
 		private Color GetCheckerColor(Shape shape, Vector3 pos, Vector3 nrm, Ray ray)
 		{
 			var c = pos * textureTiling.width;
-			bool alternate = c.Z % 2 == 1;
-			Color col = ((c.X % 2 == c.Y % 2) ^ alternate ? secColor : mainColor) * SampleMainTex(shape, pos, nrm, ray);
+			bool alternate = (int)(c.Z % 2) == 1;
+			Color col = (((int)(c.X % 2) == (int)(c.Y % 2)) ^ alternate ? secColor : mainColor) * SampleMainTex(shape, pos, nrm, ray);
 			return col;
 		}
 
