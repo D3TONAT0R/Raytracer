@@ -52,21 +52,24 @@ namespace Raytracer {
 
 		public override Material GetMaterial(Vector3 pos) {
 			CalculateNearestFace(pos, out int face, out _);
+			var r = roofMaterial ?? material;
+			Material mat;
 			if(face == 0) {
-				return material;
+				mat = material;
 			} else if(face == 1) {
-				return roofMaterial;
+				mat = r;
 			} else if(face == 2) {
-				return cuts[0] > 0 ? roofMaterial : material;
+				mat = cuts[0] > 0 ? r : material;
 			} else if(face == 3) {
-				return cuts[2] > 0 ? roofMaterial : material;
+				mat = cuts[2] > 0 ? r : material;
 			} else if(face == 4) {
-				return cuts[1] > 0 ? roofMaterial : material;
+				mat = cuts[1] > 0 ? r : material;
 			} else if(face == 5) {
-				return cuts[3] > 0 ? roofMaterial : material;
+				mat = cuts[3] > 0 ? r : material;
 			} else {
-				return material;
+				mat = material;
 			}
+			return mat ?? OverrideMaterial;
 		}
 	}
 }

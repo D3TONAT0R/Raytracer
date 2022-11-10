@@ -39,7 +39,7 @@ namespace Raytracer {
 		public abstract Vector3 GetNormalAt(Vector3 pos, Ray ray);
 
 		public virtual Material GetMaterial(Vector3 pos) {
-			return material;
+			return material ?? OverrideMaterial;
 		}
 
 		public abstract void SetupAABBs();

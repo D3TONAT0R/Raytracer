@@ -163,5 +163,10 @@ namespace Raytracer {
 			}
 			return illum * Math.Max(0, dot);
 		}
+
+		public override IEnumerable<T> GetContainedObjectsOfType<T>()
+		{
+			if(typeof(T).IsAssignableFrom(GetType())) yield return this as T;
+		}
 	}
 }
