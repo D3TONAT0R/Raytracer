@@ -51,7 +51,7 @@ namespace Raytracer {
 
 		public override bool Intersects(Vector3 pos) {
 			if(!base.Intersects(pos)) return false;
-			Vector3 rel = (pos - localPosition) / size;
+			Vector3 rel = (pos - WorldPosition) / size;
 			return GetIntersectingArea(rel.Y).Contains(rel.X, rel.Z);
 		}
 
