@@ -155,7 +155,7 @@ namespace Raytracer {
 
 			camera.Render(Scene, CurrentRenderTarget);
 
-			if (render) renderTimer.Stop();
+			if (render && renderTimer != null) renderTimer.Stop();
 
 			if(toScreenshot) {
 				SaveScreenshot();

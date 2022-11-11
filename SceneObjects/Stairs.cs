@@ -10,12 +10,11 @@ namespace Raytracer
 	[ObjectIdentifier("STAIRS")]
 	public class Stairs : SceneObject
 	{
-		public enum Direction { XNeg, XPos, ZNeg, ZPos }
 
 		[DataIdentifier("SIZE")]
 		public Vector3 size;
 		[DataIdentifier("DIRECTION")]
-		public Direction stairsDirection;
+		public SlopeDirection stairsDirection;
 		[DataIdentifier("STEPS")]
 		public int stepCount;
 		[DataIdentifier("MATERIAL")]
@@ -39,16 +38,16 @@ namespace Raytracer
 				float stepHeight = size.Y / stepCount;
 				switch (stairsDirection)
 				{
-					case Direction.XNeg:
+					case SlopeDirection.XNeg:
 						xp = 1f - i / (stepCount - 1f);
 						break;
-					case Direction.XPos:
+					case SlopeDirection.XPos:
 						xn = i / (stepCount - 1f);
 						break;
-					case Direction.ZNeg:
+					case SlopeDirection.ZNeg:
 						zp = 1f - i / (stepCount - 1f);
 						break;
-					case Direction.ZPos:
+					case SlopeDirection.ZPos:
 						zn = i / (stepCount - 1f);
 						break;
 				}

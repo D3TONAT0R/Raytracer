@@ -91,6 +91,8 @@
     <Compile Include="RenderTarget.cs" />
     <Compile Include="SceneFileWriter.cs" />
     <Compile Include="SceneObjects\ObjectInstance.cs" />
+    <Compile Include="SceneObjects\Slope.cs" />
+    <Compile Include="SceneObjects\SlopeDirection.cs" />
     <Compile Include="SceneObjects\Stairs.cs" />
     <Compile Include="ScreenRenderer.cs" />
     <Compile Include="SceneRenderer.cs" />
