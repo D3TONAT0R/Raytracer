@@ -21,7 +21,7 @@ namespace Raytracer
 		[DataIdentifier("MATERIAL")]
 		public Material material;
 
-		public override Material OverrideMaterial => material ?? parent.OverrideMaterial;
+		public override Material OverrideMaterial => material ?? parent?.OverrideMaterial;
 
 		private Shape[] subShapes;
 
@@ -30,10 +30,29 @@ namespace Raytracer
 			subShapes = new Shape[stepCount - 1];
 			for (int i = 0; i < stepCount - 1; i++)
 			{
-				var stepOffsetX = (i / (stepCount - 1f)) * size.X;
-				var stepOffsetY = (i / (float)stepCount) * size.Y;
-				var stepHeight = size.Y / stepCount;
-				var step = new Cuboid("step_" + i, new Vector3(stepOffsetX, stepOffsetY, 0), new Vector3(size.X - stepOffsetX, stepHeight, size.Z));
+				Cuboid step;
+				float xn = 0f;
+				float xp = 1f;
+				float zn = 0f;
+				float zp = 1f;
+				float stepOffsetY = (i / (float)stepCount) * size.Y;
+				float stepHeight = size.Y / stepCount;
+				switch (stairsDirection)
+				{
+					case Direction.XNeg:
+						xp = 1f - i / (stepCount - 1f);
+						break;
+					case Direction.XPos:
+						xn = i / (stepCount - 1f);
+						break;
+					case Direction.ZNeg:
+						zp = 1f - i / (stepCount - 1f);
+						break;
+					case Direction.ZPos:
+						zn = i / (stepCount - 1f);
+						break;
+				}
+				step = new Cuboid("step_" + i, new Vector3(size.X * xn, stepOffsetY, size.Z * zn), new Vector3(size.X * (xp - xn), stepHeight, size.Z * (zp - zn)));
 				step.parent = this;
 				subShapes[i] = step;
 			}
