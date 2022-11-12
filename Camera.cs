@@ -109,5 +109,10 @@ namespace Raytracer {
 			};
 			return v;
 		}
+
+		public override void SetupForRendering()
+		{
+			
+		}
 	}
 }

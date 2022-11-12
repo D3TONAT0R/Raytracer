@@ -17,6 +17,10 @@ namespace Raytracer {
 
 		public override Material OverrideMaterial => overrideMaterial ?? parent?.OverrideMaterial;
 
+		public override bool CanContainShapes => true;
+
+		private AABB groupAABB;
+
 		public Group() : base(null) { }
 
 		public Group(string name, Vector3 pivot, params SceneObject[] content) : base(name) {
@@ -69,6 +73,32 @@ namespace Raytracer {
 			{
 				if(c == null) throw new NullReferenceException("Null child object detected.");
 				foreach(var o in c.GetContainedObjectsOfType<T>()) yield return o;
+			}
+		}
+
+		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
+		{
+			if(groupAABB.Intersects(ray))
+			{
+				foreach(var c in children)
+				{
+					foreach(var s in c.GetIntersectingShapes(ray)) yield return s;
+				}
+			}
+		}
+
+		public override AABB GetTotalShapeAABB()
+		{
+			return groupAABB;
+		}
+
+		public override void SetupForRendering()
+		{
+			groupAABB = AABB.Empty;
+			foreach(var c in children)
+			{
+				c.SetupForRendering();
+				groupAABB = groupAABB.Join(c.GetTotalShapeAABB());
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace Raytracer {
 			this.radius = radius;
 		}
 
-		public override void SetupAABBs() {
+		public override void SetupForRendering() {
 			ShapeAABB = new AABB(WorldPosition - Vector3.One * radius, WorldPosition + Vector3.One * radius);
 		}
 

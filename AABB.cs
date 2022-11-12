@@ -6,19 +6,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Raytracer {
-	public class AABB {
+	public struct AABB {
 
+		public static readonly AABB Empty = new AABB();
 		public static AABB CreateInfinity() => new AABB(-Vector3.One * float.MaxValue, Vector3.One * float.MaxValue);
 
 		public Vector3 lower;
 		public Vector3 upper;
-		public Vector3 Size => upper - lower;
 
+		public Vector3 Size => (upper - lower).Abs();
 		public Vector3 Center => (upper + lower) / 2f;
-
-		public AABB() {
-
-		}
 
 		public AABB(Vector3 a, Vector3 b) {
 			lower.X = Math.Min(a.X, b.X);
@@ -34,14 +31,58 @@ namespace Raytracer {
 		}
 
 		public bool Intersects(Ray r) {
-			/*Vector3 t1 = lower - ray.position * ray.inverse;
-			Vector3 t2 = upper - ray.position * ray.inverse;
 
-			var min = Highest(Min(t1, t2));
-			var max = Lowest(Max(t1, t2));
+			float tmin = (lower.X - r.origin.X) / r.Direction.X;
+			float tmax = (upper.X - r.origin.X) / r.Direction.X;
 
-			return max >= min;*/
+			if(tmin > tmax)
+			{
+				var t = tmax;
+				tmax = tmin;
+				tmin = t;
+			}
 
+			float tymin = (lower.Y - r.origin.Y) / r.Direction.Y;
+			float tymax = (upper.Y - r.origin.Y) / r.Direction.Y;
+
+			if(tymin > tymax)
+			{
+				var t = tymax;
+				tymax = tymin;
+				tymin = t;
+			}
+
+			if((tmin > tymax) || (tymin > tmax))
+				return false;
+
+			if(tymin > tmin)
+				tmin = tymin;
+
+			if(tymax < tmax)
+				tmax = tymax;
+
+			float tzmin = (lower.Z - r.origin.Z) / r.Direction.Z;
+			float tzmax = (upper.Z - r.origin.Z) / r.Direction.Z;
+
+			if(tzmin > tzmax)
+			{
+				var t = tzmax;
+				tzmax = tzmin;
+				tzmin = t;
+			}
+
+			if((tmin > tzmax) || (tzmin > tmax))
+				return false;
+
+			if(tzmin > tmin)
+				tmin = tzmin;
+
+			if(tzmax < tmax)
+				tmax = tzmax;
+
+			return true;
+
+			/*
 			float tx1 = (lower.X - r.position.X) * r.Inverse.X;
 			float tx2 = (upper.X - r.position.X) * r.Inverse.X;
 
@@ -61,21 +102,6 @@ namespace Raytracer {
 			tmax = Math.Min(tmax, Math.Max(tz1, tz2));
 
 			return tmax >= tmin;
-
-			/*
-			double tx1 = (b.min.x - r.x0.x) * r.n_inv.x;
-			double tx2 = (b.max.x - r.x0.x) * r.n_inv.x;
-
-			double tmin = min(tx1, tx2);
-			double tmax = max(tx1, tx2);
-
-			double ty1 = (b.min.y - r.x0.y) * r.n_inv.y;
-			double ty2 = (b.max.y - r.x0.y) * r.n_inv.y;
-
-			tmin = max(tmin, min(ty1, ty2));
-			tmax = min(tmax, max(ty1, ty2));
-
-			return tmax >= tmin;
 			*/
 		}
 
@@ -87,14 +113,21 @@ namespace Raytracer {
 		}
 
 		public AABB Join(AABB other) {
-			var aabb = new AABB();
-			aabb.lower.X = Math.Min(lower.X, other.lower.X);
-			aabb.lower.Y = Math.Min(lower.Y, other.lower.Y);
-			aabb.lower.Z = Math.Min(lower.Z, other.lower.Z);
-			aabb.upper.X = Math.Max(upper.X, other.upper.X);
-			aabb.upper.Y = Math.Max(upper.Y, other.upper.Y);
-			aabb.upper.Z = Math.Max(upper.Z, other.upper.Z);
-			return aabb;
+			if(lower == Vector3.Zero && upper == Vector3.Zero)
+			{
+				return other;
+			}
+			else
+			{
+				var aabb = new AABB();
+				aabb.lower.X = Math.Min(lower.X, other.lower.X);
+				aabb.lower.Y = Math.Min(lower.Y, other.lower.Y);
+				aabb.lower.Z = Math.Min(lower.Z, other.lower.Z);
+				aabb.upper.X = Math.Max(upper.X, other.upper.X);
+				aabb.upper.Y = Math.Max(upper.Y, other.upper.Y);
+				aabb.upper.Z = Math.Max(upper.Z, other.upper.Z);
+				return aabb;
+			}
 		}
 
 		public AABB Trim(AABB other) {

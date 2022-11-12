@@ -32,6 +32,8 @@ namespace Raytracer {
 			protected set;
 		}
 
+		public override bool CanContainShapes => true;
+
 		public abstract bool Intersects(Vector3 pos);
 
 		public abstract Color GetColorAt(Vector3 pos, Ray ray);
@@ -42,16 +44,20 @@ namespace Raytracer {
 			return material ?? OverrideMaterial;
 		}
 
-		public abstract void SetupAABBs();
-
-		public virtual void OnBeginRender() {
-			
-		}
-
 		public abstract float GetSurfaceProximity(Vector3 worldPos);
 
 		public virtual Shape[] GetSubShapes() {
 			return new Shape[] { this };
+		}
+
+		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
+		{
+			if(ShapeAABB.Intersects(ray)) yield return this;
+		}
+
+		public override AABB GetTotalShapeAABB()
+		{
+			return ShapeAABB;
 		}
 	}
 }

@@ -70,14 +70,14 @@ namespace Raytracer {
 				var sn = new Scene("Buildings + Lights");
 				float fr = 0f;
 				float fs = 0f;
-				Material roadMaterial = Material.CreateTexturedMaterial("road", fr, fs, new TilingVector(0, 0, 0.2f, 0.2f, 90f));
+				Material roadMaterial = Material.CreateTexturedMaterial(sn, "road", fr, fs, new TilingVector(0, 0, 0.2f, 0.2f, 90f));
 				roadMaterial.mappingType = TextureMappingType.LocalYProj;
-				Material sidewalkMaterial = Material.CreateTexturedMaterial("sidewalk", fr, fs, new TilingVector(0, 0, 0.2f, 0.2f, 0));
+				Material sidewalkMaterial = Material.CreateTexturedMaterial(sn, "sidewalk", fr, fs, new TilingVector(0, 0, 0.2f, 0.2f, 0));
 				sidewalkMaterial.mappingType = TextureMappingType.LocalYProj;
-				Material building1Material = Material.CreateTexturedMaterial("building_1", 0, 0, TilingVector.FromSize(4));
-				Material building2Material = Material.CreateTexturedMaterial("building_2", 0, 0, TilingVector.FromSize(4));
+				Material building1Material = Material.CreateTexturedMaterial(sn, "building_1", 0, 0, TilingVector.FromSize(4));
+				Material building2Material = Material.CreateTexturedMaterial(sn, "building_2", 0, 0, TilingVector.FromSize(4));
 				Material checkerboardMaterial = Material.CreateCheckerMaterial(Color.White, Color.Gray, 0.5f, 0.9f, 4);
-				Material roofMaterial = Material.CreateTexturedMaterial("roof", 0, 0, TilingVector.FromSize(2.5f));
+				Material roofMaterial = Material.CreateTexturedMaterial(sn, "roof", 0, 0, TilingVector.FromSize(2.5f));
 				Material metal = new Material(Color.Gray, 0.5f, 0.7f);
 				sn.AddObject(new Cuboid("road", new Vector3(0, -1, -10), new Vector3(5, 1, 30)) {
 					material = roadMaterial
@@ -183,10 +183,10 @@ namespace Raytracer {
 			var scene = new Scene("Random Cube World");
 			var materials = new Material[] {
 				new Material(Color.White, 0.1f, 1) {
-					mainTexture = Sampler2D.Create("texture_1.png")
+					mainTexture = Sampler2D.Create("texture_1.png", null)
 				},
 				new Material(Color.White, 0.3f, 1) {
-					mainTexture = Sampler2D.Create("texture_2.png")
+					mainTexture = Sampler2D.Create("texture_2.png", null)
 				},
 				new Material(new Color(0.4f, 0.4f, 0.35f), 0.7f, 1f),
 				new Material(new Color(0.2f, 0.6f, 1, 1), 0.3f, 1f)
@@ -207,7 +207,7 @@ namespace Raytracer {
 			var scene = new Scene("Random Sphere World");
 			scene.AddObject(new Sphere("sphere1", new Vector3(2, 2, 5), 2) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
-					mainTexture = Sampler2D.Create("texture_1.png")
+					mainTexture = Sampler2D.Create("texture_1.png", null)
 				},
 			});
 			scene.AddObject(new Sphere("sphere2", new Vector3(1, 7, 6), 1) {
@@ -215,7 +215,7 @@ namespace Raytracer {
 			});
 			scene.AddObject(new Sphere("sphere3", new Vector3(5, 2, 10), 3) {
 				material = new Material(System.Drawing.Color.Yellow, 0.5f, 1) {
-					mainTexture = Sampler2D.Create("texture_2.png")
+					mainTexture = Sampler2D.Create("texture_2.png", null)
 				},
 			});
 			scene.AddObject(new Sphere("sphere4", new Vector3(-5, -2, 3), 4) {
@@ -232,27 +232,27 @@ namespace Raytracer {
 			});
 			scene.AddObject(new Cuboid("cube2", new Vector3(0, -3, 0), new Vector3(5, 1, 5)) {
 				material = new Material(System.Drawing.Color.White, 0.5f, 0.7f) {
-					mainTexture = Sampler2D.Create("floortiles.jpg"),
+					mainTexture = Sampler2D.Create("floortiles.jpg", null),
 					textureTiling = new TilingVector(0, 0, 0.5f, 0.5f)
 				},
 			});
 			var wallMaterial = new Material(Color.White, 0, 0) {
-				mainTexture = Sampler2D.Create("building_1.png"),
+				mainTexture = Sampler2D.Create("building_1.png", null),
 				textureTiling = new TilingVector(0, 0, 0.5f, 0.5f)
 			};
 			var roofMaterial = new Material(Color.White, 0, 0) {
-				mainTexture = Sampler2D.Create("texture_1.png")
+				mainTexture = Sampler2D.Create("texture_1.png", null)
 			};
 			var house = CreateHouse("house1", new Vector3(-2, -2, 0), new Vector3(3, 3, 5), 2, Roof.RoofType.GableZ, wallMaterial, roofMaterial);
 			var b1cube = house[0];
 			var b2sphere = new Sphere("b2sphere", new Vector3(0.75f, -1.5f, 1.5f), 1) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
-					mainTexture = Sampler2D.Create("texture_2.png")
+					mainTexture = Sampler2D.Create("texture_2.png", null)
 				}
 			};
 			var b3prism = new Prism("b3prism", new Vector3(0, -1.5f, 3.5f), new Vector3(1, 1, 1), false) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
-					mainTexture = Sampler2D.Create("texture_1.png")
+					mainTexture = Sampler2D.Create("texture_1.png", null)
 				}
 			};
 			scene.AddObject(new BooleanSolid("cut_house", BooleanSolid.BooleanOperation.Subtract, b1cube, b2sphere, b3prism));
@@ -261,7 +261,7 @@ namespace Raytracer {
 			scene.AddObjects(house2);
 			scene.AddObject(new Cuboid("house2", new Vector3(4, -2, 0), new Vector3(1, 3, 5)) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
-					mainTexture = Sampler2D.Create("building_2.png"),
+					mainTexture = Sampler2D.Create("building_2.png", null),
 					textureTiling = new TilingVector(0, 0, 0.5f, 0.5f)
 				},
 			});

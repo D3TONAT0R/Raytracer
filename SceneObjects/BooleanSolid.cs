@@ -35,10 +35,10 @@ namespace Raytracer {
 			foreach(var s in solids) s.Initialize();
 		}
 
-		public override void SetupAABBs() {
+		public override void SetupForRendering() {
 			//expandedAABBs = new AABB[solids.Length];
 			for(int i = 0; i < solids.Length; i++) {
-				solids[i].SetupAABBs();
+				solids[i].SetupForRendering();
 				//expandedAABBs[i] = solids[i].ShapeAABB.Expand(RaytracedRenderer.CurrentSettings.rayMarchDistanceInVoid);
 			}
 

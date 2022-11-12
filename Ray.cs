@@ -4,6 +4,7 @@ using System.Numerics;
 namespace Raytracer {
 	public class Ray {
 
+		public readonly Vector3 origin;
 		public Vector3 position;
 		public float maxDistance = 1000;
 
@@ -23,6 +24,7 @@ namespace Raytracer {
 		}
 
 		public Ray(Vector3 pos, Vector3 dir, int iteration, Vector2 screenPos, float maxDistance = 1000) {
+			origin = pos;
 			position = pos;
 			this.dir = dir;
 			reflectionIteration = iteration;

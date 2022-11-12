@@ -169,5 +169,10 @@ namespace Raytracer {
 		{
 			if(typeof(T).IsAssignableFrom(GetType())) yield return this as T;
 		}
+
+		public override void SetupForRendering()
+		{
+
+		}
 	}
 }

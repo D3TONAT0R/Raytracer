@@ -173,16 +173,16 @@ namespace Raytracer
 			var prefabBlock = blocks.Find((b) => b.keyword == "PREFABS");
 			var objBlock = blocks.Find((b) => b.keyword == "OBJECTS");
 
-			if (envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock);
+			if (envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock, scene);
 			if (colBlock != null) scene.globalColors = ParseColorsBlock(colBlock);
-			if (matBlock != null) scene.globalMaterials = ParseMaterialsBlock(matBlock, scene);
+			if (matBlock != null) scene.globalMaterials = ParseMaterialsBlock( matBlock, scene);
 			if (prefabBlock != null) scene.prefabContent = ParseObjectsBlock(prefabBlock, scene);
 			if (objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
 
 			return scene;
 		}
 
-		static Environment ParseEnvironmentBlock(BlockContent block)
+		static Environment ParseEnvironmentBlock(BlockContent block, Scene scene)
 		{
 			var env = new Environment();
 			foreach(var d in block.data)
@@ -191,7 +191,7 @@ namespace Raytracer
 				switch(line.keyword)
 				{
 					case "SKYBOX":
-						env.skyboxTexture = Sampler2D.Create(line.data);
+						env.skyboxTexture = Sampler2D.Create(line.data, scene.rootDirectory);
 						break;
 					case "SKYBOX_SPHERICAL":
 						env.skyboxIsSpherical = bool.Parse(line.data);

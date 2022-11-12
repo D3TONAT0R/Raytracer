@@ -30,7 +30,7 @@ namespace Raytracer {
 			axis = direction;
 		}
 
-		public override void SetupAABBs() {
+		public override void SetupForRendering() {
 			Vector3 lower = WorldPosition;
 			Vector3 upper = WorldPosition;
 			if(axis == CylinderAxis.Y) {

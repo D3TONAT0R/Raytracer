@@ -34,7 +34,7 @@ namespace Raytracer {
 		}
 
 		protected override void OnInit() {
-			heightmap = Sampler2D.Create(heightmapFile);
+			heightmap = Sampler2D.Create(heightmapFile, RaytracerEngine.Scene.rootDirectory);
 			if (material != null)
 			{
 				material.mappingType = TextureMappingType.LocalYProj;
@@ -42,7 +42,7 @@ namespace Raytracer {
 			}
 		}
 
-		public override void SetupAABBs() {
+		public override void SetupForRendering() {
 			var add = Vector3.UnitY * bottomThickness;
 			ShapeAABB = new AABB(WorldPosition - add, WorldPosition + dimensions + add);
 		}

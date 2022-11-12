@@ -30,7 +30,7 @@ namespace Raytracer {
 			this.size = size;
 		}
 
-		public override void SetupAABBs() {
+		public override void SetupForRendering() {
 			ShapeAABB = new AABB(WorldPosition, WorldPosition + size);
 		}
 

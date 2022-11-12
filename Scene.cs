@@ -63,21 +63,24 @@ namespace Raytracer
 				RegisterSceneContent(obj);
 			}
 			//shapeAABBs.Clear();
-			sceneObjectsAABB = new AABB();
+			sceneObjectsAABB = AABB.Empty;
+			foreach(var s in sceneContent)
+			{
+				s.SetupForRendering();
+				sceneObjectsAABB = sceneObjectsAABB.Join(s.GetTotalShapeAABB());
+			}
+			/*
 			foreach(var s1 in shapes)
 			{
 				foreach(var s in s1.GetSubShapes())
 				{
-					s.SetupAABBs();
+					s.SetupForRendering();
 					sceneObjectsAABB = sceneObjectsAABB.Join(s.ShapeAABB.Offset(s.HierarchyPositionOffset));
 					//s.SetupAABBs(expandedAABBs, expansionAmount);
 					//shapeAABBs.Add(s, new AABB[] { s.ShapeAABB, s.ShapeAABB.Expand(expansionAmount) });
 				}
 			}
-			foreach(var s in shapes)
-			{
-				s.OnBeginRender();
-			}
+			*/
 		}
 
 		void RegisterSceneContent(SceneObject obj)
@@ -109,15 +112,26 @@ namespace Raytracer
 			*/
 		}
 
+		static Random r = new Random();
+
 		public List<Shape> GetIntersectingShapes(Ray ray)
 		{
 			var list = new List<Shape>();
+			foreach(var o in sceneContent)
+			{
+				if(o.CanContainShapes)
+				{
+					list.AddRange(o.GetIntersectingShapes(ray));
+				}
+			}
+			/*
 			foreach(var s in shapes)
 			{
 				//TODO: correct?
 				//if(s.ShapeAABB.Offset(s.HierarchyPositionOffset).Intersects(ray)) list.Add(s);
 				if(s.ShapeAABB.Intersects(ray)) list.Add(s);
 			}
+			*/
 			return list;
 		}
 
@@ -133,7 +147,8 @@ namespace Raytracer
 
 		public bool IsInWorldBounds(Vector3 pos)
 		{
-			return worldAABB.IsInside(pos);
+			return sceneObjectsAABB.IsInside(pos);
+			//return worldAABB.IsInside(pos);
 		}
 
 		public Shape[] GetAABBIntersectingShape(Vector3 pos)

@@ -11,7 +11,7 @@ namespace Raytracer {
 
 		public static string defaultPath = Path.Combine(RaytracerEngine.rootPath, "Textures");
 
-		public readonly string relativeTexturePath;
+		public readonly string textureName;
 
 		public Color[,] texture;
 		public readonly int width;
@@ -19,8 +19,8 @@ namespace Raytracer {
 		public bool filtering = true;
 		public Color averageColor;
 
-		private Sampler2D(string path, string relativePath) {
-			relativeTexturePath = relativePath;
+		private Sampler2D(string path) {
+			textureName = Path.GetFileName(path);
 			Bitmap bmp = new Bitmap(Image.FromFile(path));
 			width = bmp.Width;
 			height = bmp.Height;
@@ -51,15 +51,30 @@ namespace Raytracer {
 			averageColor *= 1f / (width * height);
 		}
 
-		public static Sampler2D Create(string textureName) {
+		public static Sampler2D Create(string textureName, string sceneRootPath) {
 			if(!Path.HasExtension(textureName)) textureName = textureName + ".*";
-			//string path = Path.Combine(defaultPath, textureName);
-			var files = Directory.GetFiles(defaultPath, Path.GetFileName(textureName));
-			if(files.Length > 0) {
-				return new Sampler2D(files[0], textureName);
+			var textureFile = LocateTexture(textureName, sceneRootPath);
+			if(textureFile != null) {
+				return new Sampler2D(textureFile);
 			} else {
 				return null;
 			}
+		}
+
+		private static string LocateTexture(string textureFileName, string sceneRootPath)
+		{
+			string[] files;
+			if(sceneRootPath != null)
+			{
+				files = Directory.GetFiles(sceneRootPath, textureFileName);
+				if(files.Length > 0) return files[0];
+			}
+			if(Directory.Exists(defaultPath))
+			{
+				files = Directory.GetFiles(defaultPath, textureFileName);
+				if(files.Length > 0) return files[0];
+			}
+			return null;
 		}
 
 		public Color Sample(float x, float y, bool alwaysSample = false) {
@@ -92,7 +107,7 @@ namespace Raytracer {
 
 		public override string ToString()
 		{
-			string s = relativeTexturePath;
+			string s = textureName;
 			if (s.EndsWith(".*")) s = s.Substring(0, s.Length - 2);
 			return s;
 		}

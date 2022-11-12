@@ -254,7 +254,7 @@ namespace Raytracer
 			{ typeof(Vector3), (s) => ParseVector3(s) },
 			{ typeof(Color), (s) => Color.Parse(s) },
 			{ typeof(TilingVector), (s) => TilingVector.Parse(s) },
-			{ typeof(Sampler2D), (s) => Sampler2D.Create(s) },
+			//{ typeof(Sampler2D), (s) => Sampler2D.Create(s) },
 			//{ typeof(Material), (s) => currentSceneLoader.materials[s] },
 			//{ typeof(SceneObject[]), (s) => GetSceneObjects(s.Split(' ')) },
 			//{ typeof(SolidShape[]), (s) => GetSolids(s.Split(' ')) }
@@ -271,6 +271,18 @@ namespace Raytracer
 				else
 				{
 					return scene.globalMaterials[((StringContent)data).data];
+				}
+			}
+			else if(targetType == typeof(Sampler2D))
+			{
+				if(data is StringContent sc)
+				{
+					return Sampler2D.Create(sc.data, scene.rootDirectory);
+				}
+				else
+				{
+					//This isn't a common use case, leave it for now
+					throw new NotImplementedException();
 				}
 			}
 			else if (targetType.IsAssignableFrom(typeof(SceneObject)))

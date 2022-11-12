@@ -151,15 +151,15 @@ namespace Raytracer {
 			}
 		}
 
-		public static Material CreateTexturedMaterial(string textureName, Color color, float r, float s, TilingVector tiling) {
+		public static Material CreateTexturedMaterial(Scene scene, string textureName, Color color, float r, float s, TilingVector tiling) {
 			return new Material(color, r, s) {
-				mainTexture = Sampler2D.Create(textureName),
+				mainTexture = Sampler2D.Create(textureName, scene.rootDirectory),
 				textureTiling = tiling
 			};
 		}
 
-		public static Material CreateTexturedMaterial(string textureName, float r, float s, TilingVector tiling) {
-			return CreateTexturedMaterial(textureName, Color.White, r, s, tiling);
+		public static Material CreateTexturedMaterial(Scene scene, string textureName, float r, float s, TilingVector tiling) {
+			return CreateTexturedMaterial(scene, textureName, Color.White, r, s, tiling);
 		}
 
 		public static Material CreateCheckerMaterial(Color c1, Color c2, float r, float s, float tiling) {

@@ -24,6 +24,8 @@ namespace Raytracer
 
 		private Shape[] subShapes;
 
+		public override bool CanContainShapes => true;
+
 		protected override void OnInit()
 		{
 			subShapes = new Shape[stepCount - 1];
@@ -66,6 +68,16 @@ namespace Raytracer
 					yield return s1;
 				}
 			}
+		}
+
+		public override void SetupForRendering()
+		{
+			foreach(var ss in subShapes) ss.SetupForRendering();
+		}
+
+		public override AABB GetTotalShapeAABB()
+		{
+			return new AABB(WorldPosition, WorldPosition + size);
 		}
 	}
 }

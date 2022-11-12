@@ -41,6 +41,8 @@ namespace Raytracer
 
 		public virtual Material OverrideMaterial => parent?.OverrideMaterial;
 
+		public virtual bool CanContainShapes => false;
+
 		public SceneObject() { }
 
 		public SceneObject(string name)
@@ -79,6 +81,15 @@ namespace Raytracer
 		public void Uninitialize()
 		{
 			IsInitialized = false;
+		}
+
+		public abstract void SetupForRendering();
+
+		public virtual AABB GetTotalShapeAABB() => AABB.Empty;
+
+		public virtual IEnumerable<Shape> GetIntersectingShapes(Ray ray)
+		{
+			yield break;
 		}
 	}
 }
