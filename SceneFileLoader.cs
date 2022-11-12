@@ -103,8 +103,40 @@ namespace Raytracer
 
 		public static Scene CreateFromFile(string filePath)
 		{
+			var rootDir = Path.GetDirectoryName(filePath);
 			string sceneName = null;
-			var reader = new StringReader(File.ReadAllText(filePath));
+			var fileLines = new List<string>(File.ReadAllLines(filePath));
+			int actualFileLine = 0;
+			for(int i = 0; i < fileLines.Count; i++)
+			{
+				actualFileLine++;
+				if(fileLines[i].Contains("$"))
+				{
+					var line = fileLines[i].Trim();
+					if(line.StartsWith("$INCLUDE "))
+					{
+						//Include another file
+						var includeFileName = line.Split(new char[0], StringSplitOptions.RemoveEmptyEntries)[1];
+						var includeFilePath = Path.Combine(rootDir, includeFileName);
+						fileLines.RemoveAt(i);
+						try
+						{
+							var includedLines = File.ReadAllLines(includeFilePath);
+							fileLines.InsertRange(i, includedLines);
+							i--;
+						}
+						catch
+						{
+							throw new FileNotFoundException($"Failed to open include file '{includeFileName}' at line {actualFileLine}");
+						}
+					}
+					else
+					{
+						throw new FormatException($"Unrecognized character sequence at line '{fileLines[i]}' at line {actualFileLine}");
+					}
+				}
+			}
+			var reader = new StringReader(string.Join("\n", fileLines));
 			int lineNum = 0;
 			List<BlockContent> blocks = new List<BlockContent>();
 			while(true)
@@ -133,6 +165,7 @@ namespace Raytracer
 			if (string.IsNullOrWhiteSpace(sceneName)) sceneName = "Untitled";
 
 			var scene = new Scene(sceneName);
+			scene.rootDirectory = rootDir;
 
 			var envBlock = blocks.Find((b) => b.keyword == "ENVIRONMENT");
 			var colBlock = blocks.Find((b) => b.keyword == "COLORS");

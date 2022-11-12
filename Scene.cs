@@ -12,6 +12,7 @@ namespace Raytracer
 	{
 
 		public string sceneName;
+		public string rootDirectory;
 
 		public Environment environment;
 
