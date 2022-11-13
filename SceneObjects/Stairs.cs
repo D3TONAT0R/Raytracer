@@ -79,5 +79,13 @@ namespace Raytracer
 		{
 			return new AABB(WorldPosition, WorldPosition + size);
 		}
+
+		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
+		{
+			foreach(var s in subShapes)
+			{
+				foreach(var s1 in s.GetIntersectingShapes(ray)) yield return s1;
+			}
+		}
 	}
 }
