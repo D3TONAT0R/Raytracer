@@ -26,7 +26,7 @@ namespace Raytracer {
 		public Ray(Vector3 pos, Vector3 dir, int iteration, Vector2 screenPos, float maxDistance = 1000) {
 			origin = pos;
 			position = pos;
-			this.dir = dir;
+			Direction = dir;
 			reflectionIteration = iteration;
 			sourceScreenPos = screenPos;
 			this.maxDistance = maxDistance;

@@ -73,13 +73,10 @@ namespace Raytracer {
 		}
 
 		public Color GetLightAtPoint(Scene scene, Vector3 point, Vector3 normal, LightingType lighting, Shape sourceShape, out bool shadowed) {
-			var targetPoint = point;
-			//var localPoint = point - HierarchyPositionOffset;
-			//point -= HierarchyPositionOffset;
 			if(lighting == LightingType.SimpleNormalBased) {
 				shadowed = false;
 				return Color.Black;
-			} else if(lighting == LightingType.RaytracedNoShadows) {
+			} else if(lighting == LightingType.RaytracedNoShadows || shadowIntensity < 0.01f) {
 				shadowed = false;
 				return color * GetIlluminationAtPoint(point, normal, GetLightNormal(point));
 			} else if(lighting == LightingType.RaytracedHardShadows) {

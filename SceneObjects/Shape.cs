@@ -24,6 +24,7 @@ namespace Raytracer {
 			protected set {
 				shapeAABB = value;
 				ExpandedAABB = value.Expand(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid);
+				//ExpandedAABB = value.Expand(0.001f);
 			}
 		}
 
