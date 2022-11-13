@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 namespace Raytracer
 {
 	[ObjectIdentifier("INSTANCE")]
-	public class ObjectInstance : SceneObject
+	public class SceneObjectInstance : SceneObject, IReferencedObject
 	{
-		public string referencedObjectName;
 		public SceneObject referencedObject;
 		[DataIdentifier("MATERIAL")]
 		public Material overrideMaterial;
+
+		public string ReferencedObjectName { get; set; }
 
 		public override Material OverrideMaterial => overrideMaterial ?? parent?.OverrideMaterial;
 
@@ -20,10 +21,10 @@ namespace Raytracer
 
 		protected override void OnInit()
 		{
-			var refObj = RaytracerEngine.Scene.GetPrefabOrSceneObject(referencedObjectName);
+			var refObj = RaytracerEngine.Scene.GetPrefabOrSceneObject(ReferencedObjectName);
 			if(refObj == null)
 			{
-				throw new NullReferenceException($"The referenced SceneObject '{referencedObjectName}' does not exist.");
+				throw new NullReferenceException($"The referenced SceneObject '{ReferencedObjectName}' does not exist.");
 			}
 			referencedObject = refObj.Clone();
 			referencedObject.parent = this;

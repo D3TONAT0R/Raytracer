@@ -90,7 +90,9 @@
     <Compile Include="Ray.cs" />
     <Compile Include="RenderTarget.cs" />
     <Compile Include="SceneFileWriter.cs" />
-    <Compile Include="SceneObjects\ObjectInstance.cs" />
+    <Compile Include="SceneObjects\IReferencedObject.cs" />
+    <Compile Include="SceneObjects\SceneObjectArray.cs" />
+    <Compile Include="SceneObjects\SceneObjectInstance.cs" />
     <Compile Include="SceneObjects\Slope.cs" />
     <Compile Include="SceneObjects\SlopeDirection.cs" />
     <Compile Include="SceneObjects\Stairs.cs" />

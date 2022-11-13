@@ -168,10 +168,10 @@ namespace Raytracer
 			obj.name = !string.IsNullOrWhiteSpace(block.name) ? block.name : null;
 			foreach(var d in block.data)
 			{
-				if(obj is ObjectInstance inst)
+				if(obj is IReferencedObject iRef)
 				{
-					if(block.refName == null) throw new NullReferenceException("ObjectInstance does not reference a scene object.");
-					inst.referencedObjectName = block.refName;
+					if(block.refName == null) throw new NullReferenceException("SceneObject is missing a required object reference.");
+					iRef.ReferencedObjectName = block.refName;
 				}
 				foreach (var f in fieldSet.fields)
 				{
