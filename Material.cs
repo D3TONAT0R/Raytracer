@@ -116,6 +116,8 @@ namespace Raytracer {
 		public Color mainColor = new Color(0.5f, 0.5f, 0.5f, 1);
 		[DataIdentifier("SECONDARYCOLOR")]
 		public Color secColor = new Color(0.25f, 0.25f, 0.25f, 1);
+		[DataIdentifier("EMISSIONCOLOR")]
+		public Color emissionColor = Color.Black;
 
 		[DataIdentifier("MAINTEX")]
 		public Sampler2D mainTexture;
@@ -251,6 +253,8 @@ namespace Raytracer {
 				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, null) * reflectivity;
 				final += reflColor;
 			}
+			//Apply emission
+			final += emissionColor;
 			return final;
 		}
 
