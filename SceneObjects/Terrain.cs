@@ -124,5 +124,10 @@ namespace Raytracer {
 			h += localPosition.Y;
 			return Math.Abs(h - worldPos.Y);
 		}
+
+		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		{
+			return new Vector2(localPos.X / dimensions.X, localPos.Z / dimensions.Z);
+		}
 	}
 }

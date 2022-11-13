@@ -37,5 +37,10 @@ namespace Raytracer {
 		public override float GetSurfaceProximity(Vector3 worldPos) {
 			return Math.Abs(Vector3.Distance(WorldPosition, worldPos) - radius);
 		}
+
+		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		{
+			return new Vector2(MathUtils.Dir2DToAngle01(normal.X, normal.Z), normal.Y * 0.5f + 0.5f);
+		}
 	}
 }

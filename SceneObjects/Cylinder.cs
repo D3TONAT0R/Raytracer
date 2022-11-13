@@ -131,5 +131,42 @@ namespace Raytracer {
 				prox = proxU;
 			}
 		}
+
+		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		{
+			if(axis == CylinderAxis.X)
+			{
+				//TODO
+				return Vector2.Zero;
+			}
+			else if(axis == CylinderAxis.Y)
+			{
+				Vector3 normPos = new Vector3(localPos.X / radius, localPos.Y / length, localPos.Z / radius);
+				if(normal.Y > 0.9f)
+				{
+					//Top face uv
+					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Z * 0.5f + 0.5f);
+				}
+				else if(normal.Y < -0.9f)
+				{
+					//Botton face uv
+					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Z * 0.5f + 0.5f);
+				}
+				else
+				{
+					//Side uv
+					return new Vector2(MathUtils.Dir2DToAngle01(normPos.X, normPos.Z), normPos.Y);
+				}
+			}
+			else if(axis == CylinderAxis.Z)
+			{
+				//TODO
+				return Vector2.Zero;
+			}
+			else
+			{
+				return Vector2.Zero;
+			}
+		}
 	}
 }

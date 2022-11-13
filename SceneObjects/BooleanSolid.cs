@@ -124,6 +124,13 @@ namespace Raytracer {
 			}
 		}
 
+		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		{
+			var wp = localPos + WorldPosition;
+			var shape = GetClosestSurfaceShape(wp);
+			return shape.GetUV(wp - shape.WorldPosition, normal);
+		}
+
 		/*public override void RegisterExpandedAABB(Dictionary<Shape, AABB> expandedAABBs, float expansionAmount) {
 			base.RegisterExpandedAABB(expandedAABBs, expansionAmount);
 			foreach(var s in solids) {

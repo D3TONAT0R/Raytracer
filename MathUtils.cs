@@ -83,5 +83,17 @@ namespace Raytracer {
 			}
 			return new Vector3(pitch - 90, yaw, 0);
 		}
+
+		public static float Dir2DToAngle01(float x, float y)
+		{
+			var v2 = Vector2.Normalize(new Vector2(x, y));
+			float a = (float)Math.Sinh(v2.X) * 76.582709f;
+			a /= 360f;
+			if(v2.Y < 0)
+			{
+				a = 0.5f - a;
+			}
+			return (a + 1.0f) % 1.0f;
+		}
 	}
 }

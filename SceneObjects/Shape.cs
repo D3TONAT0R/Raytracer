@@ -60,5 +60,7 @@ namespace Raytracer {
 		{
 			return ShapeAABB;
 		}
+
+		public abstract Vector2 GetUV(Vector3 localPos, Vector3 normal);
 	}
 }

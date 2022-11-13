@@ -71,5 +71,41 @@ namespace Raytracer {
 				}
 			}
 		}
+
+		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		{
+			var normPos = localPos / size;
+			if(normal.Y > 0.9f)
+			{
+				//Top
+				return new Vector2(normPos.X, normPos.Z);
+			}
+			else if(normal.Y < -0.9f)
+			{
+				//Bottom
+				return new Vector2(-normPos.X, normPos.Z);
+			}
+			else if(normal.X > 0.9f)
+			{
+				//Right
+				return new Vector2(normPos.Z, normPos.Y);
+			}
+			else if(normal.X < -0.9f)
+			{
+				//Left
+				return new Vector2(-normPos.Z, normPos.Y);
+			}
+			else if(normal.Z < -0.9f)
+			{
+				//Front
+				return new Vector2(normPos.X, normPos.Y);
+			}
+			else if(normal.Z > 0.9f)
+			{
+				//Back
+				return new Vector2(-normPos.X, normPos.Y);
+			}
+			else return Vector2.Zero;
+		}
 	}
 }

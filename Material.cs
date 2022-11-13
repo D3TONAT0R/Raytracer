@@ -32,7 +32,8 @@ namespace Raytracer {
 		LocalXProj,
 		LocalYProj,
 		LocalZProj,
-		Screen
+		Screen,
+		UV
 	}
 
 	public class TilingVector {
@@ -286,7 +287,7 @@ namespace Raytracer {
 				mappingType == TextureMappingType.LocalYProj ||
 				mappingType == TextureMappingType.LocalZProj)
 			{
-				pos += shape.WorldPosition;
+				pos -= shape.WorldPosition;
 			}
 			switch(mappingType) {
 				case TextureMappingType.LocalXYZ:
@@ -298,6 +299,7 @@ namespace Raytracer {
 				case TextureMappingType.LocalZProj:
 				case TextureMappingType.WorldZProj: uv = new Vector2(pos.X, pos.Y); break;
 				case TextureMappingType.Screen: uv = ray.sourceScreenPos; break;
+				case TextureMappingType.UV: uv = shape.GetUV(pos - shape.WorldPosition, nrm); break;
 				default: uv = Vector2.Zero; break;
 			}
 			return uv;
