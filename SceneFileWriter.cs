@@ -100,7 +100,7 @@ namespace Raytracer
 			if (mat.mappingType != TextureMappingType.WorldXYZ) Write("MAPPING", mat.mappingType);
 			if (mat.reflectivity != 0) Write("REFL", mat.reflectivity);
 			if (mat.smoothness != 0) Write("SMOOTH", mat.smoothness);
-			if (mat.refraction != 0) Write("REFRACTION", mat.refraction);
+			if (mat.indexOfRefraction >= 0) Write("IOR", mat.indexOfRefraction);
 			EndBlock();
 		}
 

@@ -131,9 +131,10 @@ namespace Raytracer {
 		public float reflectivity = 0;
 		[DataIdentifier("SMOOTH")]
 		public float smoothness = 0;
-		public float? transparencyCutout = null;
-		[DataIdentifier("REFRACTION")]
-		public float refraction = 0f;
+		[DataIdentifier("ALPHACUTOFF")]
+		public float transparencyCutoff = -1;
+		[DataIdentifier("IOR")]
+		public float indexOfRefraction = 1f;
 
 		public bool isGlobalMaterial = false;
 
@@ -205,7 +206,7 @@ namespace Raytracer {
 			if (RaytracerEngine.Scene.environment.fogDistance > 0)
 			{
 				//Apply fog
-				float fogDensity = Math.Min(1, distance / (float)RaytracerEngine.Scene.environment.fogDistance);
+				float fogDensity = Math.Min(1, distance / RaytracerEngine.Scene.environment.fogDistance);
 				output = Color.Lerp(output, RaytracerEngine.Scene.environment.fogColor, fogDensity);
 			}
 			return output;
@@ -244,9 +245,18 @@ namespace Raytracer {
 			final *= shade;
 			//Apply transparency
 			if(mainColor.a < 1) {
-				var newray = new Ray(ray.position, MathUtils.Refract(ray.Direction, nrm, refraction * 0.1f), ray.reflectionIteration+1, ray.sourceScreenPos);
+				float op;
+				if(transparencyCutoff >= 0)
+				{
+					op = mainColor.a > transparencyCutoff ? 1 : 0;
+				}
+				else
+				{
+					op = mainColor.a;
+				}
+				var newray = new Ray(ray.position, MathUtils.Refract(ray.Direction, nrm, indexOfRefraction), ray.reflectionIteration + 1, ray.sourceScreenPos);
 				var backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * mainColor;
-				final = Color.Lerp(backColor, final, mainColor.a);
+				final = Color.Lerp(backColor, final, op);
 			}
 			//Apply reflections
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {

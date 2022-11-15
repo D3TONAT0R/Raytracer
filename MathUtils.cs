@@ -7,9 +7,19 @@ namespace Raytracer {
 		public const float Deg2Rad = (float)Math.PI / 180f;
 		public const float Rad2Deg = 180f / (float)Math.PI;
 
-		public static Vector3 Refract(Vector3 rayNrm, Vector3 surfaceNrm, float refraction) {
-			float r = -refraction * (1f - Math.Abs(Vector3.Dot(rayNrm, surfaceNrm)));
-			return Vector3.Normalize(Vector3.Lerp(rayNrm, -surfaceNrm, -refraction));
+		public static Vector3 Refract(Vector3 rayNrm, Vector3 surfaceNrm, float ior) {
+			if(ior != 1)
+			{
+				//float r = -ior * (1f - Math.Abs(Vector3.Dot(rayNrm, surfaceNrm)));
+				//return Vector3.Normalize(Vector3.Lerp(rayNrm, -surfaceNrm, -ior));
+				float r = 1f / ior;
+				var c = Vector3.Dot(-surfaceNrm, rayNrm);
+				return r * rayNrm + (float)(r * c - Math.Sqrt(1f - Math.Pow(r, 2) * Math.Pow(c, 2))) * surfaceNrm;
+			}
+			else
+			{
+				return rayNrm;
+			}
 		}
 
 		public static float Step(float x, float a) {
