@@ -29,7 +29,8 @@ namespace Raytracer {
 			return Vector3.Distance(pos, WorldPosition) <= radius;
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
+		public override Vector3 GetNormalAt(Vector3 pos)
+		{
 			var nrm = Vector3.Normalize(pos - WorldPosition);
 			return nrm;
 		}

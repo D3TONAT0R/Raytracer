@@ -38,7 +38,8 @@ namespace Raytracer {
 			return ShapeAABB.IsInside(pos);
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
+		public override Vector3 GetNormalAt(Vector3 pos)
+		{
 			CalculateNearestFace(pos, out int face, out _);
 			return localNormals[face];
 		}

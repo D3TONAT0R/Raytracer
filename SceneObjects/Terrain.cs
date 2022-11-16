@@ -47,7 +47,8 @@ namespace Raytracer {
 			ShapeAABB = new AABB(WorldPosition - add, WorldPosition + dimensions + add);
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
+		public override Vector3 GetNormalAt(Vector3 pos)
+		{
 			return CalculateNormal(GetTerrainCoord(pos).XZ(), true);
 		}
 

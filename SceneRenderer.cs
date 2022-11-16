@@ -103,7 +103,7 @@ namespace Raytracer
 		{
 			if (ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
 			Vector3? hit = TraceRay(scene, ref ray, out var intersection, excludeShape);
-			if (hit != null)
+			if (hit != null && intersection != null)
 			{
 				return intersection.GetColorAt((Vector3)hit, ray);
 			}
@@ -114,7 +114,7 @@ namespace Raytracer
 			}
 		}
 
-		public static Vector3? TraceRay(Scene scene, ref Ray ray, out Shape intersectingShape, Shape excludeShape = null)
+		public static Vector3? TraceRay(Scene scene, ref Ray ray, out Shape intersectingShape, Shape excludeShape = null, Shape exitShape = null)
 		{
 			var shapes = scene.GetIntersectingShapes(ray);
 			intersectingShape = null;
@@ -129,9 +129,10 @@ namespace Raytracer
 					if (intersecting.Length == 0)
 					{
 						//No AABB collision detected
+						if(exitShape != null) return ray.position;
 						if (!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
 						{
-							return null;
+							return ray.position;
 						}
 					}
 					else
@@ -146,15 +147,29 @@ namespace Raytracer
 								return ray.position;
 							}
 						}
+
+						var maxReached = !ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInObject + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation);
 						//If Advance returns false, we have reached the ray's maximum distance without hitting any surface
-						if (!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInObject + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
+						if (maxReached)
 						{
-							return null;
+							return ray.position;
+						}
+
+						if(exitShape != null && exitShape.Intersects(ray.position)) 
+						{
+							//We are no longer in contact with the given shape, return the current position instead
+							if(ray.travelDistance == 0) throw new InvalidOperationException("Not in contact with target shape after a distance of 0 units.");
+							return ray.position;
 						}
 					}
 				}
 			}
-			return null;
+			else
+			{
+				ray.Advance(ray.maxDistance);
+				return ray.position;
+			}
+			return ray.position;
 		}
 
 		static void OptimizeRay(Ray ray, List<Shape> shapes)

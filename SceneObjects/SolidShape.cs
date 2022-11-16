@@ -14,7 +14,7 @@ namespace Raytracer {
 
 		public override Color GetColorAt(Vector3 pos, Ray ray) {
 			var mat = GetMaterial(pos) ?? Material.DefaultMaterial;
-			return mat.GetColor(this, pos, GetNormalAt(pos, ray), ray);
+			return mat.GetColor(this, pos, GetNormalAt(pos), ray);
 		}
 	}
 }

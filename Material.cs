@@ -135,6 +135,8 @@ namespace Raytracer {
 		public float transparencyCutoff = -1;
 		[DataIdentifier("IOR")]
 		public float indexOfRefraction = 1f;
+		[DataIdentifier("THICKNESS")]
+		public float thickness = -1f;
 
 		public bool isGlobalMaterial = false;
 
@@ -254,8 +256,24 @@ namespace Raytracer {
 				{
 					op = mainColor.a;
 				}
-				var newray = new Ray(ray.position, MathUtils.Refract(ray.Direction, nrm, indexOfRefraction), ray.reflectionIteration + 1, ray.sourceScreenPos);
-				var backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * mainColor;
+				Color backColor;
+				if(indexOfRefraction != 1f)
+				{
+					var refractedNormal = MathUtils.Refract(ray.Direction, -nrm, 1f, indexOfRefraction);
+					var refrMaxDistance = thickness > 0 ? thickness : 100;
+					var newray = new Ray(ray.position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
+					var refractedExitPos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref newray, out _, shape, shape);
+
+					var exitSurfaceNrm = thickness > 0 ? -nrm : shape.GetNormalAt(refractedExitPos ?? newray.position);
+					refractedNormal = MathUtils.Refract(refractedNormal, -exitSurfaceNrm, indexOfRefraction, 1f);
+					newray = new Ray(newray.position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
+					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * mainColor;
+				}
+				else
+				{
+					var newray = new Ray(ray.position, ray.Direction, ray.reflectionIteration + 1, ray.sourceScreenPos);
+					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, shape) * mainColor;
+				}
 				final = Color.Lerp(backColor, final, op);
 			}
 			//Apply reflections
@@ -313,6 +331,11 @@ namespace Raytracer {
 				default: uv = Vector2.Zero; break;
 			}
 			return uv;
+		}
+
+		private void Deflect(Ray r)
+		{
+
 		}
 
 		private Vector2 MapWorld(Vector3 pos, Vector3 nrm, bool correctMirroring) {

@@ -59,7 +59,8 @@ namespace Raytracer {
 			return new Rect(cuts[0] * relY, cuts[1] * relY, 1f - cuts[2] * relY, 1f - cuts[3] * relY);
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
+		public override Vector3 GetNormalAt(Vector3 pos)
+		{
 			CalculateNearestFace(pos, out int face, out _);
 			Vector3 nrm;
 			if(face == 0) nrm = -Vector3.UnitY;

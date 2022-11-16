@@ -71,7 +71,8 @@ namespace Raytracer {
 			return true;
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos, Ray ray) {
+		public override Vector3 GetNormalAt(Vector3 pos)
+		{
 			CalculateClosestFace(pos, out int face, out _);
 			if(axis == CylinderAxis.Y) {
 				if(face == 0) {
