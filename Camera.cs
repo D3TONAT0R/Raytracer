@@ -21,7 +21,14 @@ namespace Raytracer {
 
 		private Matrix4x4 cameraMatrix;
 		private float aspectRatio;
-		public Vector3 cornerDir;
+		private Vector3 cornerDir;
+
+		public void LoadConfiguration(CameraConfiguration configuration)
+		{
+			localPosition = configuration.position;
+			rotation = configuration.rotation;
+			fieldOfView = configuration.fieldOfView;
+		}
 
 		public void Move(Vector3 localMoveVector, bool fly) {
 			var euler = rotation * MathUtils.Deg2Rad;

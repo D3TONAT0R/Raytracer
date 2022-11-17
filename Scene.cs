@@ -19,6 +19,8 @@ namespace Raytracer
 		public Dictionary<string, Color> globalColors = new Dictionary<string, Color>();
 		public Dictionary<string, Material> globalMaterials = new Dictionary<string, Material>();
 
+		public List<CameraConfiguration> cameraConfigurations = new List<CameraConfiguration>();
+
 		public List<SceneObject> prefabContent = new List<SceneObject>();
 		public List<SceneObject> sceneContent = new List<SceneObject>();
 		public bool hasContentUpdate = true;

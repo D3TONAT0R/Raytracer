@@ -70,6 +70,7 @@
     <Compile Include="Animation\Animator.cs" />
     <Compile Include="BmpPixelSnoop.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="CameraConfiguration.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="CurrentPixelRenderData.cs" />
     <Compile Include="Environment.cs" />

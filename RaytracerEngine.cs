@@ -265,6 +265,22 @@ namespace Raytracer {
 			});
 		}
 
+		public static void UpdateCameraConfigurationItems()
+		{
+			infoWindow.Invoke((Action)delegate
+			{
+				var items = new List<ToolStripMenuItem>();
+				int i = 0;
+				foreach(var c in scene.cameraConfigurations)
+				{
+					string name = $"{i} - {c.name ?? "UNNAMED"}";
+					items.Add(new ToolStripMenuItem(name));
+					i++;
+				}
+				infoWindow.cameraMenuItem.DropDownItems.AddRange(items.ToArray());
+			});
+		}
+
 		private void OnRenderSettingsMenuItemClick(object sender, EventArgs e)
 		{
 			if(sender is ToolStripMenuItem mi)

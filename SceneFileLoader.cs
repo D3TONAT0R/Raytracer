@@ -167,12 +167,14 @@ namespace Raytracer
 			var scene = new Scene(sceneName);
 			scene.rootDirectory = rootDir;
 
+			var cameraBlock = blocks.Find((b) => b.keyword == "CAMERAS");
 			var envBlock = blocks.Find((b) => b.keyword == "ENVIRONMENT");
 			var colBlock = blocks.Find((b) => b.keyword == "COLORS");
 			var matBlock = blocks.Find((b) => b.keyword == "MATERIALS");
 			var prefabBlock = blocks.Find((b) => b.keyword == "PREFABS");
 			var objBlock = blocks.Find((b) => b.keyword == "OBJECTS");
 
+			if (cameraBlock != null) scene.cameraConfigurations = ParseCameraConfigurations(cameraBlock, scene);
 			if (envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock, scene);
 			if (colBlock != null) scene.globalColors = ParseColorsBlock(colBlock);
 			if (matBlock != null) scene.globalMaterials = ParseMaterialsBlock( matBlock, scene);
@@ -180,6 +182,23 @@ namespace Raytracer
 			if (objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
 
 			return scene;
+		}
+
+		static List<CameraConfiguration> ParseCameraConfigurations(BlockContent block, Scene scene)
+		{
+			List<CameraConfiguration> cameras = new List<CameraConfiguration>();
+			foreach(var b in block.data)
+			{
+				if(b is BlockContent bc)
+				{
+					cameras.Add(Reflection.CreateCameraConfiguration(scene, bc));
+				}
+				else
+				{
+					throw new NotImplementedException();
+				}
+			}
+			return cameras;
 		}
 
 		static Environment ParseEnvironmentBlock(BlockContent block, Scene scene)

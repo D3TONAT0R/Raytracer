@@ -167,8 +167,9 @@ namespace Raytracer {
 			{
 				try
 				{
-					var scene = SceneLoader.LoadSceneFromFile(d.FileName);
+					var scene = LoadSceneFromFile(d.FileName);
 					RaytracerEngine.Scene = scene;
+					RaytracerEngine.UpdateCameraConfigurationItems();
 					MessageBox.Show("Scene loaded " + d.FileName);
 				}
 				catch (Exception e)

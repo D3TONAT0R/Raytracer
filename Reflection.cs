@@ -79,11 +79,11 @@ namespace Raytracer
 			}
 		}
 
-		static Dictionary<string, ExposedFieldSet> objects;
+		static Dictionary<string, ExposedFieldSet> exposedFieldSets;
 
 		static Reflection()
 		{
-			objects = new Dictionary<string, ExposedFieldSet>();
+			exposedFieldSets = new Dictionary<string, ExposedFieldSet>();
 			var attrs = Assembly.GetCallingAssembly().GetTypes()
 								  .Where(m => m.GetCustomAttributes(typeof(ObjectIdentifierAttribute), false).Length > 0)
 								  .ToArray();
@@ -103,7 +103,7 @@ namespace Raytracer
 						typeInfo.fields.Add(attr.identifier, f2);
 					}
 				}
-				objects.Add(a.GetCustomAttribute<ObjectIdentifierAttribute>().identifier, typeInfo);
+				exposedFieldSets.Add(a.GetCustomAttribute<ObjectIdentifierAttribute>().identifier, typeInfo);
 			}
 		}
 
@@ -112,7 +112,7 @@ namespace Raytracer
 			var attr = type.GetCustomAttribute<ObjectIdentifierAttribute>();
 			if (attr != null)
 			{
-				objects.TryGetValue(attr.identifier, out var value);
+				exposedFieldSets.TryGetValue(attr.identifier, out var value);
 				return value;
 			}
 			else
@@ -129,7 +129,7 @@ namespace Raytracer
 				//TODO: find a better way to do this
 				return AttributeTypeInfo.Environment;
 			}
-			foreach (var a in objects)
+			foreach (var a in exposedFieldSets)
 			{
 				if (a.Key == identifier)
 				{
@@ -149,7 +149,7 @@ namespace Raytracer
 
 		public static FieldInfo GetField(Type type, string identifier)
 		{
-			foreach (var o in objects.Values)
+			foreach (var o in exposedFieldSets.Values)
 			{
 				if (o.type == type)
 				{
@@ -163,7 +163,7 @@ namespace Raytracer
 
 		internal static SceneObject CreateSceneObject(Scene scene, BlockContent block)
 		{
-			var fieldSet = objects[block.keyword.ToUpper()];
+			var fieldSet = exposedFieldSets[block.keyword.ToUpper()];
 			SceneObject obj = (SceneObject)Activator.CreateInstance(fieldSet.type);
 			obj.name = !string.IsNullOrWhiteSpace(block.name) ? block.name : null;
 			foreach(var d in block.data)
@@ -183,6 +183,24 @@ namespace Raytracer
 				}
 			}
 			return obj;
+		}
+
+		internal static CameraConfiguration CreateCameraConfiguration(Scene scene, BlockContent block)
+		{
+			var config = new CameraConfiguration(block.keyword);
+			var fs = exposedFieldSets["CAMERA_CONFIGURATION"];
+			foreach (var d in block.data)
+			{
+				foreach (var f in fs.fields)
+				{
+					if (d.keyword == f.Key)
+					{
+						FieldInfo fi = fs.type.GetField(f.Value.fieldName);
+						fi.SetValue(config, ParseData(scene, fi.FieldType, d));
+					}
+				}
+			}
+			return config;
 		}
 
 		/*public static SceneObject CreateSceneObjectOld(SceneFileLoader loader, string identifier, string name, string[] data) {
@@ -206,7 +224,7 @@ namespace Raytracer
 
 		internal static Material CreateMaterial(BlockContent block, Scene scene)
 		{
-			var t = objects["MATERIAL"];
+			var t = exposedFieldSets["MATERIAL"];
 			Material mat = (Material)Activator.CreateInstance(t.type);
 			foreach (var d in block.data)
 			{

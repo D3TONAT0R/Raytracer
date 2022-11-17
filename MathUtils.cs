@@ -9,11 +9,15 @@ namespace Raytracer {
 
 		public static Vector3 Refract(Vector3 rayNrm, Vector3 surfaceNrm, float iorFrom, float iorTo) {
 			if(iorFrom == iorTo) return rayNrm;
+			float ior = iorFrom / iorTo;
 			//float r = -ior * (1f - Math.Abs(Vector3.Dot(rayNrm, surfaceNrm)));
-			//return Vector3.Normalize(Vector3.Lerp(rayNrm, -surfaceNrm, -ior));
+			return Vector3.Normalize(Vector3.Lerp(rayNrm, -surfaceNrm, ior - 1f));
+
+			/*
 			float r = iorFrom / iorTo;
 			var c = Vector3.Dot(-surfaceNrm, rayNrm);
 			return r * rayNrm + (float)(r * c - Math.Sqrt(1f - Math.Pow(r, 2) * Math.Pow(c, 2))) * surfaceNrm;
+			*/
 		}
 
 		public static float Step(float x, float a) {
