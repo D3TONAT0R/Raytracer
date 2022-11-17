@@ -23,7 +23,7 @@ namespace Raytracer {
 		private float aspectRatio;
 		private Vector3 cornerDir;
 
-		public void LoadConfiguration(CameraConfiguration configuration)
+		public void ApplyConfiguration(CameraConfiguration configuration)
 		{
 			localPosition = configuration.position;
 			rotation = configuration.rotation;

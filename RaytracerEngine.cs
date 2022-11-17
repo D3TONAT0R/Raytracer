@@ -269,16 +269,40 @@ namespace Raytracer {
 		{
 			infoWindow.Invoke((Action)delegate
 			{
-				var items = new List<ToolStripMenuItem>();
+				var items = new List<ToolStripItem>();
 				int i = 0;
+				infoWindow.cameraMenuItem.DropDownItems.Clear();
 				foreach(var c in scene.cameraConfigurations)
 				{
 					string name = $"{i} - {c.name ?? "UNNAMED"}";
-					items.Add(new ToolStripMenuItem(name));
+					var menuItem = new ToolStripMenuItem(name);
+					menuItem.Click += (object sender, EventArgs e) => OnCameraConfigurationItemClick(i - 1);
+					items.Add(menuItem);
 					i++;
 				}
+				items.Add(new ToolStripSeparator());
+				var getCurrentMenuItem = new ToolStripMenuItem("Current configuration info ...");
+				getCurrentMenuItem.Click += (object sender, EventArgs e) => GetCurrentCameraConfiguration();
+				items.Add(getCurrentMenuItem);
 				infoWindow.cameraMenuItem.DropDownItems.AddRange(items.ToArray());
 			});
+		}
+
+		private static void OnCameraConfigurationItemClick(int index)
+		{
+			redrawScreen = true;
+			instance.camera.ApplyConfiguration(scene.cameraConfigurations[index]);
+		}
+
+		private static void GetCurrentCameraConfiguration()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("Current camera configuration:");
+			var cam = instance.camera;
+			sb.AppendLine("Position: " + cam.localPosition.ToString());
+			sb.AppendLine("Rotation: " + cam.rotation.ToString());
+			sb.AppendLine("FOV: " + cam.fieldOfView.ToString());
+			MessageBox.Show(sb.ToString());
 		}
 
 		private void OnRenderSettingsMenuItemClick(object sender, EventArgs e)
