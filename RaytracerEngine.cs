@@ -276,7 +276,8 @@ namespace Raytracer {
 				{
 					string name = $"{i} - {c.name ?? "UNNAMED"}";
 					var menuItem = new ToolStripMenuItem(name);
-					menuItem.Click += (object sender, EventArgs e) => OnCameraConfigurationItemClick(i - 1);
+					int i1 = i;
+					menuItem.Click += (object sender, EventArgs e) => OnCameraConfigurationItemClick(i1);
 					items.Add(menuItem);
 					i++;
 				}

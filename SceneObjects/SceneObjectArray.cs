@@ -63,11 +63,11 @@ namespace Raytracer
 
 		public override void SetupForRendering()
 		{
-			AABB aabb = AABB.Empty;
+			totalAABB = AABB.Empty;
 			foreach(var i in arrayInstances)
 			{
 				i.SetupForRendering();
-				aabb = aabb.Join(i.GetTotalShapeAABB());
+				totalAABB = totalAABB.Join(i.GetTotalShapeAABB());
 			}
 		}
 

@@ -68,6 +68,7 @@
     <Compile Include="AABB.cs" />
     <Compile Include="Animation\AnimatedProperty.cs" />
     <Compile Include="Animation\Animator.cs" />
+    <Compile Include="Axis.cs" />
     <Compile Include="BmpPixelSnoop.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraConfiguration.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="SceneObjects\Slope.cs" />
     <Compile Include="SceneObjects\SlopeDirection.cs" />
     <Compile Include="SceneObjects\Stairs.cs" />
+    <Compile Include="SceneObjects\Window.cs" />
     <Compile Include="ScreenRenderer.cs" />
     <Compile Include="SceneRenderer.cs" />
     <Compile Include="RaytracerEngine.cs" />

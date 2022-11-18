@@ -281,13 +281,13 @@ namespace Raytracer {
 			};
 			scene.AddObject(new BooleanSolid("cutsphere", BooleanSolid.BooleanOperation.Subtract, redSphere, blueSphere));
 
-			scene.AddObject(new Cylinder("cyl_y", new Vector3(5, 0, 1), 0.5f, 2f, Cylinder.CylinderAxis.Y) {
+			scene.AddObject(new Cylinder("cyl_y", new Vector3(5, 0, 1), 0.5f, 2f, Axis.Y) {
 				material = new Material(Color.Green, 0.5f, 1)
 			});
-			scene.AddObject(new Cylinder("cyl_x", new Vector3(6.5f, 0, 0), 0.5f, 2f, Cylinder.CylinderAxis.X) {
+			scene.AddObject(new Cylinder("cyl_x", new Vector3(6.5f, 0, 0), 0.5f, 2f, Axis.X) {
 				material = new Material(Color.Red, 0.5f, 1)
 			});
-			scene.AddObject(new Cylinder("cyl_z", new Vector3(3.5f, 1, -1), 0.5f, 2f, Cylinder.CylinderAxis.Z) {
+			scene.AddObject(new Cylinder("cyl_z", new Vector3(3.5f, 1, -1), 0.5f, 2f, Axis.Z) {
 				material = new Material(Color.Blue, 0.5f, 1)
 			});
 
