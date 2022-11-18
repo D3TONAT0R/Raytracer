@@ -89,7 +89,6 @@ namespace Raytracer {
 					//sourceShape = null;
 				}
 				var illum = GetIlluminationAtPoint(point, normal, lightNormal);
-				Vector3? caster = null;
 				/*bool castShadowRay;
 				if(type == LightType.Directional)
 				{
@@ -110,10 +109,11 @@ namespace Raytracer {
 				{
 					ray = new Ray(point, lightNormal, 0, Vector2.Zero, Vector3.Distance(WorldPosition, point) - shadowStartOffset);
 				}
+				Shape caster = null;
 				if (ray.maxDistance > 0)
 				{
 					//caster = SceneRenderer.TraceRay(scene, ref ray, out _, sourceShape);
-					caster = SceneRenderer.TraceRay(scene, ref ray, out _, null);
+					SceneRenderer.TraceRay(scene, ref ray, out caster, null);
 				}
 
 				//}
