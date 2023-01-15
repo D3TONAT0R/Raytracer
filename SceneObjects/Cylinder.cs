@@ -77,7 +77,7 @@ namespace Raytracer {
 				} else if(face == -1) {
 					return -Vector3.UnitY;
 				} else if(face == 1) {
-					return -Vector3.UnitY;
+					return Vector3.UnitY;
 				}
 			} else if(axis == Axis.X) {
 				if(face == 0) {
