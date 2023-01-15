@@ -91,5 +91,10 @@ namespace Raytracer {
 		{
 			RaytracerEngine.SaveScreenshot();
 		}
+
+		private void reloadCurrentSceneToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SceneLoader.ReloadCurrent();
+		}
 	}
 }

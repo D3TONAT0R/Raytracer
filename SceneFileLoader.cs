@@ -164,7 +164,7 @@ namespace Raytracer
 			}
 			if (string.IsNullOrWhiteSpace(sceneName)) sceneName = "Untitled";
 
-			var scene = new Scene(sceneName);
+			var scene = new Scene(sceneName, filePath);
 			scene.rootDirectory = rootDir;
 
 			var cameraBlock = blocks.Find((b) => b.keyword == "CAMERAS");

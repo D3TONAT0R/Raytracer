@@ -36,21 +36,21 @@ namespace Raytracer {
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Node1");
-			System.Windows.Forms.TreeNode treeNode11 = new System.Windows.Forms.TreeNode("Node2");
-			System.Windows.Forms.TreeNode treeNode12 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
-            treeNode10,
-            treeNode11});
-			System.Windows.Forms.TreeNode treeNode13 = new System.Windows.Forms.TreeNode("Node4");
-			System.Windows.Forms.TreeNode treeNode14 = new System.Windows.Forms.TreeNode("Node5");
-			System.Windows.Forms.TreeNode treeNode15 = new System.Windows.Forms.TreeNode("Node8");
-			System.Windows.Forms.TreeNode treeNode16 = new System.Windows.Forms.TreeNode("Node6", new System.Windows.Forms.TreeNode[] {
-            treeNode15});
-			System.Windows.Forms.TreeNode treeNode17 = new System.Windows.Forms.TreeNode("Node3", new System.Windows.Forms.TreeNode[] {
-            treeNode13,
-            treeNode14,
-            treeNode16});
-			System.Windows.Forms.TreeNode treeNode18 = new System.Windows.Forms.TreeNode("Node7");
+			System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Node1");
+			System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Node2");
+			System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Node0", new System.Windows.Forms.TreeNode[] {
+            treeNode1,
+            treeNode2});
+			System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Node4");
+			System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Node5");
+			System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Node8");
+			System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Node6", new System.Windows.Forms.TreeNode[] {
+            treeNode6});
+			System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Node3", new System.Windows.Forms.TreeNode[] {
+            treeNode4,
+            treeNode5,
+            treeNode7});
+			System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Node7");
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.progressInfo = new System.Windows.Forms.RichTextBox();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -84,6 +84,7 @@ namespace Raytracer {
 			this.defaultToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.cameraMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).BeginInit();
@@ -232,28 +233,28 @@ namespace Raytracer {
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.sceneTree.Location = new System.Drawing.Point(3, 3);
 			this.sceneTree.Name = "sceneTree";
-			treeNode10.Name = "Node1";
-			treeNode10.Text = "Node1";
-			treeNode11.Name = "Node2";
-			treeNode11.Text = "Node2";
-			treeNode12.Name = "Node0";
-			treeNode12.Text = "Node0";
-			treeNode13.Name = "Node4";
-			treeNode13.Text = "Node4";
-			treeNode14.Name = "Node5";
-			treeNode14.Text = "Node5";
-			treeNode15.Name = "Node8";
-			treeNode15.Text = "Node8";
-			treeNode16.Name = "Node6";
-			treeNode16.Text = "Node6";
-			treeNode17.Name = "Node3";
-			treeNode17.Text = "Node3";
-			treeNode18.Name = "Node7";
-			treeNode18.Text = "Node7";
+			treeNode1.Name = "Node1";
+			treeNode1.Text = "Node1";
+			treeNode2.Name = "Node2";
+			treeNode2.Text = "Node2";
+			treeNode3.Name = "Node0";
+			treeNode3.Text = "Node0";
+			treeNode4.Name = "Node4";
+			treeNode4.Text = "Node4";
+			treeNode5.Name = "Node5";
+			treeNode5.Text = "Node5";
+			treeNode6.Name = "Node8";
+			treeNode6.Text = "Node8";
+			treeNode7.Name = "Node6";
+			treeNode7.Text = "Node6";
+			treeNode8.Name = "Node3";
+			treeNode8.Text = "Node3";
+			treeNode9.Name = "Node7";
+			treeNode9.Text = "Node7";
 			this.sceneTree.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode12,
-            treeNode17,
-            treeNode18});
+            treeNode3,
+            treeNode8,
+            treeNode9});
 			this.sceneTree.Size = new System.Drawing.Size(132, 147);
 			this.sceneTree.TabIndex = 0;
 			this.sceneTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.OnSceneTreeSelect);
@@ -335,7 +336,8 @@ namespace Raytracer {
             this.openSceneMenuItem,
             this.openSampleSceneMenuItem,
             this.saveSceneAsToolStripMenuItem,
-            this.quitToolStripMenuItem});
+            this.quitToolStripMenuItem,
+            this.reloadCurrentSceneToolStripMenuItem});
 			this.asasToolStripMenuItem2.Name = "asasToolStripMenuItem2";
 			this.asasToolStripMenuItem2.Size = new System.Drawing.Size(37, 20);
 			this.asasToolStripMenuItem2.Text = "File";
@@ -465,8 +467,16 @@ namespace Raytracer {
 			// test1ToolStripMenuItem
 			// 
 			this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
 			this.test1ToolStripMenuItem.Text = "Load Configuration";
+			// 
+			// reloadCurrentSceneToolStripMenuItem
+			// 
+			this.reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
+			this.reloadCurrentSceneToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+			this.reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.reloadCurrentSceneToolStripMenuItem.Text = "Reload Current Scene";
+			this.reloadCurrentSceneToolStripMenuItem.Click += new System.EventHandler(this.reloadCurrentSceneToolStripMenuItem_Click);
 			// 
 			// RaytracerForm
 			// 
@@ -538,5 +548,6 @@ namespace Raytracer {
 		private ToolStripMenuItem saveCurrentViewToFileToolStripMenuItem;
 		private ToolStripMenuItem test1ToolStripMenuItem;
 		internal ToolStripMenuItem cameraMenuItem;
+		private ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
 	}
 }

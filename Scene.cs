@@ -13,6 +13,7 @@ namespace Raytracer
 
 		public string sceneName;
 		public string rootDirectory;
+		public string sourceFile;
 
 		public Environment environment;
 
@@ -32,10 +33,11 @@ namespace Raytracer
 
 		public SceneObject remoteControlledObject;
 
-		public Scene(string name)
+		public Scene(string name, string sourceFilePath)
 		{
 			sceneName = name;
 			environment = new Environment();
+			sourceFile = sourceFilePath;
 		}
 
 		public void AddObject(SceneObject obj)
@@ -71,6 +73,7 @@ namespace Raytracer
 				s.SetupForRendering();
 				sceneObjectsAABB = sceneObjectsAABB.Join(s.GetTotalShapeAABB());
 			}
+			sceneObjectsAABB = sceneObjectsAABB.Expand(1.0f);
 			/*
 			foreach(var s1 in shapes)
 			{

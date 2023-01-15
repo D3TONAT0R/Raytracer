@@ -50,7 +50,7 @@ namespace Raytracer {
 			} else if(index == 2) {
 				return GenerateRandomWorld();
 			} else if(index == 3) {
-				var sn = new Scene("Group Lighting Test");
+				var sn = new Scene("Group Lighting Test", null);
 				sn.AddObject(new Cuboid("floor", new Vector3(-10, -1, -10), new Vector3(20, 1, 20)));
 				sn.AddObject(new Cuboid("cube", new Vector3(-2, 0, 4), Vector3.One));
 				sn.AddObject(new Cuboid("cube", new Vector3(-1, 0, 2), Vector3.One));
@@ -67,7 +67,7 @@ namespace Raytracer {
 				sn.remoteControlledObject = group;
 				return sn;
 			} else if(index == 4) {
-				var sn = new Scene("Buildings + Lights");
+				var sn = new Scene("Buildings + Lights", null);
 				float fr = 0f;
 				float fs = 0f;
 				Material roadMaterial = Material.CreateTexturedMaterial(sn, "road", fr, fs, new TilingVector(0, 0, 0.2f, 0.2f, 90f));
@@ -179,9 +179,28 @@ namespace Raytracer {
 			}
 		}
 
+		public static void ReloadCurrent()
+		{
+			if(RaytracerEngine.Scene != null)
+			{
+				if(!string.IsNullOrWhiteSpace(RaytracerEngine.Scene.sourceFile))
+				{
+					RaytracerEngine.Scene = LoadSceneFromFile(RaytracerEngine.Scene.sourceFile);
+				}
+				else
+				{
+					MessageBox.Show("Unable to locate source file.", "Reload Scene", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+			else
+			{
+				MessageBox.Show("No scene is loaded.", "Reload Scene", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
 		static Scene GenerateRandomWorld() {
 			var rand = new Random();
-			var scene = new Scene("Random Cube World");
+			var scene = new Scene("Random Cube World", null);
 			var materials = new Material[] {
 				new Material(Color.White, 0.1f, 1) {
 					mainTexture = Sampler2D.Create("texture_1.png", null)
@@ -205,7 +224,7 @@ namespace Raytracer {
 		}
 
 		static Scene GenerateSphereWorld() {
-			var scene = new Scene("Random Sphere World");
+			var scene = new Scene("Random Sphere World", null);
 			scene.AddObject(new Sphere("sphere1", new Vector3(2, 2, 5), 2) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
 					mainTexture = Sampler2D.Create("texture_1.png", null)
