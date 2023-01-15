@@ -70,6 +70,8 @@ namespace Raytracer
 		private int chunksRendered = 0;
 		private int pixelsRendered = 0;
 
+		private static object chunkLock = new object();
+
 		public override void GetProgressInfo(out string progressString, out float progress)
 		{
 			progressString = $"Pass {(passCount - pass)}/{passCount}: {chunksRendered}/{currentIterationChunks.Count}";
@@ -129,13 +131,16 @@ namespace Raytracer
 			chunksRendered++;
 			pixelsRendered += rendered;
 
-			if (pass > 1 && Pow(cellSize, pass) > minChunkSize)
+			lock(chunkLock)
 			{
-				c.SplitNextIteration(nextIterationChunks, targetWidth, targetHeight);
-			}
-			else
-			{
-				nextIterationChunks.Add(c);
+				if(pass > 1 && Pow(cellSize, pass) > minChunkSize)
+				{
+					c.SplitNextIteration(nextIterationChunks, targetWidth, targetHeight);
+				}
+				else
+				{
+					nextIterationChunks.Add(c);
+				}
 			}
 			/*
 			//Split
