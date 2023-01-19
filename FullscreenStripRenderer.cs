@@ -27,9 +27,16 @@ namespace Raytracer
 
 		private void DrawPixelRow(int y1, Camera camera, Scene scene, byte[] buffer, int width, int height, int depth)
 		{
-			for (int x = 0; x < width; x++)
+			try
 			{
-				DrawPixel(x, y1, camera, scene, buffer, width, height, depth);
+				for(int x = 0; x < width; x++)
+				{
+					DrawPixel(x, y1, camera, scene, buffer, width, height, depth);
+				}
+			}
+			catch
+			{
+				//Catch errors during rendering
 			}
 			renderedStrips++;
 		}

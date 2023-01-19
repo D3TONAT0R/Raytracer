@@ -245,22 +245,24 @@ namespace Raytracer {
 		}
 
 		private Color ReflectiveShader(Color baseColor, Shape shape, Vector3 nrm, Ray ray) {
-			baseColor *= 0.75f;
+			baseColor.r *= 0.75f;
+			baseColor.g *= 0.75f;
+			baseColor.b *= 0.75f;
 			Color final = baseColor;
 			var reflNrm = MathUtils.Bounce(ray.Direction, nrm);
 
 			var shade = CalculateLighting(CurrentRenderSettings.lightingType, ray.position, shape, nrm, reflNrm);
 			final *= shade;
 			//Apply transparency
-			if(mainColor.a < 1) {
+			if(baseColor.a < 1) {
 				float op;
 				if(transparencyCutoff >= 0)
 				{
-					op = mainColor.a > transparencyCutoff ? 1 : 0;
+					op = baseColor.a > transparencyCutoff ? 1 : 0;
 				}
 				else
 				{
-					op = mainColor.a;
+					op = baseColor.a;
 				}
 				Color backColor;
 				if(indexOfRefraction != 1f)
