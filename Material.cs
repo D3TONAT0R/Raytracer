@@ -112,10 +112,11 @@ namespace Raytracer {
 
 		public string globalMaterialName;
 
+		[DataIdentifier("TYPE")]
 		public ShaderType shader;
 		[DataIdentifier("COLOR")]
 		public Color mainColor = new Color(0.5f, 0.5f, 0.5f, 1);
-		[DataIdentifier("SECONDARYCOLOR")]
+		[DataIdentifier("SECCOLOR")]
 		public Color secColor = new Color(0.25f, 0.25f, 0.25f, 1);
 		[DataIdentifier("EMISSIONCOLOR")]
 		public Color emissionColor = Color.Black;
