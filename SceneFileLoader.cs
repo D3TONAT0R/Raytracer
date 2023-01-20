@@ -268,5 +268,19 @@ namespace Raytracer
 			}
 			return list;
 		}
+
+		public static void ParseArgumentedInput(string input, out string output, out string[] args)
+		{
+			string argsString = Regex.Match(input, @"\<([^)]+)\>").Value.Replace("<", "").Replace(">", "");
+			output = input.Split('<')[0].TrimEnd();
+			if(!string.IsNullOrWhiteSpace(argsString))
+			{
+				args = argsString.Split(',');
+			}
+			else
+			{
+				args = new string[0];
+			}
+		}
 	}
 }

@@ -19,15 +19,13 @@ namespace Raytracer {
 		public bool filtering = true;
 		public Color averageColor;
 
-		private Sampler2D(string path) {
+		private Sampler2D(string path, bool bilinearFilter) {
 			textureName = Path.GetFileName(path);
 			Bitmap bmp = new Bitmap(Image.FromFile(path));
 			width = bmp.Width;
 			height = bmp.Height;
 			LoadTexture(bmp);
-			if(width < 32) {
-				filtering = false;
-			}
+			filtering = bilinearFilter;
 		}
 
 		private void LoadTexture(Bitmap bmp) {
@@ -51,11 +49,18 @@ namespace Raytracer {
 			averageColor *= 1f / (width * height);
 		}
 
-		public static Sampler2D Create(string textureName, string sceneRootPath) {
-			if(!Path.HasExtension(textureName)) textureName = textureName + ".*";
-			var textureFile = LocateTexture(textureName, sceneRootPath);
+		public static Sampler2D Create(string input, string sceneRootPath) {
+
+			SceneFileLoader.ParseArgumentedInput(input, out input, out var args);
+			if(!Path.HasExtension(input)) input = input + ".*";
+			var textureFile = LocateTexture(input, sceneRootPath);
+			bool filtering = true;
+			if(args.Contains("point"))
+			{
+				filtering = false;
+			}
 			if(textureFile != null) {
-				return new Sampler2D(textureFile);
+				return new Sampler2D(textureFile, filtering);
 			} else {
 				return null;
 			}
