@@ -293,7 +293,7 @@ namespace Raytracer {
 				final += reflColor;
 			}
 			//Apply emission
-			final += emissionColor;
+			final += emissionColor * baseColor;
 			return final;
 		}
 
