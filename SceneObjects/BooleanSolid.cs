@@ -104,9 +104,9 @@ namespace Raytracer {
 
 		private Shape GetClosestSurfaceShape(Vector3 pos) {
 			Shape shape = null;
-			float closest = 999;
+			float closest = float.MaxValue;
 			for(int i = 0; i < solids.Length; i++) {
-				if(solids[i].ShapeAABB.IsInside(pos)) {
+				if(solids[i].ExpandedAABB.IsInside(pos)) {
 					var prox = solids[i].GetSurfaceProximity(pos);
 					if(prox < closest) {
 						shape = solids[i];
