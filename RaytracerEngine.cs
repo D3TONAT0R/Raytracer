@@ -114,8 +114,8 @@ namespace Raytracer {
 			};
 			var maxRenderSettings = new RenderSettings("High")
 			{
-				rayMarchDistanceInVoid = 0.1f,
-				rayMarchDistanceInObject = 0.01f,
+				rayMarchDistanceInVoid = 0.03f,
+				rayMarchDistanceInObject = 0.002f,
 				rayDistanceDegradation = 0f,
 				maxBounces = 3,
 				lightingType = LightingType.RaytracedHardShadows
@@ -543,7 +543,7 @@ namespace Raytracer {
 		}
 
 		public static void SaveScreenshot(string prefix = "screenshot") {
-			var buffer = CurrentRenderTarget.RenderBuffer;
+			var buffer = lastRenderTarget.RenderBuffer;
 			if(buffer != null) {
 				int num = 1;
 				var path = Path.Combine(rootPath, "Screenshots", prefix + "_");

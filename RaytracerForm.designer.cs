@@ -65,13 +65,12 @@ namespace Raytracer {
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.propertiesPanel = new System.Windows.Forms.FlowLayoutPanel();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-			this.imageViewer = new Raytracer.SceneViewerPictureBox();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.asasToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.openSceneMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openSampleSceneMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveSceneAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.startRenderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renderToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +83,7 @@ namespace Raytracer {
 			this.defaultToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.cameraMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.imageViewer = new Raytracer.SceneViewerPictureBox();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).BeginInit();
@@ -99,8 +98,8 @@ namespace Raytracer {
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).BeginInit();
 			this.menuStrip.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// progressBar
@@ -305,19 +304,6 @@ namespace Raytracer {
 			this.splitContainer1.SplitterDistance = 148;
 			this.splitContainer1.TabIndex = 16;
 			// 
-			// imageViewer
-			// 
-			this.imageViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.imageViewer.Cursor = System.Windows.Forms.Cursors.Cross;
-			this.imageViewer.Location = new System.Drawing.Point(3, 3);
-			this.imageViewer.Name = "imageViewer";
-			this.imageViewer.Size = new System.Drawing.Size(469, 384);
-			this.imageViewer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.imageViewer.TabIndex = 0;
-			this.imageViewer.TabStop = false;
-			// 
 			// menuStrip
 			// 
 			this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -333,11 +319,10 @@ namespace Raytracer {
 			// asasToolStripMenuItem2
 			// 
 			this.asasToolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.reloadCurrentSceneToolStripMenuItem,
             this.openSceneMenuItem,
-            this.openSampleSceneMenuItem,
             this.saveSceneAsToolStripMenuItem,
-            this.quitToolStripMenuItem,
-            this.reloadCurrentSceneToolStripMenuItem});
+            this.quitToolStripMenuItem});
 			this.asasToolStripMenuItem2.Name = "asasToolStripMenuItem2";
 			this.asasToolStripMenuItem2.Size = new System.Drawing.Size(37, 20);
 			this.asasToolStripMenuItem2.Text = "File";
@@ -346,34 +331,33 @@ namespace Raytracer {
 			// 
 			this.openSceneMenuItem.Name = "openSceneMenuItem";
 			this.openSceneMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.openSceneMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.openSceneMenuItem.Size = new System.Drawing.Size(232, 22);
 			this.openSceneMenuItem.Text = "Open Scene ...";
 			this.openSceneMenuItem.Click += new System.EventHandler(this.OnOpenSceneMenuItemClick);
-			// 
-			// openSampleSceneMenuItem
-			// 
-			this.openSampleSceneMenuItem.Name = "openSampleSceneMenuItem";
-			this.openSampleSceneMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.O)));
-			this.openSampleSceneMenuItem.Size = new System.Drawing.Size(254, 22);
-			this.openSampleSceneMenuItem.Text = "Open Sample Scene";
-			this.openSampleSceneMenuItem.Click += new System.EventHandler(this.OnOpenSampleSceneMenuItemClick);
 			// 
 			// saveSceneAsToolStripMenuItem
 			// 
 			this.saveSceneAsToolStripMenuItem.Name = "saveSceneAsToolStripMenuItem";
 			this.saveSceneAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-			this.saveSceneAsToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.saveSceneAsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			this.saveSceneAsToolStripMenuItem.Text = "Save Scene As ...";
 			this.saveSceneAsToolStripMenuItem.Click += new System.EventHandler(this.OnSaveSceneAsMenuItemClick);
 			// 
 			// quitToolStripMenuItem
 			// 
 			this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-			this.quitToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+			this.quitToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
 			this.quitToolStripMenuItem.Text = "Quit";
 			this.quitToolStripMenuItem.Click += new System.EventHandler(this.OnQuitMenuItemClick);
+			// 
+			// reloadCurrentSceneToolStripMenuItem
+			// 
+			this.reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
+			this.reloadCurrentSceneToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+			this.reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+			this.reloadCurrentSceneToolStripMenuItem.Text = "Reload Current Scene";
+			this.reloadCurrentSceneToolStripMenuItem.Click += new System.EventHandler(this.reloadCurrentSceneToolStripMenuItem_Click);
 			// 
 			// renderToolStripMenuItem
 			// 
@@ -467,16 +451,21 @@ namespace Raytracer {
 			// test1ToolStripMenuItem
 			// 
 			this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.test1ToolStripMenuItem.Text = "Load Configuration";
 			// 
-			// reloadCurrentSceneToolStripMenuItem
+			// imageViewer
 			// 
-			this.reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
-			this.reloadCurrentSceneToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
-			this.reloadCurrentSceneToolStripMenuItem.Text = "Reload Current Scene";
-			this.reloadCurrentSceneToolStripMenuItem.Click += new System.EventHandler(this.reloadCurrentSceneToolStripMenuItem_Click);
+			this.imageViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.imageViewer.Cursor = System.Windows.Forms.Cursors.Cross;
+			this.imageViewer.Location = new System.Drawing.Point(3, 3);
+			this.imageViewer.Name = "imageViewer";
+			this.imageViewer.Size = new System.Drawing.Size(469, 384);
+			this.imageViewer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.imageViewer.TabIndex = 0;
+			this.imageViewer.TabStop = false;
 			// 
 			// RaytracerForm
 			// 
@@ -505,9 +494,9 @@ namespace Raytracer {
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -532,7 +521,6 @@ namespace Raytracer {
 		public FlowLayoutPanel propertiesPanel;
 		private ToolStripMenuItem asasToolStripMenuItem2;
 		private ToolStripMenuItem openSceneMenuItem;
-		private ToolStripMenuItem openSampleSceneMenuItem;
 		private ToolStripMenuItem renderToolStripMenuItem;
 		private ToolStripMenuItem startRenderToolStripMenuItem;
 		private ToolStripMenuItem renderToFileToolStripMenuItem;
