@@ -383,7 +383,7 @@ namespace Raytracer {
 							infoWindow.progressInfo.Text = sb.ToString();
 							infoWindow.progressBar.Maximum = 100;
 							infoWindow.progressBar.Value = (int)(progress*100);
-							movementSpeedScale = infoWindow.cameraSpeedScale.Value / 10f;
+							movementSpeedScale = infoWindow.cameraSpeedScale.Value / 20f;
 							BuildSceneTree();
 						});
 						if(SceneRenderer.IsRendering && IsRendering)
