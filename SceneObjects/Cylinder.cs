@@ -82,7 +82,7 @@ namespace Raytracer {
 			} else if(axis == Axis.X) {
 				if(face == 0) {
 					var zy = pos.ZY() - WorldPosition.ZY();
-					return Vector3.Normalize(new Vector3(zy.X, zy.Y, 0));
+					return Vector3.Normalize(new Vector3(0, zy.Y, zy.X));
 				} else if(face == -1) {
 					return -Vector3.UnitX;
 				} else if(face == 1) {
@@ -133,12 +133,25 @@ namespace Raytracer {
 		{
 			if(axis == Axis.X)
 			{
-				//TODO
-				return Vector2.Zero;
+				if(normal.X > 0.9f)
+				{
+					//Top face uv
+					return new Vector2(localPos.Z * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
+				}
+				else if(normal.X < -0.9f)
+				{
+					//Botton face uv
+					return new Vector2(localPos.Z * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
+				}
+				else
+				{
+					//Side uv
+					Vector3 normPos = new Vector3(localPos.X / length, localPos.Y / radius, localPos.Z / radius);
+					return new Vector2(MathUtils.Dir2DToAngle01(normPos.Y, normPos.Z), normPos.X);
+				}
 			}
 			else if(axis == Axis.Y)
 			{
-				Vector3 normPos = new Vector3(localPos.X / radius, localPos.Y / length, localPos.Z / radius);
 				if(normal.Y > 0.9f)
 				{
 					//Top face uv
@@ -152,13 +165,28 @@ namespace Raytracer {
 				else
 				{
 					//Side uv
+					Vector3 normPos = new Vector3(localPos.X / radius, localPos.Y / length, localPos.Z / radius);
 					return new Vector2(MathUtils.Dir2DToAngle01(normPos.X, normPos.Z), normPos.Y);
 				}
 			}
 			else if(axis == Axis.Z)
 			{
-				//TODO
-				return Vector2.Zero;
+				if(normal.Z > 0.9f)
+				{
+					//Top face uv
+					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
+				}
+				else if(normal.Z < -0.9f)
+				{
+					//Botton face uv
+					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
+				}
+				else
+				{
+					//Side uv
+					Vector3 normPos = new Vector3(localPos.X / radius, localPos.Y / radius, localPos.Z / length);
+					return new Vector2(MathUtils.Dir2DToAngle01(normPos.X, normPos.Y), normPos.Z);
+				}
 			}
 			else
 			{
