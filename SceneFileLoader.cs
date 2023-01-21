@@ -110,6 +110,7 @@ namespace Raytracer
 			for(int i = 0; i < fileLines.Count; i++)
 			{
 				actualFileLine++;
+				if(fileLines[i].Trim().StartsWith("#")) continue;
 				if(fileLines[i].Contains("$"))
 				{
 					var line = fileLines[i].Trim();
