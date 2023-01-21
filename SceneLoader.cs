@@ -185,7 +185,14 @@ namespace Raytracer {
 			{
 				if(!string.IsNullOrWhiteSpace(RaytracerEngine.Scene.sourceFile))
 				{
-					RaytracerEngine.Scene = LoadSceneFromFile(RaytracerEngine.Scene.sourceFile);
+					try
+					{
+						RaytracerEngine.Scene = LoadSceneFromFile(RaytracerEngine.Scene.sourceFile);
+					}
+					catch(Exception e)
+					{
+						MessageBox.Show(e.Message, "Reload Scene", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
 				}
 				else
 				{
