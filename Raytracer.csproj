@@ -76,6 +76,7 @@
     <Compile Include="CurrentPixelRenderData.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="PersistentPrefs.cs" />
     <Compile Include="ProgressiveChunkRenderer.cs" />
     <Compile Include="FullscreenStripRenderer.cs" />
     <Compile Include="GPUTest\GPUTest.cs" />

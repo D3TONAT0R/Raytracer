@@ -22,8 +22,6 @@ namespace Raytracer {
 
 		public static Action SceneLoaded;
 
-		public string name => "Raytracer";
-
 		static bool render = false;
 		static bool toScreenshot = false;
 
@@ -40,7 +38,6 @@ namespace Raytracer {
 				SceneLoaded?.Invoke();
 			}
 		}
-		public Camera camera;
 		bool flyMode = true;
 		public static bool redrawScreen = true;
 
@@ -75,18 +72,19 @@ namespace Raytracer {
 
 			redrawScreen = true;
 			MakeWinforms();
-			camera = new Camera() {
+			Camera.MainCamera = new Camera() {
 				localPosition = Vector3.UnitY,
 				rotation = Vector3.Zero,
 				fieldOfView = 60
 			};
+			Camera.MainCamera.HasChanged += PersistentPrefs.WriteLastSessionInfo;
 			var ts = new ThreadStart(LoopThread);
 			loopthread = new Thread(ts);
 			loopthread.SetApartmentState(ApartmentState.STA);
 			loopthread.Start();
 			while(!exit) {
 				Thread.Sleep(250);
-				if (infoWindow == null) exit = true;
+				if (infoWindow == null || !infoWindow.Visible) exit = true;
 				//DrawInfoWindow();
 				if(redrawScreen) DrawScreenOnWinform();
 			}
@@ -153,7 +151,7 @@ namespace Raytracer {
 				renderTimer.Restart();
 			}
 
-			camera.Render(Scene, CurrentRenderTarget);
+			Camera.MainCamera.Render(Scene, CurrentRenderTarget);
 
 			if (render && renderTimer != null) renderTimer.Stop();
 
@@ -292,14 +290,14 @@ namespace Raytracer {
 		private static void OnCameraConfigurationItemClick(int index)
 		{
 			redrawScreen = true;
-			instance.camera.ApplyConfiguration(scene.cameraConfigurations[index]);
+			Camera.MainCamera.ApplyConfiguration(scene.cameraConfigurations[index]);
 		}
 
 		private static void GetCurrentCameraConfiguration()
 		{
 			StringBuilder sb = new StringBuilder();
 			sb.AppendLine("Current camera configuration:");
-			var cam = instance.camera;
+			var cam = Camera.MainCamera;
 			sb.AppendLine("Position: " + cam.localPosition.ToString());
 			sb.AppendLine("Rotation: " + cam.rotation.ToString());
 			sb.AppendLine("FOV: " + cam.fieldOfView.ToString());
@@ -364,7 +362,7 @@ namespace Raytracer {
 						infoWindow.Invoke((Action)delegate {
 							StringBuilder sb = new StringBuilder();
 							float progress = 1;
-							if(render && camera.rendering) {
+							if(render && Camera.MainCamera.rendering) {
 								sb.AppendLine("Rendering...");
 								SceneRenderer.ActiveScreenRenderer.GetProgressInfo(out string progressString, out progress);
 								sb.AppendLine(progressString);
@@ -517,21 +515,21 @@ namespace Raytracer {
 			}
 			if(Input.comma.isPressed) {
 				redrawScreen = true;
-				camera.fieldOfView += 5;
+				Camera.MainCamera.fieldOfView += 5;
 			}
 			if(Input.period.isPressed) {
 				redrawScreen = true;
-				camera.fieldOfView -= 5;
+				Camera.MainCamera.fieldOfView -= 5;
 			}
 		}
 
 		void KeyPress(int x, int y, int z, bool rotate) {
 			redrawScreen = true;
 			if(rotate) {
-				float rmul = (float)Math.Tan((camera.fieldOfView / 2f).DegToRad()) * movementSpeedScale;
-				camera.Rotate(new Vector3(x, y, z) * 10 * rmul);
+				float rmul = (float)Math.Tan((Camera.MainCamera.fieldOfView / 2f).DegToRad()) * movementSpeedScale;
+				Camera.MainCamera.Rotate(new Vector3(x, y, z) * 10 * rmul);
 			} else {
-				camera.Move(new Vector3(x, y, z) * movementSpeedScale, flyMode);
+				Camera.MainCamera.Move(new Vector3(x, y, z) * movementSpeedScale, flyMode);
 			}
 		}
 

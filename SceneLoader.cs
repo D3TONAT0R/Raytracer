@@ -110,14 +110,14 @@ namespace Raytracer {
 				sn.environment.fogDistance = 160f;
 
 				//Animation
-				var prop = new AnimatedProperty(RaytracerEngine.instance.camera, "POSITION",
+				var prop = new AnimatedProperty(Camera.MainCamera, "POSITION",
 					new AnimatedProperty.Keyframe[] {
 						new AnimatedProperty.Keyframe(0, new Vector3(-5f, 5f, -10f)),
 						new AnimatedProperty.Keyframe(1, new Vector3(0f, 2f, -5f)),
 						new AnimatedProperty.Keyframe(3, new Vector3(2f, 1f, 3))
 					}
 				);
-				var prop2 = new AnimatedProperty(RaytracerEngine.instance.camera, "ROTATION",
+				var prop2 = new AnimatedProperty(Camera.MainCamera, "ROTATION",
 					new AnimatedProperty.Keyframe[] {
 						new AnimatedProperty.Keyframe(0, new Vector3(25, 30, 30)),
 						new AnimatedProperty.Keyframe(1, new Vector3(5, 0, 10)),
@@ -170,6 +170,7 @@ namespace Raytracer {
 					var scene = LoadSceneFromFile(d.FileName);
 					RaytracerEngine.Scene = scene;
 					RaytracerEngine.UpdateCameraConfigurationItems();
+					PersistentPrefs.WriteLastSessionInfo();
 					MessageBox.Show("Scene loaded " + d.FileName);
 				}
 				catch (Exception e)
@@ -188,6 +189,7 @@ namespace Raytracer {
 					try
 					{
 						RaytracerEngine.Scene = LoadSceneFromFile(RaytracerEngine.Scene.sourceFile);
+						PersistentPrefs.WriteLastSessionInfo();
 					}
 					catch(Exception e)
 					{

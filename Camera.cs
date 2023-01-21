@@ -14,6 +14,8 @@ namespace Raytracer {
 	[ObjectIdentifier("CAMERA")]
 	public class Camera : SceneObject {
 
+		public static Camera MainCamera { get; set; }
+
 		[DataIdentifier("ROTATION")]
 		public Vector3 rotation;
 		[DataIdentifier("FOV")]
@@ -23,11 +25,14 @@ namespace Raytracer {
 		private float aspectRatio;
 		private Vector3 cornerDir;
 
+		public event Action HasChanged;
+
 		public void ApplyConfiguration(CameraConfiguration configuration)
 		{
 			localPosition = configuration.position;
 			rotation = configuration.rotation;
 			fieldOfView = configuration.fieldOfView;
+			HasChanged?.Invoke();
 		}
 
 		public void Move(Vector3 localMoveVector, bool fly) {
@@ -43,10 +48,12 @@ namespace Raytracer {
 			localPosition += fwd * localMoveVector.Z;
 			localPosition += right * localMoveVector.X;
 			localPosition += up * localMoveVector.Y;
+			HasChanged?.Invoke();
 		}
 
 		public void Rotate(Vector3 rot) {
 			rotation += rot;
+			HasChanged?.Invoke();
 		}
 
 		public void SetScreenParams(int w, int h) {

@@ -343,11 +343,6 @@ namespace Raytracer {
 			return uv;
 		}
 
-		private void Deflect(Ray r)
-		{
-
-		}
-
 		private Vector2 MapWorld(Vector3 pos, Vector3 nrm, bool correctMirroring) {
 			if(correctMirroring) {
 				Vector3 mirrorCorrection = new Vector3(nrm.X < 0 ? -1 : 1, nrm.Y < 0 ? -1 : 1, nrm.Z < 0 ? -1 : 1);

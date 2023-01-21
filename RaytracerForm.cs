@@ -94,7 +94,28 @@ namespace Raytracer {
 
 		private void reloadCurrentSceneToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			SceneLoader.ReloadCurrent();
+			if(RaytracerEngine.Scene != null)
+			{
+				SceneLoader.ReloadCurrent();
+			}
+			else
+			{
+				try
+				{
+					if(PersistentPrefs.TryGetLastSessionInfo(out var info))
+					{
+						RaytracerEngine.Scene = SceneFileLoader.CreateFromFile(info.sceneFile);
+						var cam = Camera.MainCamera;
+						cam.localPosition = info.cameraPos;
+						cam.rotation = info.cameraRot;
+						cam.fieldOfView = info.cameraFOV;
+					}
+				}
+				catch
+				{
+					MessageBox.Show("Failed to restore last session", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
 		}
 	}
 }
