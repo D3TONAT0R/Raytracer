@@ -99,10 +99,10 @@ namespace Raytracer
 			FlushCurrent();
 		}
 
-		public static Color TraceRay(Scene scene, Ray ray, Shape excludeShape = null)
+		public static Color TraceRay(Scene scene, Ray ray, Shape excludeShape = null, bool allowOptimization = true)
 		{
 			if (ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
-			Vector3? hit = TraceRay(scene, ref ray, out var intersection, excludeShape);
+			Vector3? hit = TraceRay(scene, ref ray, out var intersection, excludeShape, null, allowOptimization);
 			if (hit != null && intersection != null)
 			{
 				return intersection.GetColorAt((Vector3)hit, ray);
@@ -114,7 +114,7 @@ namespace Raytracer
 			}
 		}
 
-		public static Vector3? TraceRay(Scene scene, ref Ray ray, out Shape intersectingShape, Shape excludeShape = null, Shape exitShape = null)
+		public static Vector3? TraceRay(Scene scene, ref Ray ray, out Shape intersectingShape, Shape excludeShape = null, Shape exitShape = null, bool allowOptimization = true)
 		{
 			var shapes = scene.GetIntersectingShapes(ray);
 			intersectingShape = null;
@@ -122,7 +122,8 @@ namespace Raytracer
 			if (excludeShape != null && shapes.Contains(excludeShape)) shapes.Remove(excludeShape);
 			if (shapes.Count > 0)
 			{
-				OptimizeRay(ray, shapes);
+				//TODO: optimization is temporarily disabled on reflections, causes floating reflections at intersections
+				if(allowOptimization) OptimizeRay(ray, shapes);
 				while (scene.IsInWorldBounds(ray.position))
 				{
 					var intersecting = scene.GetAABBIntersectingShapes(ray.position, shapes);
@@ -179,7 +180,7 @@ namespace Raytracer
 			float farthestIntersection = 0;
 			for (int i = 0; i < shapes.Count; i++)
 			{
-				var intersections = GetAABBIntersectionPoints(ray, shapes[i].ExpandedAABB/*scene.shapeAABBs[shapes[i]][1]*/);
+				var intersections = GetAABBIntersectionPoints(ray, shapes[i].ExpandedAABB);
 				if (intersections.Count > 0)
 				{
 					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.position, intersections[0]));
@@ -193,7 +194,7 @@ namespace Raytracer
 			{
 				ray.maxDistance = farthestIntersection;
 			}
-			if (nearestIntersection < float.MaxValue)
+			if (nearestIntersection < float.MaxValue && nearestIntersection > 0)
 			{
 				ray.Advance(nearestIntersection);
 			}

@@ -85,7 +85,7 @@ namespace Raytracer {
 				if(RaytracerEngine.CurrentRenderSettings.allowSelfShadowing) {
 					//TODO: may break lighting, rewrite needed
 					//Depenetrate surface to allow self shadowing
-					point += sourceShape.GetSurfaceProximity(point) * (normal * 1.1f);
+					point += (sourceShape.GetSurfaceProximity(point) + RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid * 0.5f) * normal;
 					//sourceShape = null;
 				}
 				var illum = GetIlluminationAtPoint(point, normal, lightNormal);
@@ -113,7 +113,7 @@ namespace Raytracer {
 				if (ray.maxDistance > 0)
 				{
 					//caster = SceneRenderer.TraceRay(scene, ref ray, out _, sourceShape);
-					SceneRenderer.TraceRay(scene, ref ray, out caster, null);
+					SceneRenderer.TraceRay(scene, ref ray, out caster, null, null, false);
 				}
 
 				//}
