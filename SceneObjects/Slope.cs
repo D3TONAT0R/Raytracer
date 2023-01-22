@@ -16,7 +16,7 @@ namespace Raytracer
 
 		public Slope() : base() { }
 
-		public Slope(string name, Vector3 position, Vector3 size, SlopeDirection dir) : base(name, position, size, false)
+		public Slope(string name, Vector3 position, Vector3 size, SlopeDirection dir) : base(name, position, size)
 		{
 			direction = dir;
 		}

@@ -279,7 +279,7 @@ namespace Raytracer {
 					mainTexture = Sampler2D.Create("texture_2.png", null)
 				}
 			};
-			var b3prism = new Prism("b3prism", new Vector3(0, -1.5f, 3.5f), new Vector3(1, 1, 1), false) {
+			var b3prism = new Prism("b3prism", new Vector3(0, -1.5f, 3.5f), new Vector3(1, 1, 1)) {
 				material = new Material(System.Drawing.Color.White, 0, 1) {
 					mainTexture = Sampler2D.Create("texture_1.png", null)
 				}

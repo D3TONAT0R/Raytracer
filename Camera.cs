@@ -94,7 +94,7 @@ namespace Raytracer {
 			rendering = true;
 			if (scene != null)
 			{
-				scene.OnBeginRender(CurrentRenderSettings.rayMarchDistanceInVoid);
+				scene.OnBeginRender();
 			}
 			SetScreenParams(target.width, target.height);
 			lock(locker)

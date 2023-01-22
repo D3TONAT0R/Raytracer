@@ -541,7 +541,7 @@ namespace Raytracer {
 		}
 
 		public static void SaveScreenshot(string prefix = "screenshot") {
-			var buffer = lastRenderTarget.RenderBuffer;
+			var buffer = (lastRenderTarget ?? CurrentRenderTarget).RenderBuffer;
 			if(buffer != null) {
 				int num = 1;
 				var path = Path.Combine(rootPath, "Screenshots", prefix + "_");

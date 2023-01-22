@@ -24,7 +24,7 @@ namespace Raytracer {
 
 		public Roof() : base() { }
 
-		public Roof(string name, Vector3 pos, Vector3 size, RoofType type, Material roofMat) : base(name, pos, size, false) {
+		public Roof(string name, Vector3 pos, Vector3 size, RoofType type, Material roofMat) : base(name, pos, size) {
 			roofType = type;
 			roofMaterial = roofMat;
 		}

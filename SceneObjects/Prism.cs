@@ -29,23 +29,35 @@ namespace Raytracer {
 		}
 
 		protected float[] cuts = new float[4] { 0.5f, 0, 0.5f, 0 };
-		[DataIdentifier("ZDIR")]
-		private bool zDir;
+		[DataIdentifier("AXIS")]
+		public Axis axis;
 
 		protected bool HasTopFace => cuts[0] - (1f - cuts[1]) > 0.01f && cuts[2] - (1f - cuts[3]) > 0.01f;
 
 		public Prism() : base() { }
 
-		public Prism(string name, Vector3 position, Vector3 size, bool zDirection) : base(name, position, size) {
-			zDir = zDirection;
+		public Prism(string name, Vector3 position, Vector3 size) : this(name, position, size, Axis.X)
+		{
+
+		}
+
+		public Prism(string name, Vector3 position, Vector3 size, Axis axis) : base(name, position, size) {
+			this.axis = axis;
 		}
 
 		protected override void OnInit() {
 			base.OnInit();
-			if(zDir) {
+			if(axis == Axis.Z)
+			{
 				cuts = new float[4] { 0.5f, 0, 0.5f, 0 };
-			} else {
+			}
+			else if(axis == Axis.X)
+			{
 				cuts = new float[4] { 0, 0.5f, 0, 0.5f };
+			}
+			else
+			{
+				cuts = new float[4] { 0.5f, 0.5f, 0.5f, 0.5f };
 			}
 		}
 
