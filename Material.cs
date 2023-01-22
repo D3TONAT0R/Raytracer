@@ -289,8 +289,8 @@ namespace Raytracer {
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {
 				var rayOffset = (shape.GetSurfaceProximity(ray.position) * 1.1f) * nrm;
 				var newray = new Ray(ray.position + rayOffset, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
-				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, null, false) * reflectivity;
-				final += reflColor;
+				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, null, false);
+				final = Color.Lerp(final, reflColor * baseColor, reflectivity);
 			}
 			//Apply emission
 			final += emissionColor * baseColor;
