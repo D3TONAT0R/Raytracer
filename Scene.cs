@@ -58,7 +58,7 @@ namespace Raytracer
 			AddObject(Light.CreateDirectionalLight(Vector3.Normalize(new Vector3(-1, -1, 0.7f)), 1.6f, new Color(1, 0.9f, 0.75f)));
 		}
 
-		public void OnBeginRender(float expansionAmount)
+		public void OnBeginRender()
 		{
 			shapes.Clear();
 			lights.Clear();
