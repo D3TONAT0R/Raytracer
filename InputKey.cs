@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ConsoleGameEngine {
+namespace Raytracer {
 	public class InputKey {
 
 		public Key[] keys;

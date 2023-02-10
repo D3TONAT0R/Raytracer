@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -116,6 +117,24 @@ namespace Raytracer {
 					MessageBox.Show("Failed to restore last session", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
+		}
+
+		private void controlsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("W/S: Move Forward / Back");
+			sb.AppendLine("A/D: Move Left / Right");
+			sb.AppendLine("E/Q: Move UP / Down");
+			sb.AppendLine("Arrow L/R: Look Left / Right");
+			sb.AppendLine("Arrow Up/Down: Look Up / Down");
+			sb.AppendLine("Y/X: Tilt Camera");
+			sb.AppendLine("./,: Zoom");
+			MessageBox.Show(sb.ToString(), "Camera Controls");
+		}
+
+		private void browseScreenshotFolderToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			Process.Start("explorer.exe", RaytracerEngine.ScreenshotDirectory);
 		}
 	}
 }

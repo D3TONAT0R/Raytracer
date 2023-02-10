@@ -54,24 +54,24 @@ namespace Raytracer {
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.progressInfo = new System.Windows.Forms.RichTextBox();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
-			this.cameraTab = new System.Windows.Forms.TabPage();
-			this.label2 = new System.Windows.Forms.Label();
-			this.maxBounceCount = new System.Windows.Forms.TrackBar();
-			this.label1 = new System.Windows.Forms.Label();
-			this.cameraSpeedScale = new System.Windows.Forms.TrackBar();
 			this.sceneTab = new System.Windows.Forms.TabPage();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this.sceneTree = new System.Windows.Forms.TreeView();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.propertiesPanel = new System.Windows.Forms.FlowLayoutPanel();
+			this.cameraTab = new System.Windows.Forms.TabPage();
+			this.label2 = new System.Windows.Forms.Label();
+			this.maxBounceCount = new System.Windows.Forms.TrackBar();
+			this.label1 = new System.Windows.Forms.Label();
+			this.cameraSpeedScale = new System.Windows.Forms.TrackBar();
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.imageViewer = new Raytracer.SceneViewerPictureBox();
 			this.menuStrip = new System.Windows.Forms.MenuStrip();
 			this.asasToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
 			this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openSceneMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveSceneAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.reloadCurrentSceneToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.startRenderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.renderToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,23 +86,24 @@ namespace Raytracer {
 			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.imageViewer = new Raytracer.SceneViewerPictureBox();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.browseScreenshotFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl1.SuspendLayout();
-			this.cameraTab.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.cameraSpeedScale)).BeginInit();
 			this.sceneTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
 			this.splitContainer2.Panel1.SuspendLayout();
 			this.splitContainer2.Panel2.SuspendLayout();
 			this.splitContainer2.SuspendLayout();
 			this.groupBox1.SuspendLayout();
+			this.cameraTab.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.cameraSpeedScale)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
-			this.menuStrip.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).BeginInit();
+			this.menuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// progressBar
@@ -138,64 +139,6 @@ namespace Raytracer {
 			this.tabControl1.SelectedIndex = 0;
 			this.tabControl1.Size = new System.Drawing.Size(146, 296);
 			this.tabControl1.TabIndex = 14;
-			// 
-			// cameraTab
-			// 
-			this.cameraTab.Controls.Add(this.label2);
-			this.cameraTab.Controls.Add(this.maxBounceCount);
-			this.cameraTab.Controls.Add(this.label1);
-			this.cameraTab.Controls.Add(this.cameraSpeedScale);
-			this.cameraTab.Location = new System.Drawing.Point(4, 22);
-			this.cameraTab.Name = "cameraTab";
-			this.cameraTab.Padding = new System.Windows.Forms.Padding(3);
-			this.cameraTab.Size = new System.Drawing.Size(138, 270);
-			this.cameraTab.TabIndex = 0;
-			this.cameraTab.Text = "Camera";
-			this.cameraTab.UseVisualStyleBackColor = true;
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(0, 50);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(75, 13);
-			this.label2.TabIndex = 10;
-			this.label2.Text = "Max. Bounces";
-			// 
-			// maxBounceCount
-			// 
-			this.maxBounceCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.maxBounceCount.BackColor = System.Drawing.SystemColors.Window;
-			this.maxBounceCount.LargeChange = 1;
-			this.maxBounceCount.Location = new System.Drawing.Point(3, 66);
-			this.maxBounceCount.Maximum = 4;
-			this.maxBounceCount.Name = "maxBounceCount";
-			this.maxBounceCount.Size = new System.Drawing.Size(132, 45);
-			this.maxBounceCount.TabIndex = 9;
-			this.maxBounceCount.Value = 2;
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(0, 0);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(82, 13);
-			this.label1.TabIndex = 8;
-			this.label1.Text = "Camera velocity";
-			// 
-			// cameraSpeedScale
-			// 
-			this.cameraSpeedScale.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.cameraSpeedScale.BackColor = System.Drawing.SystemColors.Window;
-			this.cameraSpeedScale.Location = new System.Drawing.Point(3, 15);
-			this.cameraSpeedScale.Maximum = 20;
-			this.cameraSpeedScale.Minimum = 1;
-			this.cameraSpeedScale.Name = "cameraSpeedScale";
-			this.cameraSpeedScale.Size = new System.Drawing.Size(132, 45);
-			this.cameraSpeedScale.TabIndex = 7;
-			this.cameraSpeedScale.Value = 10;
 			// 
 			// sceneTab
 			// 
@@ -288,6 +231,64 @@ namespace Raytracer {
 			this.propertiesPanel.WrapContents = false;
 			this.propertiesPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.propertiesPanel_Paint);
 			// 
+			// cameraTab
+			// 
+			this.cameraTab.Controls.Add(this.label2);
+			this.cameraTab.Controls.Add(this.maxBounceCount);
+			this.cameraTab.Controls.Add(this.label1);
+			this.cameraTab.Controls.Add(this.cameraSpeedScale);
+			this.cameraTab.Location = new System.Drawing.Point(4, 22);
+			this.cameraTab.Name = "cameraTab";
+			this.cameraTab.Padding = new System.Windows.Forms.Padding(3);
+			this.cameraTab.Size = new System.Drawing.Size(138, 270);
+			this.cameraTab.TabIndex = 0;
+			this.cameraTab.Text = "Camera";
+			this.cameraTab.UseVisualStyleBackColor = true;
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(0, 50);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(75, 13);
+			this.label2.TabIndex = 10;
+			this.label2.Text = "Max. Bounces";
+			// 
+			// maxBounceCount
+			// 
+			this.maxBounceCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.maxBounceCount.BackColor = System.Drawing.SystemColors.Window;
+			this.maxBounceCount.LargeChange = 1;
+			this.maxBounceCount.Location = new System.Drawing.Point(3, 66);
+			this.maxBounceCount.Maximum = 4;
+			this.maxBounceCount.Name = "maxBounceCount";
+			this.maxBounceCount.Size = new System.Drawing.Size(132, 45);
+			this.maxBounceCount.TabIndex = 9;
+			this.maxBounceCount.Value = 2;
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(0, 0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(82, 13);
+			this.label1.TabIndex = 8;
+			this.label1.Text = "Camera velocity";
+			// 
+			// cameraSpeedScale
+			// 
+			this.cameraSpeedScale.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.cameraSpeedScale.BackColor = System.Drawing.SystemColors.Window;
+			this.cameraSpeedScale.Location = new System.Drawing.Point(3, 15);
+			this.cameraSpeedScale.Maximum = 20;
+			this.cameraSpeedScale.Minimum = 1;
+			this.cameraSpeedScale.Name = "cameraSpeedScale";
+			this.cameraSpeedScale.Size = new System.Drawing.Size(132, 45);
+			this.cameraSpeedScale.TabIndex = 7;
+			this.cameraSpeedScale.Value = 10;
+			// 
 			// splitContainer1
 			// 
 			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -308,6 +309,19 @@ namespace Raytracer {
 			this.splitContainer1.Size = new System.Drawing.Size(627, 390);
 			this.splitContainer1.SplitterDistance = 148;
 			this.splitContainer1.TabIndex = 16;
+			// 
+			// imageViewer
+			// 
+			this.imageViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.imageViewer.Cursor = System.Windows.Forms.Cursors.Cross;
+			this.imageViewer.Location = new System.Drawing.Point(3, 3);
+			this.imageViewer.Name = "imageViewer";
+			this.imageViewer.Size = new System.Drawing.Size(469, 384);
+			this.imageViewer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+			this.imageViewer.TabIndex = 0;
+			this.imageViewer.TabStop = false;
 			// 
 			// menuStrip
 			// 
@@ -365,14 +379,6 @@ namespace Raytracer {
 			this.quitToolStripMenuItem.Text = "Quit";
 			this.quitToolStripMenuItem.Click += new System.EventHandler(this.OnQuitMenuItemClick);
 			// 
-			// reloadCurrentSceneToolStripMenuItem
-			// 
-			this.reloadCurrentSceneToolStripMenuItem.Name = "reloadCurrentSceneToolStripMenuItem";
-			this.reloadCurrentSceneToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-			this.reloadCurrentSceneToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
-			this.reloadCurrentSceneToolStripMenuItem.Text = "Reload Current Scene";
-			this.reloadCurrentSceneToolStripMenuItem.Click += new System.EventHandler(this.reloadCurrentSceneToolStripMenuItem_Click);
-			// 
 			// renderToolStripMenuItem
 			// 
 			this.renderToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -382,7 +388,9 @@ namespace Raytracer {
             this.cancelCurrentRenderToolStripMenuItem,
             this.toolStripMenuItem1,
             this.resolutionMenuItem,
-            this.qualityMenuItem});
+            this.qualityMenuItem,
+            this.toolStripMenuItem2,
+            this.browseScreenshotFolderToolStripMenuItem});
 			this.renderToolStripMenuItem.Name = "renderToolStripMenuItem";
 			this.renderToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
 			this.renderToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
@@ -464,8 +472,9 @@ namespace Raytracer {
 			// 
 			// test1ToolStripMenuItem
 			// 
+			this.test1ToolStripMenuItem.Enabled = false;
 			this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.test1ToolStripMenuItem.Text = "Load Configuration";
 			// 
 			// helpToolStripMenuItem
@@ -479,21 +488,21 @@ namespace Raytracer {
 			// controlsToolStripMenuItem
 			// 
 			this.controlsToolStripMenuItem.Name = "controlsToolStripMenuItem";
-			this.controlsToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
-			this.controlsToolStripMenuItem.Text = "Controls";
+			this.controlsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.controlsToolStripMenuItem.Text = "Camera Controls";
+			this.controlsToolStripMenuItem.Click += new System.EventHandler(this.controlsToolStripMenuItem_Click);
 			// 
-			// imageViewer
+			// toolStripMenuItem2
 			// 
-			this.imageViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.imageViewer.Cursor = System.Windows.Forms.Cursors.Cross;
-			this.imageViewer.Location = new System.Drawing.Point(3, 3);
-			this.imageViewer.Name = "imageViewer";
-			this.imageViewer.Size = new System.Drawing.Size(469, 384);
-			this.imageViewer.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-			this.imageViewer.TabIndex = 0;
-			this.imageViewer.TabStop = false;
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(243, 6);
+			// 
+			// browseScreenshotFolderToolStripMenuItem
+			// 
+			this.browseScreenshotFolderToolStripMenuItem.Name = "browseScreenshotFolderToolStripMenuItem";
+			this.browseScreenshotFolderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.browseScreenshotFolderToolStripMenuItem.Text = "Browse Screenshot Folder";
+			this.browseScreenshotFolderToolStripMenuItem.Click += new System.EventHandler(this.browseScreenshotFolderToolStripMenuItem_Click);
 			// 
 			// RaytracerForm
 			// 
@@ -508,23 +517,23 @@ namespace Raytracer {
 			this.Enter += new System.EventHandler(this.OnFocusEnter);
 			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OnKeyDown);
 			this.tabControl1.ResumeLayout(false);
-			this.cameraTab.ResumeLayout(false);
-			this.cameraTab.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.cameraSpeedScale)).EndInit();
 			this.sceneTab.ResumeLayout(false);
 			this.splitContainer2.Panel1.ResumeLayout(false);
 			this.splitContainer2.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
 			this.splitContainer2.ResumeLayout(false);
 			this.groupBox1.ResumeLayout(false);
+			this.cameraTab.ResumeLayout(false);
+			this.cameraTab.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.maxBounceCount)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.cameraSpeedScale)).EndInit();
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
 			this.splitContainer1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).EndInit();
 			this.menuStrip.ResumeLayout(false);
 			this.menuStrip.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.imageViewer)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -567,5 +576,7 @@ namespace Raytracer {
 		private ToolStripMenuItem reloadCurrentSceneToolStripMenuItem;
 		private ToolStripMenuItem helpToolStripMenuItem;
 		private ToolStripMenuItem controlsToolStripMenuItem;
+		private ToolStripSeparator toolStripMenuItem2;
+		private ToolStripMenuItem browseScreenshotFolderToolStripMenuItem;
 	}
 }

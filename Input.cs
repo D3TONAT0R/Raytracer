@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ConsoleGameEngine {
+namespace Raytracer {
 	public static class Input {
 
 		public static InputKey esc = new InputKey(Key.Escape);

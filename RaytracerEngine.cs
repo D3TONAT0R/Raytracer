@@ -1,4 +1,4 @@
-﻿using ConsoleGameEngine;
+﻿using Raytracer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -57,6 +57,8 @@ namespace Raytracer {
 
 		public static RenderSettings CurrentRenderSettings => render ? renderSettings[currentRenderSettingsIndex] : previewRenderSettings;
 		public static RenderTarget CurrentRenderTarget => render ? renderTargets[currentRenderTargetIndex] : previewRenderTarget;
+
+		public static string ScreenshotDirectory => Path.Combine(rootPath, "Screenshots");
 
 		static bool exit = false;
 		bool animating = false;
@@ -544,7 +546,7 @@ namespace Raytracer {
 			var buffer = (lastRenderTarget ?? CurrentRenderTarget).RenderBuffer;
 			if(buffer != null) {
 				int num = 1;
-				var path = Path.Combine(rootPath, "Screenshots", prefix + "_");
+				var path = Path.Combine(ScreenshotDirectory, prefix + "_");
 				while(File.Exists(path + num.ToString("D4") + ".png")) {
 					num++;
 				}
