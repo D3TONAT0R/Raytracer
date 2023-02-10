@@ -64,7 +64,7 @@ namespace Raytracer {
 		}
 
 		public bool Contributes(Vector3 point) {
-			if(intensity <= 0) return false;
+			if(intensity <= 0 || !VisibleInHierarchy) return false;
 			if(type == LightType.Directional) {
 				return true;
 			} else {

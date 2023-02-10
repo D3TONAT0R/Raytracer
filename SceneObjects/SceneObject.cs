@@ -7,14 +7,15 @@ namespace Raytracer
 {
 	public abstract class SceneObject
 	{
-
 		public bool IsInitialized { get; private set; }
 		public SceneObject parent;
 		public string name;
-		[DataIdentifier("VIS")]
+		[DataIdentifier("VISIBLE")]
 		public bool visible = true;
 		[DataIdentifier("POSITION")]
 		public Vector3 localPosition;
+
+		public bool VisibleInHierarchy => visible && (parent?.VisibleInHierarchy ?? true);
 
 		public Vector3 HierarchyPositionOffset
 		{

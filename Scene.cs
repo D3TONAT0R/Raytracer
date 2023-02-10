@@ -129,14 +129,7 @@ namespace Raytracer
 					list.AddRange(o.GetIntersectingShapes(ray));
 				}
 			}
-			/*
-			foreach(var s in shapes)
-			{
-				//TODO: correct?
-				//if(s.ShapeAABB.Offset(s.HierarchyPositionOffset).Intersects(ray)) list.Add(s);
-				if(s.ShapeAABB.Intersects(ray)) list.Add(s);
-			}
-			*/
+			list.RemoveAll((s) => !s.VisibleInHierarchy);
 			return list;
 		}
 
