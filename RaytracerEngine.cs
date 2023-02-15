@@ -365,7 +365,7 @@ namespace Raytracer {
 
 		void WindowUpdateWorker(object sender, EventArgs e) {
 			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-			Thread.Sleep(100);
+			Thread.Sleep(500);
 			try {
 				UpdateRenderMenuItems();
 				while(!exit && infoWindow != null) {
