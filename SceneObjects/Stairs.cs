@@ -26,7 +26,7 @@ namespace Raytracer
 
 		public override bool CanContainShapes => true;
 
-		protected override void OnInit()
+		protected override void OnInit(Scene parentScene)
 		{
 			subShapes = new Shape[stepCount - 1];
 			for (int i = 0; i < stepCount - 1; i++)

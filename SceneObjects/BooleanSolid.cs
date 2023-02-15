@@ -31,8 +31,9 @@ namespace Raytracer {
 			solids = shapes;
 		}
 
-		protected override void OnInit() {
-			foreach(var s in solids) s.Initialize();
+		protected override void OnInit(Scene parentScene)
+		{
+			foreach(var s in solids) s.Initialize(parentScene);
 		}
 
 		public override void SetupForRendering() {
@@ -147,5 +148,13 @@ namespace Raytracer {
 			}
 			return list.ToArray();
 		}*/
+
+		public override IEnumerable<T> GetContainedObjectsOfType<T>()
+		{
+			foreach(var s in solids)
+			{
+				foreach(var o in s.GetContainedObjectsOfType<T>()) yield return o;
+			}
+		}
 	}
 }

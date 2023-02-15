@@ -143,10 +143,11 @@ namespace Raytracer {
 					}
 				);
 
-				Animator.animatedProperties.Add(prop);
-				Animator.animatedProperties.Add(prop2);
-				Animator.animatedProperties.Add(animsphere);
-				Animator.animatedProperties.Add(animsphere2);
+				sn.animator = new Animator(0, null, 15);
+				sn.animator.animatedProperties.Add(prop);
+				sn.animator.animatedProperties.Add(prop2);
+				sn.animator.animatedProperties.Add(animsphere);
+				sn.animator.animatedProperties.Add(animsphere2);
 				return sn;
 			} else {
 				return null;

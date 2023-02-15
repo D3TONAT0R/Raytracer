@@ -29,7 +29,9 @@ namespace Raytracer {
 		public static InputKey comma = new InputKey(Key.OemComma);
 		public static InputKey period = new InputKey(Key.OemPeriod);
 		public static InputKey r = new InputKey(Key.R);
+		public static InputKey o = new InputKey(Key.O);
 		public static InputKey p = new InputKey(Key.P);
+		public static InputKey l = new InputKey(Key.L);
 		public static InputKey y = new InputKey(Key.Y);
 		public static InputKey x = new InputKey(Key.X);
 		public static InputKey b = new InputKey(Key.B);
@@ -65,7 +67,9 @@ namespace Raytracer {
 			comma.Evaluate();
 			period.Evaluate();
 			r.Evaluate();
+			o.Evaluate();
 			p.Evaluate();
+			l.Evaluate();
 			y.Evaluate();
 			x.Evaluate();
 			nLeft.Evaluate();

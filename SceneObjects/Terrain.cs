@@ -33,7 +33,8 @@ namespace Raytracer {
 			material = mat;
 		}
 
-		protected override void OnInit() {
+		protected override void OnInit(Scene parentScene)
+		{
 			heightmap = Sampler2D.Create(heightmapFile, RaytracerEngine.Scene.rootDirectory);
 			if (material != null)
 			{

@@ -33,6 +33,8 @@ namespace Raytracer
 
 		public SceneObject remoteControlledObject;
 
+		public Animator animator;
+
 		public Scene(string name, string sourceFilePath)
 		{
 			sceneName = name;
@@ -56,6 +58,18 @@ namespace Raytracer
 		public void AddDefaultDirectionalLight()
 		{
 			AddObject(Light.CreateDirectionalLight(Vector3.Normalize(new Vector3(-1, -1, 0.7f)), 1.6f, new Color(1, 0.9f, 0.75f)));
+		}
+
+		public void Initialize()
+		{
+			foreach(var obj in sceneContent)
+			{
+				if(!obj.IsInitialized)
+				{
+					obj.Initialize(this);
+				}
+			}
+			if(animator != null) animator.Init(this);
 		}
 
 		public void OnBeginRender()
@@ -90,10 +104,6 @@ namespace Raytracer
 
 		void RegisterSceneContent(SceneObject obj)
 		{
-			if(!obj.IsInitialized)
-			{
-				obj.Initialize();
-			}
 			shapes.AddRange(obj.GetContainedObjectsOfType<Shape>());
 			lights.AddRange(obj.GetContainedObjectsOfType<Light>());
 			/*
@@ -167,7 +177,7 @@ namespace Raytracer
 			return list.ToArray();
 		}
 
-		public SceneObject Find(string path)
+		public SceneObject FindSceneObject(string path)
 		{
 			string name = path.Split('/')[0];
 			var root = sceneContent.FirstOrDefault((c) => c.name == name);
@@ -195,7 +205,7 @@ namespace Raytracer
 
 		public SceneObject GetPrefabOrSceneObject(string name)
 		{
-			return GetPrefabObject(name) ?? GetSceneObject(name);
+			return GetPrefabObject(name) ?? FindSceneObject(name);
 		}
 	}
 }

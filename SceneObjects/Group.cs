@@ -28,9 +28,10 @@ namespace Raytracer {
 			children = content;
 		}
 
-		protected override void OnInit() {
+		protected override void OnInit(Scene parentScene)
+		{
 			foreach(var c in children) {
-				c.Initialize();
+				c.Initialize(parentScene);
 				c.parent = this;
 			}
 		}
@@ -117,5 +118,10 @@ namespace Raytracer {
 				solids[i].RegisterExpandedAABB(expandedAABBs, expansionAmount);
 			}
 		}*/
+
+		public override SceneObject FindChildByName(string name)
+		{
+			return children.FirstOrDefault((so) => so.name == name);
+		}
 	}
 }

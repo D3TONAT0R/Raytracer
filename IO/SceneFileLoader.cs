@@ -182,8 +182,9 @@ namespace Raytracer
 			if(matBlock != null) scene.globalMaterials = ParseMaterialsBlock(matBlock, scene);
 			if(prefabBlock != null) scene.prefabContent = ParseObjectsBlock(prefabBlock, scene);
 			if(objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
-			if(animBlock != null) Animator.animatedProperties = ParseAnimationBlock(animBlock);
-			else Animator.animatedProperties = null;
+			if(animBlock != null) scene.animator = ParseAnimationBlock(animBlock);
+
+			scene.Initialize();
 
 			return scene;
 		}
@@ -273,9 +274,29 @@ namespace Raytracer
 			return list;
 		}
 
-		static List<AnimatedProperty> ParseAnimationBlock(BlockContent block)
+		static Animator ParseAnimationBlock(BlockContent block)
 		{
+			float start = 0f;
+			float? end = null;
+			float fps = 15;
 			List<AnimatedProperty> list = new List<AnimatedProperty>();
+
+			foreach(var d in block.data)
+			{
+				if(d.keyword == "STARTTIME") start = float.Parse(((StringContent)d).data);
+				else if(d.keyword == "ENDTIME") end = float.Parse(((StringContent)d).data);
+				else if(d.keyword == "FPS") fps = float.Parse(((StringContent)d).data);
+				else if(d.keyword == "DATA") BuildAnimatedPropList((BlockContent)d, list);
+				else throw new InvalidDataException($"Invalid keyword in animation block: '{d.keyword}'");
+			}
+			Animator animator = new Animator(start, end, fps);
+			animator.animatedProperties = list;
+			return animator;
+		}
+
+		static void BuildAnimatedPropList(BlockContent block, List<AnimatedProperty> list)
+		{
+
 			foreach(var c in block.data)
 			{
 				var b = c as BlockContent;
@@ -288,7 +309,6 @@ namespace Raytracer
 				}
 				list.Add(anim);
 			}
-			return list;
 		}
 
 		public static void ParseArgumentedInput(string input, out string output, out string[] args)

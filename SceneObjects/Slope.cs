@@ -21,9 +21,9 @@ namespace Raytracer
 			direction = dir;
 		}
 
-		protected override void OnInit()
+		protected override void OnInit(Scene parentScene)
 		{
-			base.OnInit();
+			base.OnInit(parentScene);
 			switch(direction)
 			{
 				case SlopeDirection.XNeg: cuts = new float[] { 0, 0, 1, 0 }; break;

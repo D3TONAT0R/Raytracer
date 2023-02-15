@@ -108,9 +108,9 @@ namespace Raytracer
 		public void Init(Scene scene)
 		{
 			if(targetObject == null && scene != null) {
-				targetObject = scene.Find(targetObjectPath);
+				targetObject = scene.FindSceneObject(targetObjectPath);
 			}
-			if(fieldInfo != null)
+			if(fieldInfo == null)
 			{
 				fieldInfo = Reflector.GetExposedField(targetObject.GetType(), targetPropertyIdentifier);
 			}

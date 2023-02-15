@@ -29,8 +29,9 @@ namespace Raytracer {
 			roofMaterial = roofMat;
 		}
 
-		protected override void OnInit() {
-			base.OnInit();
+		protected override void OnInit(Scene parentScene)
+		{
+			base.OnInit(parentScene);
 			if(roofType == RoofType.GableX) {
 				cuts = new float[4] { 0, 0.5f, 0, 0.5f };
 			} else if(roofType == RoofType.GableZ) {

@@ -51,13 +51,13 @@ namespace Raytracer
 			this.name = name;
 		}
 
-		public void Initialize()
+		public void Initialize(Scene parentScene)
 		{
-			OnInit();
+			OnInit(parentScene);
 			IsInitialized = true;
 		}
 
-		protected virtual void OnInit()
+		protected virtual void OnInit(Scene parentScene)
 		{
 
 		}
@@ -81,9 +81,20 @@ namespace Raytracer
 
 		public virtual SceneObject FindChildByPath(string path)
 		{
-			string name = path.Substring(0, path.IndexOf('/'));
+			string name;
+			if(path.Contains("/")) {
+				name = path.Substring(0, path.IndexOf('/'));
+			}
+			else
+			{
+				name = path;
+			}
 			var so = FindChildByName(name);
-			if(so != null)
+			if(name.Length == path.Length)
+			{
+				return so;
+			}
+			else if(so != null)
 			{
 				return so.FindChildByPath(path.Substring(name.Length + 1));
 			}

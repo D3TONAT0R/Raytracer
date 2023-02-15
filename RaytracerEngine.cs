@@ -61,7 +61,7 @@ namespace Raytracer {
 		public static string ScreenshotDirectory => Path.Combine(rootPath, "Screenshots");
 
 		static bool exit = false;
-		bool animating = false;
+		static bool animating = false;
 		Thread loopthread;
 
 		static Stopwatch renderTimer;
@@ -171,10 +171,10 @@ namespace Raytracer {
 				redrawScreen = true;
 			}
 
-			if(animating)
+			if(animating && Scene.animator != null)
 			{
-				Animator.StepFrames(1);
-				animating = !Animator.AtEnd;
+				Scene.animator.StepFrames(1);
+				animating = Scene.animator.HasNextFrame;
 			}
 
 			RefreshImageView();
@@ -184,7 +184,7 @@ namespace Raytracer {
 				MessageBox.Show($"Time elapsed: {renderTimer.Elapsed:mm\\:ss}\nResolution: {lastRenderTarget}\nRender Settings: {CurrentRenderSettings.name}", "Render Finished", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
 			}
 
-			render = false;
+			if(!animating) render = false;
 		}
 
 		public void RefreshImageView()
@@ -354,6 +354,7 @@ namespace Raytracer {
 		public static void CancelRender()
 		{
 			render = false;
+			animating = false;
 			renderTimer.Reset();
 			redrawScreen = true;
 		}
@@ -469,10 +470,14 @@ namespace Raytracer {
 				exit = true;
 			}
 			if(Input.b.isDown) {
-				if(Animator.Duration > 0) {
+				if(Scene.animator.RecDuration > 0) {
 					animating = !animating;
-					if(animating) redrawScreen = true;
-					Animator.SetTime(0);
+					render = animating;
+					if(animating)
+					{
+						redrawScreen = true;
+						Scene.animator.Rewind();
+					}
 				}
 			}
 			if(animating || render) return;
@@ -531,6 +536,25 @@ namespace Raytracer {
 			if(Input.period.isPressed) {
 				redrawScreen = true;
 				Camera.MainCamera.fieldOfView -= 5;
+			}
+
+			if(scene != null && scene.animator != null)
+			{
+				if(Input.o.isPressed)
+				{
+					scene.animator.StepFrames(-1);
+					redrawScreen = true;
+				}
+				if(Input.p.isPressed)
+				{
+					scene.animator.StepFrames(1);
+					redrawScreen = true;
+				}
+				if(Input.l.isPressed)
+				{
+					scene.animator.Rewind();
+					redrawScreen = true;
+				}
 			}
 		}
 

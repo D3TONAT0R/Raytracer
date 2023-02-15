@@ -45,8 +45,9 @@ namespace Raytracer {
 			this.axis = axis;
 		}
 
-		protected override void OnInit() {
-			base.OnInit();
+		protected override void OnInit(Scene parentScene)
+		{
+			base.OnInit(parentScene);
 			if(axis == Axis.Z)
 			{
 				cuts = new float[4] { 0.5f, 0, 0.5f, 0 };

@@ -39,7 +39,7 @@ namespace Raytracer.SceneObjects
 
 		public override Material OverrideMaterial => borderMaterial ?? parent.OverrideMaterial;
 
-		protected override void OnInit()
+		protected override void OnInit(Scene parentScene)
 		{
 			float fill = fillDepth > 0 ? fillDepth : Depth * 0.25f;
 			if(axis == Axis.X)
@@ -85,7 +85,7 @@ namespace Raytracer.SceneObjects
 
 			foreach(var c in GetSubShapes())
 			{
-				c.Initialize();
+				c.Initialize(parentScene);
 			}
 		}
 

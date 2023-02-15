@@ -26,9 +26,9 @@ namespace Raytracer
 
 		public override bool CanContainShapes => true;
 
-		protected override void OnInit()
+		protected override void OnInit(Scene parentScene)
 		{
-			var refObj = RaytracerEngine.Scene.GetPrefabOrSceneObject(ReferencedObjectName);
+			var refObj = parentScene.GetPrefabOrSceneObject(ReferencedObjectName);
 			if(refObj == null)
 			{
 				throw new NullReferenceException($"The referenced SceneObject '{ReferencedObjectName}' does not exist.");
@@ -39,7 +39,7 @@ namespace Raytracer
 				var inst = refObj.Clone();
 				inst.localPosition += i * offset;
 				inst.parent = this;
-				inst.Initialize();
+				inst.Initialize(parentScene);
 				arrayInstances[i] = inst;
 			}
 		}
