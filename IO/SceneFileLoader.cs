@@ -192,7 +192,7 @@ namespace Raytracer
 			{
 				if(b is BlockContent bc)
 				{
-					cameras.Add(Reflection.CreateCameraConfiguration(scene, bc));
+					cameras.Add(Reflector.CreateCameraConfiguration(scene, bc));
 				}
 				else
 				{
@@ -249,7 +249,7 @@ namespace Raytracer
 			foreach (var d in block.data)
 			{
 				var l = d as BlockContent;
-				var mat = Reflection.CreateMaterial(l, scene);
+				var mat = Reflector.CreateMaterial(l, scene);
 				mat.globalMaterialName = l.keyword;
 				mat.isGlobalMaterial = true;
 				materials.Add(l.keyword, mat);
@@ -264,7 +264,7 @@ namespace Raytracer
 			{
 				var b = c as BlockContent;
 
-				var so = Reflection.CreateSceneObject(scene, b);
+				var so = Reflector.CreateSceneObject(scene, b);
 				list.Add(so);
 			}
 			return list;

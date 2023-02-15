@@ -74,7 +74,7 @@ namespace Raytracer
 
 		public virtual SceneObject Clone()
 		{
-			var copy = Reflection.CloneObject(this);
+			var copy = Reflector.CloneObject(this);
 			copy.Uninitialize();
 			return copy;
 		}

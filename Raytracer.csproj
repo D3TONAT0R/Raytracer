@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Raytracer.Program</StartupObject>
+    <StartupObject>Raytracer.RaytracerEngine</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -69,29 +69,28 @@
     <Compile Include="Animation\AnimatedProperty.cs" />
     <Compile Include="Animation\Animator.cs" />
     <Compile Include="Axis.cs" />
-    <Compile Include="BmpPixelSnoop.cs" />
+    <Compile Include="Rendering\BmpPixelSnoop.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraConfiguration.cs" />
     <Compile Include="Color.cs" />
-    <Compile Include="CurrentPixelRenderData.cs" />
+    <Compile Include="Rendering\CurrentPixelRenderData.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="PersistentPrefs.cs" />
-    <Compile Include="ProgressiveChunkRenderer.cs" />
-    <Compile Include="FullscreenStripRenderer.cs" />
+    <Compile Include="Rendering\ProgressiveChunkRenderer.cs" />
+    <Compile Include="Rendering\FullscreenStripRenderer.cs" />
     <Compile Include="GPUTest\GPUTest.cs" />
     <Compile Include="Gradient.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputKey.cs" />
-    <Compile Include="LabeledNumericUpDown.cs">
+    <Compile Include="UI\LabeledNumericUpDown.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Material.cs" />
     <Compile Include="MathUtils.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ray.cs" />
-    <Compile Include="RenderTarget.cs" />
+    <Compile Include="Rendering\RenderTarget.cs" />
     <Compile Include="SceneFileWriter.cs" />
     <Compile Include="SceneObjects\IReferencedObject.cs" />
     <Compile Include="SceneObjects\SceneObjectArray.cs" />
@@ -100,17 +99,17 @@
     <Compile Include="SceneObjects\SlopeDirection.cs" />
     <Compile Include="SceneObjects\Stairs.cs" />
     <Compile Include="SceneObjects\Window.cs" />
-    <Compile Include="ScreenRenderer.cs" />
-    <Compile Include="SceneRenderer.cs" />
+    <Compile Include="Rendering\ScreenRenderer.cs" />
+    <Compile Include="Rendering\SceneRenderer.cs" />
     <Compile Include="RaytracerEngine.cs" />
-    <Compile Include="RaytracerForm.cs">
+    <Compile Include="UI\RaytracerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RaytracerForm.designer.cs">
+    <Compile Include="UI\RaytracerForm.designer.cs">
       <DependentUpon>RaytracerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Reflection.cs" />
-    <Compile Include="RenderSettings.cs" />
+    <Compile Include="Rendering\RenderSettings.cs" />
     <Compile Include="Sampler2D.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="SceneLoader.cs" />
@@ -128,7 +127,7 @@
     <Compile Include="SceneObjects\SolidShape.cs" />
     <Compile Include="SceneObjects\Sphere.cs" />
     <Compile Include="SceneObjects\Terrain.cs" />
-    <Compile Include="SceneViewerPictureBox.cs">
+    <Compile Include="UI\SceneViewerPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -140,7 +139,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="RaytracerForm.resx">
+    <EmbeddedResource Include="UI\RaytracerForm.resx">
       <DependentUpon>RaytracerForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />

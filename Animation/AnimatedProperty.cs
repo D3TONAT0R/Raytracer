@@ -43,7 +43,7 @@ namespace Raytracer {
 		public AnimatedProperty(SceneObject target, string property, params Keyframe[] keyframes) {
 			targetObject = target;
 			targetField = property;
-			fieldInfo = Reflection.GetField(target.GetType(), property);
+			fieldInfo = Reflector.GetField(target.GetType(), property);
 			if(fieldInfo.FieldType == typeof(float)) {
 				fieldType = AnimatedFieldType.Float;
 			} else if(fieldInfo.FieldType == typeof(Vector3)) {

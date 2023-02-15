@@ -67,7 +67,13 @@ namespace Raytracer {
 		static Stopwatch renderTimer;
 		static RenderTarget lastRenderTarget;
 
-		public void Run() {
+		public static void Main(string[] args)
+		{
+			var engine = new RaytracerEngine();
+			engine.Start();
+		}
+
+		public void Start() {
 			instance = this;
 			exit = false;
 			SetupSettingsAndTargets();

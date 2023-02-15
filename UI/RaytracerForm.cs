@@ -55,7 +55,7 @@ namespace Raytracer {
 
 		private void OnOpenSceneMenuItemClick(object sender, EventArgs args)
 		{
-			SceneLoader.LoadSceneFilePrompt();
+			SceneGenerator.LoadSceneFilePrompt();
 		}
 
 		private void OnRenderMenuItemClick(object sender, EventArgs e)
@@ -97,7 +97,7 @@ namespace Raytracer {
 		{
 			if(RaytracerEngine.Scene != null)
 			{
-				SceneLoader.ReloadCurrent();
+				SceneGenerator.ReloadCurrent();
 			}
 			else
 			{

@@ -34,7 +34,7 @@ namespace Raytracer
 		}
 	}
 
-	public static class Reflection
+	public static class Reflector
 	{
 
 		public enum AttributeTypeInfo
@@ -81,7 +81,7 @@ namespace Raytracer
 
 		static Dictionary<string, ExposedFieldSet> exposedFieldSets;
 
-		static Reflection()
+		static Reflector()
 		{
 			exposedFieldSets = new Dictionary<string, ExposedFieldSet>();
 			var attrs = Assembly.GetCallingAssembly().GetTypes()

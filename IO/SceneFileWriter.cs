@@ -134,7 +134,7 @@ namespace Raytracer
 			var objType = obj.GetType();
 			var keyword = objType.GetCustomAttribute<ObjectIdentifierAttribute>().identifier;
 			BeginBlock(keyword, obj.name);
-			var set = Reflection.GetExposedFieldSet(obj.GetType());
+			var set = Reflector.GetExposedFieldSet(obj.GetType());
 			foreach(var f in set.fields)
 			{
 				var value = objType.GetField(f.Value.fieldName).GetValue(obj);

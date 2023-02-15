@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Raytracer {
-	public class SceneLoader {
+	public class SceneGenerator {
 
 		public static Color[] randomColors = new Color[] {
 			System.Drawing.Color.Red,
