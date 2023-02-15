@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public static class Animator {
 
-		public static float time = 0;
+		public static float CurrentTime { get; private set; } = 0f;
 
-		public static float framesPerSecond = 15;
+		public static bool AtEnd => CurrentTime >= Duration;
 
 		public static List<AnimatedProperty> animatedProperties = new List<AnimatedProperty>();
 
@@ -23,13 +23,18 @@ namespace Raytracer {
 			}
 		}
 
-		public static bool Animate() {
-			if(time > Duration) return false;
-			foreach(var prop in animatedProperties) {
-				prop.SampleAnimation(time);
+		public static void SetTime(float time)
+		{
+			CurrentTime = time;
+			foreach(var prop in animatedProperties)
+			{
+				prop.SampleAnimation(CurrentTime);
 			}
-			time += 1f / framesPerSecond;
-			return true;
+		}
+
+		public static void Step(float delta)
+		{
+			SetTime(CurrentTime + delta);
 		}
 	}
 }

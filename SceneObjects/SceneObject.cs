@@ -67,6 +67,32 @@ namespace Raytracer
 			if(typeof(T).IsAssignableFrom(GetType())) yield return this as T;
 		}
 
+		public virtual SceneObject FindChildByName(string name)
+		{
+			foreach(var child in GetContainedObjectsOfType<SceneObject>())
+			{
+				if(child.name == name)
+				{
+					return child;
+				}
+			}
+			return null;
+		}
+
+		public virtual SceneObject FindChildByPath(string path)
+		{
+			string name = path.Substring(0, path.IndexOf('/'));
+			var so = FindChildByName(name);
+			if(so != null)
+			{
+				return so.FindChildByPath(path.Substring(name.Length + 1));
+			}
+			else
+			{
+				return null;
+			}
+		}
+
 		public override string ToString()
 		{
 			return $"[{name} ({GetType().Name.ToUpper()})]";

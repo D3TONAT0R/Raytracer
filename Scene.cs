@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Raytracer
 {
@@ -166,9 +167,25 @@ namespace Raytracer
 			return list.ToArray();
 		}
 
-		public SceneObject GetSceneObject(string name)
+		public SceneObject Find(string path)
 		{
-			return sceneContent.FirstOrDefault((c) => c.name == name);
+			string name = path.Split('/')[0];
+			var root = sceneContent.FirstOrDefault((c) => c.name == name);
+			if(root != null)
+			{
+				if(path.Length > name.Length + 1)
+				{
+					return root.FindChildByPath(path.Substring(name.Length + 1));
+				}
+				else
+				{
+					return root;
+				}
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		public SceneObject GetPrefabObject(string name)

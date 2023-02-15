@@ -34,7 +34,7 @@ namespace Raytracer
 				line = TrimLine(line);
 				var split = line.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
 				keyword = split[0];
-				data = line.Substring(split[0].Length+1);
+				data = line.Substring(split[0].Length + 1);
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace Raytracer
 			{
 				int startLineNum = lineNum;
 				var split = TrimLine(currentLine).Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
-				if (!split[split.Length - 1].StartsWith("{")) throw new FormatException($"Missing '{{' at line {lineNum}");
+				if(!split[split.Length - 1].StartsWith("{")) throw new FormatException($"Missing '{{' at line {lineNum}");
 				keyword = split[0];
 				if(keyword.Contains('('))
 				{
@@ -60,11 +60,11 @@ namespace Raytracer
 				{
 					name = split[1];
 				}
-				while (true)
+				while(true)
 				{
 					var line = reader.ReadLine();
 					if(line.StartsWith("#")) continue;
-					if (line == null) throw new EndOfStreamException($"Unclosed block at line {startLineNum}.");
+					if(line == null) throw new EndOfStreamException($"Unclosed block at line {startLineNum}.");
 					if(line.Contains('}'))
 					{
 						//End of block reached
@@ -84,7 +84,7 @@ namespace Raytracer
 			public string[] StringsToArray()
 			{
 				var arr = new string[data.Count];
-				for (int i = 0; i < data.Count; i++)
+				for(int i = 0; i < data.Count; i++)
 				{
 					var sc = data[i] as StringContent;
 					arr[i] = $"{sc.keyword} {sc.data}" ?? "";
@@ -97,7 +97,7 @@ namespace Raytracer
 		{
 			line = line.Trim();
 			line = line.Replace('\t', ' ');
-			while (line.Contains("  ")) line = line.Replace("  ", " ");
+			while(line.Contains("  ")) line = line.Replace("  ", " ");
 			return line;
 		}
 
@@ -147,11 +147,11 @@ namespace Raytracer
 				if(line != null)
 				{
 					//Skip empty lines and comments
-					if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
+					if(string.IsNullOrWhiteSpace(line) || line.StartsWith("#")) continue;
 
 					if(line.StartsWith("NAME"))
 					{
-						if (sceneName != null) throw new ArgumentException($"Duplicate NAME tag at line {lineNum}.");
+						if(sceneName != null) throw new ArgumentException($"Duplicate NAME tag at line {lineNum}.");
 						sceneName = line.Substring(5);
 						continue;
 					}
@@ -163,7 +163,7 @@ namespace Raytracer
 					break;
 				}
 			}
-			if (string.IsNullOrWhiteSpace(sceneName)) sceneName = "Untitled";
+			if(string.IsNullOrWhiteSpace(sceneName)) sceneName = "Untitled";
 
 			var scene = new Scene(sceneName, filePath);
 			scene.rootDirectory = rootDir;
@@ -174,13 +174,16 @@ namespace Raytracer
 			var matBlock = blocks.Find((b) => b.keyword == "MATERIALS");
 			var prefabBlock = blocks.Find((b) => b.keyword == "PREFABS");
 			var objBlock = blocks.Find((b) => b.keyword == "OBJECTS");
+			var animBlock = blocks.Find((b) => b.keyword == "ANIMATION");
 
-			if (cameraBlock != null) scene.cameraConfigurations = ParseCameraConfigurations(cameraBlock, scene);
-			if (envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock, scene);
-			if (colBlock != null) scene.globalColors = ParseColorsBlock(colBlock);
-			if (matBlock != null) scene.globalMaterials = ParseMaterialsBlock( matBlock, scene);
-			if (prefabBlock != null) scene.prefabContent = ParseObjectsBlock(prefabBlock, scene);
-			if (objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
+			if(cameraBlock != null) scene.cameraConfigurations = ParseCameraConfigurations(cameraBlock, scene);
+			if(envBlock != null) scene.environment = ParseEnvironmentBlock(envBlock, scene);
+			if(colBlock != null) scene.globalColors = ParseColorsBlock(colBlock);
+			if(matBlock != null) scene.globalMaterials = ParseMaterialsBlock(matBlock, scene);
+			if(prefabBlock != null) scene.prefabContent = ParseObjectsBlock(prefabBlock, scene);
+			if(objBlock != null) scene.sceneContent = ParseObjectsBlock(objBlock, scene);
+			if(animBlock != null) Animator.animatedProperties = ParseAnimationBlock(animBlock);
+			else Animator.animatedProperties = null;
 
 			return scene;
 		}
@@ -246,7 +249,7 @@ namespace Raytracer
 		static Dictionary<string, Material> ParseMaterialsBlock(BlockContent block, Scene scene)
 		{
 			var materials = new Dictionary<string, Material>();
-			foreach (var d in block.data)
+			foreach(var d in block.data)
 			{
 				var l = d as BlockContent;
 				var mat = Reflector.CreateMaterial(l, scene);
@@ -266,6 +269,24 @@ namespace Raytracer
 
 				var so = Reflector.CreateSceneObject(scene, b);
 				list.Add(so);
+			}
+			return list;
+		}
+
+		static List<AnimatedProperty> ParseAnimationBlock(BlockContent block)
+		{
+			List<AnimatedProperty> list = new List<AnimatedProperty>();
+			foreach(var c in block.data)
+			{
+				var b = c as BlockContent;
+				var nameSplit = b.keyword.Split(':');
+				var anim = new AnimatedProperty(nameSplit[0], nameSplit[1]);
+				foreach(var k in b.data)
+				{
+					var kl = k as StringContent;
+					anim.keyframes.Add(AnimatedProperty.Keyframe.Parse(kl.keyword, kl.data));
+				}
+				list.Add(anim);
 			}
 			return list;
 		}

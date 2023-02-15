@@ -147,9 +147,6 @@ namespace Raytracer {
 			/*if(winform == null) return;
 			graphics = winform.CreateGraphics();
 			graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;*/
-			if(animating) {
-				animating = Animator.Animate();
-			}
 
 			if (render)
 			{
@@ -172,6 +169,12 @@ namespace Raytracer {
 			{
 				SaveScreenshot("anim");
 				redrawScreen = true;
+			}
+
+			if(animating)
+			{
+				Animator.StepFrames(1);
+				animating = !Animator.AtEnd;
 			}
 
 			RefreshImageView();
@@ -469,7 +472,7 @@ namespace Raytracer {
 				if(Animator.Duration > 0) {
 					animating = !animating;
 					if(animating) redrawScreen = true;
-					Animator.time = 0;
+					Animator.SetTime(0);
 				}
 			}
 			if(animating || render) return;

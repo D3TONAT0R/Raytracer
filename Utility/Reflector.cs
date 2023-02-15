@@ -121,6 +121,7 @@ namespace Raytracer
 			}
 		}
 
+		/*
 		public static AttributeTypeInfo GetInstanceType(string identifier)
 		{
 			identifier = identifier.Split(new char[0], StringSplitOptions.RemoveEmptyEntries)[0].Split('_')[0].Trim();
@@ -146,8 +147,9 @@ namespace Raytracer
 			}
 			return AttributeTypeInfo.Unknown;
 		}
+		*/
 
-		public static FieldInfo GetField(Type type, string identifier)
+		public static FieldInfo GetExposedField(Type type, string identifier)
 		{
 			foreach (var o in exposedFieldSets.Values)
 			{
