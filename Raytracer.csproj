@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation\AnimationPlayer.cs" />
+    <Compile Include="SceneObjects\Pyramid.cs" />
     <Compile Include="Utility\AABB.cs" />
     <Compile Include="Animation\AnimatedProperty.cs" />
     <Compile Include="Animation\Animator.cs" />
