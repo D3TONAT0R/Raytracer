@@ -375,7 +375,10 @@ namespace Raytracer {
 							StringBuilder sb = new StringBuilder();
 							float progress = 1;
 							if(render && Camera.MainCamera.rendering) {
-								sb.AppendLine("Rendering...");
+								string renderText = "Rendering ";
+								if(animating) renderText += $"({scene.animator.CurrentFrame}/{scene.animator.TotalRecFrameCount})";
+								renderText += "...";
+								sb.AppendLine(renderText);
 								SceneRenderer.ActiveScreenRenderer.GetProgressInfo(out string progressString, out progress);
 								sb.AppendLine(progressString);
 								if (render && lastRenderTarget != null)

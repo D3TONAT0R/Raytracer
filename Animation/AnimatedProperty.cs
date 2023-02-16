@@ -108,7 +108,14 @@ namespace Raytracer
 		public void Init(Scene scene)
 		{
 			if(targetObject == null && scene != null) {
-				targetObject = scene.FindSceneObject(targetObjectPath);
+				if(targetObjectPath == "<CAMERA>")
+				{
+					targetObject = Camera.MainCamera;
+				}
+				else
+				{
+					targetObject = scene.FindSceneObject(targetObjectPath);
+				}
 			}
 			if(fieldInfo == null)
 			{

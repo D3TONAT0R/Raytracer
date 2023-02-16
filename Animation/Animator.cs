@@ -8,6 +8,7 @@ namespace Raytracer {
 	public class Animator {
 
 		public float CurrentTime { get; private set; } = 0f;
+		public int CurrentFrame => (int)(CurrentTime * framesPerSecond);
 
 		public List<AnimatedProperty> animatedProperties = new List<AnimatedProperty>();
 
