@@ -110,6 +110,7 @@ namespace Raytracer {
 						cam.localPosition = info.cameraPos;
 						cam.rotation = info.cameraRot;
 						cam.fieldOfView = info.cameraFOV;
+						cam.forwardOffset = info.cameraOffset;
 					}
 				}
 				catch

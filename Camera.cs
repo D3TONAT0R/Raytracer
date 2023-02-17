@@ -20,10 +20,14 @@ namespace Raytracer {
 		public Vector3 rotation;
 		[DataIdentifier("FOV")]
 		public float fieldOfView = 60;
+		[DataIdentifier("OFFSET")]
+		public float forwardOffset = 0;
 
 		private Matrix4x4 cameraMatrix;
 		private float aspectRatio;
 		private Vector3 cornerDir;
+
+		public Vector3 ActualCameraPosition => WorldPosition + MathUtils.EulerToDir(rotation) * forwardOffset;
 
 		public event Action HasChanged;
 
@@ -32,6 +36,7 @@ namespace Raytracer {
 			localPosition = configuration.position;
 			rotation = configuration.rotation;
 			fieldOfView = configuration.fieldOfView;
+			forwardOffset = configuration.offset;
 			HasChanged?.Invoke();
 		}
 
@@ -48,6 +53,12 @@ namespace Raytracer {
 			localPosition += fwd * localMoveVector.Z;
 			localPosition += right * localMoveVector.X;
 			localPosition += up * localMoveVector.Y;
+			HasChanged?.Invoke();
+		}
+
+		public void MoveOffset(float offsetAdd)
+		{
+			forwardOffset += offsetAdd;
 			HasChanged?.Invoke();
 		}
 
@@ -71,7 +82,7 @@ namespace Raytracer {
 			var offset = Matrix4x4.CreateFromYawPitchRoll(offsetEuler.Y, -offsetEuler.X, 0);
 			var result = offset * cameraMatrix;
 			var dir = Forward(result);
-			return new Ray(localPosition, dir, 0, Vector2.Zero);
+			return new Ray(ActualCameraPosition, dir, 0, Vector2.Zero);
 		}
 
 		Vector3 Forward(Matrix4x4 m) {

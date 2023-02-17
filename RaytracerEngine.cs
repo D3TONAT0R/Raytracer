@@ -521,6 +521,16 @@ namespace Raytracer {
 			if(Input.x.isPressed) {
 				KeyPress(0, 0, 1, true);
 			}
+			if(Input.n.isPressed)
+			{
+				Camera.MainCamera.MoveOffset(-1f * movementSpeedScale);
+				redrawScreen = true;
+			}
+			if(Input.m.isPressed)
+			{
+				Camera.MainCamera.MoveOffset(1f * movementSpeedScale);
+				redrawScreen = true;
+			}
 			if(Input.nLeft.isDown) {
 				MoveRemoteObject(-1, 0);
 			}

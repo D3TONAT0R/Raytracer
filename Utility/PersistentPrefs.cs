@@ -17,6 +17,7 @@ namespace Raytracer
 			public Vector3 cameraPos;
 			public Vector3 cameraRot;
 			public float cameraFOV;
+			public float cameraOffset;
 		}
 
 		const string rootRegistryPath = @"SOFTWARE\Raytracer";
@@ -31,6 +32,7 @@ namespace Raytracer
 				info.cameraPos = RegToVector3((string)key.GetValue("CameraPos"));
 				info.cameraRot = RegToVector3((string)key.GetValue("CameraRot"));
 				info.cameraFOV = float.Parse((string)key.GetValue("CameraFOV"));
+				info.cameraOffset = float.Parse((string)key.GetValue("CameraOffset"));
 				return true;
 			}
 			else
@@ -51,6 +53,7 @@ namespace Raytracer
 				key.SetValue("CameraPos", Vector3ToReg(cam.localPosition));
 				key.SetValue("CameraRot", Vector3ToReg(cam.rotation));
 				key.SetValue("CameraFOV", cam.fieldOfView.ToString());
+				key.SetValue("CameraOffset", cam.forwardOffset.ToString());
 			}
 		}
 

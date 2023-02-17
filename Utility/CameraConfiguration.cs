@@ -18,6 +18,8 @@ namespace Raytracer
 		public Vector3 rotation;
 		[DataIdentifier("FOV")]
 		public float fieldOfView;
+		[DataIdentifier("OFFSET")]
+		public float offset;
 
 		public CameraConfiguration(string name)
 		{

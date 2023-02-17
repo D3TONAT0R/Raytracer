@@ -35,6 +35,8 @@ namespace Raytracer {
 		public static InputKey y = new InputKey(Key.Y);
 		public static InputKey x = new InputKey(Key.X);
 		public static InputKey b = new InputKey(Key.B);
+		public static InputKey n = new InputKey(Key.N);
+		public static InputKey m = new InputKey(Key.M);
 
 		public static InputKey nLeft = new InputKey(Key.NumPad4);
 		public static InputKey nRight = new InputKey(Key.NumPad6);
@@ -77,6 +79,8 @@ namespace Raytracer {
 			nDown.Evaluate();
 			nUp.Evaluate();
 			b.Evaluate();
+			n.Evaluate();
+			m.Evaluate();
 		}
 
 		public static void CancelAll() {
@@ -84,17 +88,6 @@ namespace Raytracer {
 				k.isDown = false;
 				k.isUp = false;
 				k.isPressed = false;
-			}
-		}
-
-		public static bool AnyKeyDown() {
-			return KeysDown().Any();
-		}
-
-		static IEnumerable<Key> KeysDown() {
-			foreach (Key key in Enum.GetValues(typeof(Key))) {
-				if (key != Key.None && Keyboard.IsKeyDown(key))
-					yield return key;
 			}
 		}
 	}
