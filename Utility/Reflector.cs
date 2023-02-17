@@ -110,34 +110,6 @@ namespace Raytracer
 			}
 		}
 
-		/*
-		public static AttributeTypeInfo GetInstanceType(string identifier)
-		{
-			identifier = identifier.Split(new char[0], StringSplitOptions.RemoveEmptyEntries)[0].Split('_')[0].Trim();
-			if (identifier == "ENVIRONMENT")
-			{
-				//TODO: find a better way to do this
-				return AttributeTypeInfo.Environment;
-			}
-			foreach (var a in exposedFieldSets)
-			{
-				if (a.Key == identifier)
-				{
-					var t = a.Value.type;
-					if (t.IsSubclassOf(typeof(SceneObject)))
-					{
-						return AttributeTypeInfo.SceneObject;
-					}
-					else if (t == typeof(Material) || t.IsSubclassOf(typeof(Material)))
-					{
-						return AttributeTypeInfo.Material;
-					}
-				}
-			}
-			return AttributeTypeInfo.Unknown;
-		}
-		*/
-
 		public static FieldInfo GetExposedField(Type type, string identifier)
 		{
 			foreach (var o in exposedFieldSets.Values)
@@ -149,8 +121,6 @@ namespace Raytracer
 			}
 			throw new KeyNotFoundException();
 		}
-
-		//static SceneFileLoader currentSceneLoader;
 
 		internal static SceneObject CreateSceneObject(Scene scene, BlockContent block)
 		{
@@ -237,31 +207,6 @@ namespace Raytracer
 			}
 			return mat;
 		}
-
-		/*
-		public static Material CreateMaterialOld(string identifier, string[] data)
-		{
-			string[] split = identifier.Split('_');
-			identifier = split[0];
-			var t = objects[identifier];
-			Material mat = (Material)Activator.CreateInstance(t.type);
-			if (split.Length > 1) mat.HandleExtraIdentifier(split[1]);
-			for (int i = 0; i < data.Length; i++)
-			{
-				string d = data[i];
-				foreach (var f in t.fields)
-				{
-					if (d.StartsWith(f.Key))
-					{
-						d = d.Substring(f.Key.Length).Trim();
-						FieldInfo fi = t.type.GetField(f.Value.fieldName);
-						fi.SetValue(mat, ParseData(null, fi.FieldType, d));
-					}
-				}
-			}
-			return mat;
-		}
-		*/
 
 		static Dictionary<Type, Func<string, object>> parsingTable = new Dictionary<Type, Func<string, object>>() {
 			{ typeof(int), (s) => int.Parse(s) },
