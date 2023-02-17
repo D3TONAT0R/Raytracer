@@ -302,10 +302,29 @@ namespace Raytracer
 				var b = c as BlockContent;
 				var nameSplit = b.keyword.Split(':');
 				var anim = new AnimatedProperty(nameSplit[0], nameSplit[1]);
+				Dictionary<int, Vector2> easingInfo = new Dictionary<int, Vector2>();
 				foreach(var k in b.data)
 				{
 					var kl = k as StringContent;
-					anim.keyframes.Add(AnimatedProperty.Keyframe.Parse(kl.keyword, kl.data));
+					if(kl.keyword == "E")
+					{
+						//Easing
+						var easingInfoSplit = kl.data.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
+						easingInfo.Add(anim.keyframes.Count - 1, new Vector2(float.Parse(easingInfoSplit[0]), float.Parse(easingInfoSplit[1])));
+					}
+					else
+					{
+						anim.keyframes.Add(AnimatedProperty.Keyframe.Parse(kl.keyword, kl.data));
+					}
+				}
+				foreach(var e in easingInfo)
+				{
+					var kf = anim.keyframes[e.Key];
+					kf.easingOut = e.Value.X;
+					anim.keyframes[e.Key] = kf;
+					kf = anim.keyframes[e.Key + 1];
+					kf.easingIn = e.Value.Y;
+					anim.keyframes[e.Key + 1] = kf;
 				}
 				list.Add(anim);
 			}

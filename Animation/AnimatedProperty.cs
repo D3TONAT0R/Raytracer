@@ -16,37 +16,37 @@ namespace Raytracer
 			public float time;
 
 			public Vector4? values;
+			public float easingIn;
+			public float easingOut;
 
 			public Keyframe(float t)
 			{
 				time = t;
 				values = null;
+				easingIn = 0;
+				easingOut = 0;
 			}
 
-			public Keyframe(float t, float? v)
+			public Keyframe(float t, float? v) : this(t)
 			{
-				time = t;
 				if(v.HasValue) values = new Vector4(v.Value, 0, 0, 0);
 				else values = null;
 			}
 
-			public Keyframe(float t, Vector2? v)
+			public Keyframe(float t, Vector2? v) : this(t)
 			{
-				time = t;
 				if(v.HasValue) values = new Vector4(v.Value, 0, 0);
 				else values = null;
 			}
 
-			public Keyframe(float t, Vector3? v)
+			public Keyframe(float t, Vector3? v) : this(t)
 			{
-				time = t;
 				if(v.HasValue) values = new Vector4(v.Value, 0);
 				else values = null;
 			}
 
-			public Keyframe(float t, Vector4? v)
+			public Keyframe(float t, Vector4? v) : this(t)
 			{
-				time = t;
 				values = v;
 			}
 
@@ -89,7 +89,9 @@ namespace Raytracer
 
 		public List<Keyframe> keyframes = new List<Keyframe>();
 
-		public float Length => keyframes.Last().time;
+		public float StartTime => keyframes.Count > 0 ? keyframes[0].time : 0;
+		public float EndTime => keyframes.Count > 0 ? keyframes[keyframes.Count - 1].time : 0;
+		public float Duration => EndTime - StartTime;
 
 		public AnimatedProperty(SceneObject target, string property, params Keyframe[] keyframes)
 		{
@@ -144,8 +146,18 @@ namespace Raytracer
 		private object Evaluate(float time, object defaultValue)
 		{
 			int index = GetLowerIndex(time, out var lerp);
+			var prev = keyframes[index];
+			var next = keyframes[index + 1];
+
+			//Apply easing
+			float x = lerp;
+			float p0 = Lerp(0, x, x * next.easingIn);
+			float x1 = 1 - x;
+			float p1 = Lerp(0, x1, x1 * -next.easingOut) + 1f;
+			lerp = Lerp(p0, p1, x);
+
 			var packedDefault = PackValues(defaultValue);
-			var i = Lerp(keyframes[index].values, keyframes[index + 1].values, lerp, packedDefault);
+			var i = Lerp(prev.values, keyframes[index + 1].values, lerp, packedDefault);
 			switch(fieldType)
 			{
 				case AnimatedFieldType.Float: return i.X;
@@ -202,11 +214,21 @@ namespace Raytracer
 			}
 		}
 
+		private static float Lerp(float a, float b, float t)
+		{
+			return a + (b - a) * t;
+		}
+
 		public static Vector4 Lerp(Vector4? a, Vector4? b, float t, Vector4 defaultValue)
 		{
 			if(a == null) a = defaultValue;
 			if(b == null) b = defaultValue;
 			return Vector4.Lerp(a.Value, b.Value, t);
+		}
+
+		public override string ToString()
+		{
+			return $"({targetObjectPath ?? targetObject?.name ?? "<NULL>"}:{targetPropertyIdentifier ?? "<NULL>"} [{StartTime:D2} - {EndTime}]";
 		}
 	}
 }

@@ -29,7 +29,7 @@ namespace Raytracer {
 				float l = 0;
 				foreach(var p in animatedProperties)
 				{
-					l = Math.Max(l, p.Length);
+					l = Math.Max(l, p.Duration);
 				}
 				return l;
 			}

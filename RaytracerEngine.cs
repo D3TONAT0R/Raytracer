@@ -35,6 +35,7 @@ namespace Raytracer {
 			set {
 				scene = value;
 				redrawScreen = true;
+				UpdateCameraConfigurationItems();
 				SceneLoaded?.Invoke();
 			}
 		}
@@ -103,7 +104,7 @@ namespace Raytracer {
 			previewRenderSettings = new RenderSettings("Preview")
 			{
 				rayMarchDistanceInVoid = 0.5f,
-				rayMarchDistanceInObject = 0.1f,
+				rayMarchDistanceInObject = 0.03f,
 				rayDistanceDegradation = 0.05f,
 				maxBounces = 0,
 				lightingType = LightingType.RaytracedNoShadows,
@@ -123,7 +124,7 @@ namespace Raytracer {
 				rayMarchDistanceInVoid = 0.03f,
 				rayMarchDistanceInObject = 0.002f,
 				rayDistanceDegradation = 0f,
-				maxBounces = 3,
+				maxBounces = 5,
 				lightingType = LightingType.RaytracedHardShadows
 			};
 			renderSettings = new List<RenderSettings>();

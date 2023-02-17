@@ -170,7 +170,6 @@ namespace Raytracer {
 				{
 					var scene = LoadSceneFromFile(d.FileName);
 					RaytracerEngine.Scene = scene;
-					RaytracerEngine.UpdateCameraConfigurationItems();
 					PersistentPrefs.WriteLastSessionInfo();
 					MessageBox.Show("Scene loaded " + d.FileName);
 				}
