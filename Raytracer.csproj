@@ -65,6 +65,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IO\ScreenshotExporter.cs" />
     <Compile Include="SceneObjects\Pyramid.cs" />
     <Compile Include="Utility\AABB.cs" />
     <Compile Include="Animation\AnimatedProperty.cs" />

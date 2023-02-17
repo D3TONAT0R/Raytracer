@@ -59,14 +59,12 @@ namespace Raytracer {
 		public static RenderSettings CurrentRenderSettings => render ? renderSettings[currentRenderSettingsIndex] : previewRenderSettings;
 		public static RenderTarget CurrentRenderTarget => render ? renderTargets[currentRenderTargetIndex] : previewRenderTarget;
 
-		public static string ScreenshotDirectory => Path.Combine(rootPath, "Screenshots");
-
 		static bool exit = false;
 		static bool animating = false;
 		Thread loopthread;
 
 		static Stopwatch renderTimer;
-		static RenderTarget lastRenderTarget;
+		internal static RenderTarget lastRenderTarget;
 
 		public static void Main(string[] args)
 		{
@@ -162,20 +160,23 @@ namespace Raytracer {
 			if (render && renderTimer != null) renderTimer.Stop();
 
 			if(toScreenshot) {
-				SaveScreenshot();
+				ScreenshotExporter.SaveScreenshot();
 				toScreenshot = false;
 			}
 
 			if (animating)
 			{
-				SaveScreenshot("anim");
+				ScreenshotExporter.SaveSequenceFrame();
 				redrawScreen = true;
 			}
 
 			if(animating && Scene.animator != null)
 			{
 				Scene.animator.StepFrames(1);
-				animating = Scene.animator.HasNextFrame;
+				if(!Scene.animator.HasNextFrame)
+				{
+					animating = false;
+				}
 			}
 
 			RefreshImageView();
@@ -480,6 +481,7 @@ namespace Raytracer {
 					if(animating)
 					{
 						redrawScreen = true;
+						ScreenshotExporter.BeginNewSequence(Scene.sceneName ?? Scene.SourceFileName);
 						Scene.animator.Rewind();
 					}
 				}
@@ -586,18 +588,6 @@ namespace Raytracer {
 			if(Scene.remoteControlledObject != null) {
 				redrawScreen = true;
 				Scene.remoteControlledObject.localPosition += new Vector3(x, 0, z);
-			}
-		}
-
-		public static void SaveScreenshot(string prefix = "screenshot") {
-			var buffer = (lastRenderTarget ?? CurrentRenderTarget).RenderBuffer;
-			if(buffer != null) {
-				int num = 1;
-				var path = Path.Combine(ScreenshotDirectory, prefix + "_");
-				while(File.Exists(path + num.ToString("D4") + ".png")) {
-					num++;
-				}
-				buffer.Save(path + num.ToString("D4") + ".png");
 			}
 		}
 

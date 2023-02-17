@@ -90,7 +90,7 @@ namespace Raytracer {
 
 		private void OnSaveViewMenuItemClick(object sender, EventArgs e)
 		{
-			RaytracerEngine.SaveScreenshot();
+			ScreenshotExporter.SaveScreenshot();
 		}
 
 		private void reloadCurrentSceneToolStripMenuItem_Click(object sender, EventArgs e)
@@ -130,12 +130,13 @@ namespace Raytracer {
 			sb.AppendLine("Arrow Up/Down: Look Up / Down");
 			sb.AppendLine("Y/X: Tilt Camera");
 			sb.AppendLine("./,: Zoom");
+			sb.AppendLine("N/M: Pivot Forward / Back");
 			MessageBox.Show(sb.ToString(), "Camera Controls");
 		}
 
 		private void browseScreenshotFolderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			Process.Start("explorer.exe", RaytracerEngine.ScreenshotDirectory);
+			Process.Start("explorer.exe", ScreenshotExporter.ScreenshotRootFolder);
 		}
 	}
 }

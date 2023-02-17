@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -15,6 +16,7 @@ namespace Raytracer
 		public string sceneName;
 		public string rootDirectory;
 		public string sourceFile;
+		public string SourceFileName => Path.GetFileNameWithoutExtension(sourceFile);
 
 		public Environment environment;
 
