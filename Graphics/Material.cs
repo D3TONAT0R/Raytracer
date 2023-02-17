@@ -307,7 +307,7 @@ namespace Raytracer {
 				return Color.Lerp(RaytracerEngine.Scene.environment.ambientColor, RaytracerEngine.Scene.environment.simpleSunColor, brightness);
 			} else {
 				//Apply correct lighting using the light sources from the scene
-				Color lightCol = RaytracerEngine.Scene.environment.ambientColor;
+				Color lightCol = RaytracerEngine.Scene.environment.AmbientLight;
 				foreach(var l in RaytracerEngine.Scene.GetContributingLights(point)) {
 					lightCol += l.GetLightAtPoint(RaytracerEngine.Scene, point, nrm, lighting, shape, out bool shadow);
 					if(CurrentRenderSettings.specularHighlights && !shadow) {

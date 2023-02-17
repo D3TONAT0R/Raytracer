@@ -4,32 +4,51 @@ namespace Raytracer
 {
 	public class Environment
 	{
-
+		[DataIdentifier("SKY_GRADIENT")]
 		public Gradient skyboxGradient;
+		[DataIdentifier("SKYBOX_TEX")]
 		public Sampler2D skyboxTexture;
-		public bool skyboxIsSpherical;
+		[DataIdentifier("SKYBOX_SPHERICAL")]
+		public bool skyboxIsSpherical = true;
 
+		[DataIdentifier("SKY_TINT")]
+		public Color skyboxTint = Color.White;
+		[DataIdentifier("SKY_BRIGHTNESS")]
+		public float skyboxBrightness = 1.0f;
+
+		[DataIdentifier("AMBIENT_COLOR")]
 		public Color ambientColor = new Color(0.2f, 0.2f, 0.25f);
+		[DataIdentifier("AMBIENT_BRIGHTNESS")]
+		public float ambientBrightness = 1f;
 		public Color simpleSunColor = new Color(1.00f, 0.96f, 0.88f);
 
+		[DataIdentifier("FOG_DISTANCE")]
 		public float fogDistance = 250f;
+		[DataIdentifier("FOG_COLOR")]
 		public Color fogColor = System.Drawing.Color.LightSkyBlue;
+
+		public Color AmbientLight => ambientColor * ambientBrightness;
 
 		public Environment()
 		{
 			skyboxGradient = new Gradient(
-				(0, System.Drawing.Color.Black),
-				(0.49f, System.Drawing.Color.DarkOliveGreen),
-				(0.51f, System.Drawing.Color.LightBlue),
-				(1f, System.Drawing.Color.White)
+				new GradientKey(0, System.Drawing.Color.Black),
+				new GradientKey(0.49f, System.Drawing.Color.DarkOliveGreen),
+				new GradientKey(0.51f, System.Drawing.Color.LightBlue),
+				new GradientKey(1f, System.Drawing.Color.White)
 			);
 		}
 
 		public Color SampleSkybox(Vector3 direction)
 		{
-			if (skyboxTexture != null)
+			return SampleSky(direction) * skyboxTint * skyboxBrightness;
+		}
+
+		private Color SampleSky(Vector3 direction)
+		{
+			if(skyboxTexture != null)
 			{
-				if (skyboxIsSpherical)
+				if(skyboxIsSpherical)
 				{
 					var x = MathUtils.DirToEuler(direction).Y / 360f;
 					var y = 0.5f + direction.Y / 2f;
@@ -45,9 +64,13 @@ namespace Raytracer
 					return skyboxTexture.Sample(x, y);
 				}
 			}
-			else
+			else if(skyboxGradient != null)
 			{
 				return skyboxGradient.Evaluate(direction.Y / 2f + 0.5f);
+			}
+			else
+			{
+				return Color.Gray;
 			}
 		}
 	}

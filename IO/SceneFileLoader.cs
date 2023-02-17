@@ -22,14 +22,20 @@ namespace Raytracer
 
 		internal abstract class Content
 		{
+			public readonly int lineNumber;
 			public string keyword;
+
+			public Content(int lineNumber)
+			{
+				this.lineNumber = lineNumber;
+			}
 		}
 
 		internal class StringContent : Content
 		{
 			public string data;
 
-			public StringContent(string line)
+			public StringContent(int lineNumber, string line) : base(lineNumber)
 			{
 				line = TrimLine(line);
 				var split = line.Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
@@ -44,7 +50,7 @@ namespace Raytracer
 			public string refName;
 			public List<Content> data = new List<Content>();
 
-			public BlockContent(string currentLine, StringReader reader, ref int lineNum)
+			public BlockContent(string currentLine, StringReader reader, ref int lineNum) : base(lineNum)
 			{
 				int startLineNum = lineNum;
 				var split = TrimLine(currentLine).Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
@@ -63,6 +69,7 @@ namespace Raytracer
 				while(true)
 				{
 					var line = reader.ReadLine();
+					lineNum++;
 					if(line.StartsWith("#")) continue;
 					if(line == null) throw new EndOfStreamException($"Unclosed block at line {startLineNum}.");
 					if(line.Contains('}'))
@@ -76,7 +83,7 @@ namespace Raytracer
 					}
 					else if(!string.IsNullOrWhiteSpace(line))
 					{
-						data.Add(new StringContent(line));
+						data.Add(new StringContent(lineNum, line));
 					}
 				}
 			}
@@ -209,30 +216,7 @@ namespace Raytracer
 		static Environment ParseEnvironmentBlock(BlockContent block, Scene scene)
 		{
 			var env = new Environment();
-			foreach(var d in block.data)
-			{
-				var line = d as StringContent;
-				switch(line.keyword)
-				{
-					case "SKYBOX":
-						env.skyboxTexture = Sampler2D.Create(line.data, scene.rootDirectory);
-						break;
-					case "SKYBOX_SPHERICAL":
-						env.skyboxIsSpherical = bool.Parse(line.data);
-						break;
-					case "AMBIENT":
-						env.ambientColor = Color.Parse(line.data);
-						break;
-					case "FOG":
-						env.fogColor = Color.Parse(line.data);
-						break;
-					case "FOG_DISTANCE":
-						env.fogDistance = float.Parse(line.data);
-						break;
-					default:
-						throw new ArgumentException($"Unexpected keyword '{line.keyword}' in ENVIRONMENT block.");
-				}
-			}
+			Reflector.LoadData(env, block, scene);
 			return env;
 		}
 

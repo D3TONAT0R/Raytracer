@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using static Raytracer.SceneFileLoader;
 
 namespace Raytracer
@@ -36,15 +34,6 @@ namespace Raytracer
 
 	public static class Reflector
 	{
-
-		public enum AttributeTypeInfo
-		{
-			Unknown,
-			SceneObject,
-			Material,
-			Environment,
-			Data
-		}
 
 		public class ExposedFieldSet
 		{
@@ -168,20 +157,27 @@ namespace Raytracer
 			var fieldSet = exposedFieldSets[block.keyword.ToUpper()];
 			SceneObject obj = (SceneObject)Activator.CreateInstance(fieldSet.type);
 			obj.name = !string.IsNullOrWhiteSpace(block.name) ? block.name : null;
+			if(obj is IReferencedObject iRef)
+			{
+				if(block.refName == null) throw new NullReferenceException("SceneObject is missing a required object reference.");
+				iRef.ReferencedObjectName = block.refName;
+			}
 			foreach(var d in block.data)
 			{
-				if(obj is IReferencedObject iRef)
-				{
-					if(block.refName == null) throw new NullReferenceException("SceneObject is missing a required object reference.");
-					iRef.ReferencedObjectName = block.refName;
-				}
+				bool found = false;
 				foreach (var f in fieldSet.fields)
 				{
 					if (d.keyword == f.Key)
 					{
 						FieldInfo fi = fieldSet.type.GetField(f.Value.fieldName);
 						fi.SetValue(obj, ParseData(scene, fi.FieldType, d));
+						found = true;
+						break;
 					}
+				}
+				if(!found)
+				{
+					throw new InvalidOperationException($"Unknown identifier '{d.keyword}' in block '{block.keyword}:{(string.IsNullOrEmpty(block.name) ? block.name : "<Unnamed>")}'\nat line {d.lineNumber}.");
 				}
 			}
 			return obj;
@@ -354,6 +350,16 @@ namespace Raytracer
 			{
 				return Enum.Parse(targetType, ((StringContent)data).data, true);
 			}
+			else if(targetType == typeof(Gradient))
+			{
+				Gradient grad = new Gradient();
+				foreach(var d in ((BlockContent)data).data)
+				{
+					var key = (StringContent)d;
+					grad.keys.Add(new GradientKey(float.Parse(key.keyword), Color.Parse(key.data)));
+				}
+				return grad;
+			}
 			else if (parsingTable.ContainsKey(targetType))
 			{
 				return parsingTable[targetType](((StringContent)data).data);
@@ -390,29 +396,43 @@ namespace Raytracer
 			}
 		}
 
+		internal static void LoadData<T>(T target, BlockContent dataBlock, Scene parentScene)
+		{
+			var members = target.GetType().GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+				.Where(m => m.GetCustomAttribute<DataIdentifierAttribute>(true) != null)
+				.ToDictionary(m => m.GetCustomAttribute<DataIdentifierAttribute>().identifier, m => m);
+			foreach(var data in dataBlock.data)
+			{
+				if(members.TryGetValue(data.keyword, out var m))
+				{
+					SetMemberValue(target, m, ParseData(parentScene, GetMemberType(m), data));
+				}
+				else
+				{
+					throw new InvalidOperationException($"Unknown identifier '{data.keyword}' in block '{dataBlock.keyword}'\nat line {data.lineNumber}.");
+				}
+			}
+		}
+
+		internal static void SetMemberValue(object obj, MemberInfo m, object value)
+		{
+			if(m is FieldInfo fi) fi.SetValue(obj, value);
+			else if(m is PropertyInfo pi) pi.SetValue(obj, value);
+			else throw new InvalidOperationException();
+		}
+
+		internal static Type GetMemberType(MemberInfo m)
+		{
+			if(m is FieldInfo fi) return fi.FieldType;
+			else if(m is PropertyInfo pi) return pi.PropertyType;
+			else throw new InvalidOperationException();
+		}
+
 		public static SceneObject CloneObject(SceneObject obj)
 		{
 			var clone = (SceneObject)Activator.CreateInstance(obj.GetType());
 			TransferFieldData(obj, clone);
 			return clone;
 		}
-
-		/*
-		public static SceneObject[] GetSceneObjects(string[] names) {
-			SceneObject[] arr = new SceneObject[names.Length];
-			for(int i = 0; i < names.Length; i++) {
-				arr[i] = currentSceneLoader.objectList[names[i]];
-			}
-			return arr;
-		}
-
-		public static SceneObject[] GetSolids(string[] names) {
-			SolidShape[] arr = new SolidShape[names.Length];
-			for(int i = 0; i < names.Length; i++) {
-				arr[i] = currentSceneLoader.objectList[names[i]] as SolidShape;
-			}
-			return arr;
-		}
-		*/
 	}
 }
