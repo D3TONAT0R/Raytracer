@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public abstract class Shape : SceneObject {
 
+		[DataIdentifier("VISFLAGS")]
+		public VisibilityFlags visibilityFlags = VisibilityFlags.All;
 		[DataIdentifier("MATERIAL")]
 		public Material material;
 

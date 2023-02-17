@@ -28,7 +28,7 @@ namespace Raytracer
 			pixelY = y;
 
 			var ray = camera.ScreenPointToRay(viewportCoord);
-			return SceneRenderer.TraceRay(scene, ray).SetAlpha(1);
+			return SceneRenderer.TraceRay(scene, ray, VisibilityFlags.Direct).SetAlpha(1);
 		}
 
 		protected void SetPixel(byte[] buffer, int x, int y, Color color, int width, int height, int depth)

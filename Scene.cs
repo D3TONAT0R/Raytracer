@@ -129,14 +129,14 @@ namespace Raytracer
 
 		static Random r = new Random();
 
-		public List<Shape> GetIntersectingShapes(Ray ray)
+		public List<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
 		{
 			var list = new List<Shape>();
 			foreach(var o in sceneContent)
 			{
 				if(o.CanContainShapes)
 				{
-					list.AddRange(o.GetIntersectingShapes(ray));
+					list.AddRange(o.GetIntersectingShapes(ray, flags));
 				}
 			}
 			list.RemoveAll((s) => !s.VisibleInHierarchy);

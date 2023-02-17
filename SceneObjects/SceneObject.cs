@@ -129,5 +129,16 @@ namespace Raytracer
 		{
 			yield break;
 		}
+
+		public IEnumerable<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
+		{
+			foreach(var s in GetIntersectingShapes(ray))
+			{
+				if(s.visibilityFlags.HasFlag(flags))
+				{
+					yield return s;
+				}
+			}
+		}
 	}
 }

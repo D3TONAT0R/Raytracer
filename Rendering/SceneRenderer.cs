@@ -99,10 +99,10 @@ namespace Raytracer
 			FlushCurrent();
 		}
 
-		public static Color TraceRay(Scene scene, Ray ray, Shape excludeShape = null, bool allowOptimization = true)
+		public static Color TraceRay(Scene scene, Ray ray, VisibilityFlags rayType, Shape excludeShape = null, bool allowOptimization = true)
 		{
 			if (ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
-			Vector3? hit = TraceRay(scene, ref ray, out var intersection, excludeShape, null, allowOptimization);
+			Vector3? hit = TraceRay(scene, ref ray, rayType, out var intersection, excludeShape, null, allowOptimization);
 			if (hit != null && intersection != null)
 			{
 				return intersection.GetColorAt((Vector3)hit, ray);
@@ -114,9 +114,9 @@ namespace Raytracer
 			}
 		}
 
-		public static Vector3? TraceRay(Scene scene, ref Ray ray, out Shape intersectingShape, Shape excludeShape = null, Shape exitShape = null, bool allowOptimization = true)
+		public static Vector3? TraceRay(Scene scene, ref Ray ray, VisibilityFlags rayType, out Shape intersectingShape, Shape excludeShape = null, Shape exitShape = null, bool allowOptimization = true)
 		{
-			var shapes = scene.GetIntersectingShapes(ray);
+			var shapes = scene.GetIntersectingShapes(ray, rayType);
 			intersectingShape = null;
 			//Ignore excluded shape
 			if (excludeShape != null && shapes.Contains(excludeShape)) shapes.Remove(excludeShape);

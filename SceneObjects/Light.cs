@@ -113,7 +113,7 @@ namespace Raytracer {
 				if (ray.maxDistance > 0)
 				{
 					//caster = SceneRenderer.TraceRay(scene, ref ray, out _, sourceShape);
-					SceneRenderer.TraceRay(scene, ref ray, out caster, null, null, false);
+					SceneRenderer.TraceRay(scene, ref ray, VisibilityFlags.Shadows, out caster, null, null, false);
 				}
 
 				//}
