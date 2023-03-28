@@ -16,8 +16,6 @@ namespace Raytracer {
 
 		public static Camera MainCamera { get; set; }
 
-		[DataIdentifier("ROTATION")]
-		public Vector3 rotation;
 		[DataIdentifier("FOV")]
 		public float fieldOfView = 60;
 		[DataIdentifier("OFFSET")]
@@ -27,21 +25,21 @@ namespace Raytracer {
 		private float aspectRatio;
 		private Vector3 cornerDir;
 
-		public Vector3 ActualCameraPosition => WorldPosition + MathUtils.EulerToDir(rotation) * forwardOffset;
+		public Vector3 ActualCameraPosition => WorldPosition + MathUtils.EulerToDir(localRotation) * forwardOffset;
 
 		public event Action HasChanged;
 
 		public void ApplyConfiguration(CameraConfiguration configuration)
 		{
 			localPosition = configuration.position;
-			rotation = configuration.rotation;
+			localRotation = configuration.rotation;
 			fieldOfView = configuration.fieldOfView;
 			forwardOffset = configuration.offset;
 			HasChanged?.Invoke();
 		}
 
 		public void Move(Vector3 localMoveVector, bool fly) {
-			var euler = rotation * MathUtils.Deg2Rad;
+			var euler = localRotation * MathUtils.Deg2Rad;
 			if(fly) {
 				euler.X = 0;
 				euler.Z = 0;
@@ -63,7 +61,7 @@ namespace Raytracer {
 		}
 
 		public void Rotate(Vector3 rot) {
-			rotation += rot;
+			localRotation += rot;
 			HasChanged?.Invoke();
 		}
 
@@ -73,7 +71,7 @@ namespace Raytracer {
 			aspectRatio = h / (float)w;
 			var cd = new Vector3(MathUtils.DegTan(fieldOfView/2f) / aspectRatio, MathUtils.DegTan(-fieldOfView/2f), 1);
 			cornerDir = cd;
-			var euler = rotation * MathUtils.Deg2Rad;
+			var euler = localRotation * MathUtils.Deg2Rad;
 			cameraMatrix = Matrix4x4.CreateFromYawPitchRoll(euler.Y, euler.X, euler.Z);
 		}
 

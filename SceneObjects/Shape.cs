@@ -26,7 +26,6 @@ namespace Raytracer {
 			protected set {
 				shapeAABB = value;
 				ExpandedAABB = value.Expand(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid);
-				//ExpandedAABB = value.Expand(0.001f);
 			}
 		}
 
@@ -55,7 +54,8 @@ namespace Raytracer {
 
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{
-			if(ShapeAABB.Intersects(ray)) yield return this;
+			var tRay = ray.Transform(WorldToLocalMatrix);
+			if(ShapeAABB.Intersects(tRay)) yield return this;
 		}
 
 		public override AABB GetTotalShapeAABB()

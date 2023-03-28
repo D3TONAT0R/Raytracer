@@ -86,10 +86,12 @@ namespace Raytracer
 			sceneObjectsAABB = AABB.Empty;
 			foreach(var s in sceneContent)
 			{
+				s.SetupMatrix();
 				s.SetupForRendering();
 				sceneObjectsAABB = sceneObjectsAABB.Join(s.GetTotalShapeAABB());
 			}
-			sceneObjectsAABB = sceneObjectsAABB.Expand(1.0f);
+			sceneObjectsAABB = sceneObjectsAABB.Join(new AABB(Camera.MainCamera.ActualCameraPosition, Camera.MainCamera.ActualCameraPosition));
+			sceneObjectsAABB = sceneObjectsAABB.Expand(2.0f);
 			/*
 			foreach(var s1 in shapes)
 			{
@@ -161,11 +163,6 @@ namespace Raytracer
 			//return worldAABB.IsInside(pos);
 		}
 
-		public Shape[] GetAABBIntersectingShape(Vector3 pos)
-		{
-			return GetAABBIntersectingShapes(pos, shapes);
-		}
-
 		public Shape[] GetAABBIntersectingShapes(Vector3 pos, List<Shape> query)
 		{
 			List<Shape> list = new List<Shape>();
@@ -173,7 +170,7 @@ namespace Raytracer
 			{
 				foreach(var s in query)
 				{
-					if(s.ExpandedAABB.IsInside(pos)) list.Add(s);
+					if(s.ExpandedAABB.IsInside(Vector3.Transform(pos, s.WorldToLocalMatrix))) list.Add(s);
 				}
 			}
 			return list.ToArray();

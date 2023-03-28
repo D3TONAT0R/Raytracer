@@ -81,7 +81,7 @@ namespace Raytracer {
 			MakeWinforms();
 			Camera.MainCamera = new Camera() {
 				localPosition = Vector3.UnitY,
-				rotation = Vector3.Zero,
+				localRotation = Vector3.Zero,
 				fieldOfView = 60
 			};
 			Camera.MainCamera.HasChanged += PersistentPrefs.WriteLastSessionInfo;
@@ -312,7 +312,7 @@ namespace Raytracer {
 			sb.AppendLine("Current camera configuration:");
 			var cam = Camera.MainCamera;
 			sb.AppendLine("Position: " + cam.localPosition.ToString());
-			sb.AppendLine("Rotation: " + cam.rotation.ToString());
+			sb.AppendLine("Rotation: " + cam.localRotation.ToString());
 			sb.AppendLine("FOV: " + cam.fieldOfView.ToString());
 			MessageBox.Show(sb.ToString());
 		}

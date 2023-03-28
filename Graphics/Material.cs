@@ -252,7 +252,7 @@ namespace Raytracer {
 			Color final = baseColor;
 			var reflNrm = MathUtils.Bounce(ray.Direction, nrm);
 
-			var shade = CalculateLighting(CurrentRenderSettings.lightingType, ray.position, shape, nrm, reflNrm);
+			var shade = CalculateLighting(CurrentRenderSettings.lightingType, ray.Position, shape, nrm, reflNrm);
 			final *= shade;
 			//Apply transparency
 			if(baseColor.a < 1) {
@@ -270,25 +270,25 @@ namespace Raytracer {
 				{
 					var refractedNormal = MathUtils.Refract(ray.Direction, -nrm, 1f, indexOfRefraction);
 					var refrMaxDistance = thickness > 0 ? thickness : 100;
-					var newray = new Ray(ray.position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
+					var newray = new Ray(ray.Position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
 					var refractedExitPos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref newray, VisibilityFlags.All, out _, shape, shape);
 
-					var exitSurfaceNrm = thickness > 0 ? -nrm : shape.GetNormalAt(refractedExitPos ?? newray.position);
+					var exitSurfaceNrm = thickness > 0 ? -nrm : shape.GetNormalAt(refractedExitPos ?? newray.Position);
 					refractedNormal = MathUtils.Refract(refractedNormal, -exitSurfaceNrm, indexOfRefraction, 1f);
-					newray = new Ray(newray.position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
+					newray = new Ray(newray.Position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
 					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Direct, shape) * mainColor;
 				}
 				else
 				{
-					var newray = new Ray(ray.position, ray.Direction, ray.reflectionIteration + 1, ray.sourceScreenPos);
+					var newray = new Ray(ray.Position, ray.Direction, ray.reflectionIteration + 1, ray.sourceScreenPos);
 					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Direct, shape) * mainColor;
 				}
 				final = Color.Lerp(backColor, final, op);
 			}
 			//Apply reflections
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {
-				var rayOffset = (shape.GetSurfaceProximity(ray.position) * 1.1f) * nrm;
-				var newray = new Ray(ray.position + rayOffset, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
+				var rayOffset = (shape.GetSurfaceProximity(ray.Position) * 1.1f) * nrm;
+				var newray = new Ray(ray.Position + rayOffset, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
 				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Reflections, null, false);
 				final = Color.Lerp(final, reflColor * baseColor, reflectivity * reflectivity);
 			}

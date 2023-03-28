@@ -108,7 +108,7 @@ namespace Raytracer {
 						RaytracerEngine.Scene = SceneFileLoader.CreateFromFile(info.sceneFile);
 						var cam = Camera.MainCamera;
 						cam.localPosition = info.cameraPos;
-						cam.rotation = info.cameraRot;
+						cam.localRotation = info.cameraRot;
 						cam.fieldOfView = info.cameraFOV;
 						cam.forwardOffset = info.cameraOffset;
 					}

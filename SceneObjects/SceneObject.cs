@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Numerics;
 using System.Runtime.Serialization;
 
@@ -13,7 +14,15 @@ namespace Raytracer
 		[DataIdentifier("VISIBLE")]
 		public bool visible = true;
 		[DataIdentifier("POSITION")]
-		public Vector3 localPosition;
+		public Vector3 localPosition = Vector3.Zero;
+		[DataIdentifier("ROTATION")]
+		public Vector3 localRotation = Vector3.Zero;
+		[DataIdentifier("SCALE")]
+		public Vector3 localScale = Vector3.One;
+
+		private Matrix4x4 childMatrix = Matrix4x4.Identity;
+		public Matrix4x4 LocalToWorldMatrix { get; private set; } = Matrix4x4.Identity;
+		public Matrix4x4 WorldToLocalMatrix { get; private set; } = Matrix4x4.Identity;
 
 		public bool VisibleInHierarchy => visible && (parent?.VisibleInHierarchy ?? true);
 
@@ -121,6 +130,16 @@ namespace Raytracer
 			IsInitialized = false;
 		}
 
+		public virtual void SetupMatrix()
+		{
+			const float deg2rad = (float)Math.PI / 180f;
+			childMatrix = Matrix4x4.CreateScale(localScale) * Matrix4x4.CreateTranslation(localPosition) * Matrix4x4.CreateFromYawPitchRoll(localRotation.Y * deg2rad, localRotation.X * deg2rad, localRotation.Z * deg2rad);
+			LocalToWorldMatrix = GetWorldMatrix();
+			Matrix4x4 inv;
+			Matrix4x4.Invert(LocalToWorldMatrix, out inv);
+			WorldToLocalMatrix = inv;
+		}
+
 		public abstract void SetupForRendering();
 
 		public virtual AABB GetTotalShapeAABB() => AABB.Empty;
@@ -139,6 +158,12 @@ namespace Raytracer
 					yield return s;
 				}
 			}
+		}
+
+		private Matrix4x4 GetWorldMatrix()
+		{
+			if(parent != null) return parent.GetWorldMatrix() * childMatrix;
+			else return childMatrix;
 		}
 	}
 }

@@ -35,13 +35,19 @@ namespace Raytracer {
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			return ShapeAABB.IsInside(pos);
+			pos = Vector3.Transform(pos, WorldToLocalMatrix);
+			return
+				pos.X > 0 && pos.X < size.X &&
+				pos.Y > 0 && pos.Y < size.Y &&
+				pos.Z > 0 && pos.Z < size.Z;
+			//return ShapeAABB.IsInside(pos);
 		}
 
 		public override Vector3 GetNormalAt(Vector3 pos)
 		{
 			CalculateNearestFace(pos, out int face, out _);
-			return localNormals[face];
+			var normal = localNormals[face];
+			return Vector3.TransformNormal(normal, WorldToLocalMatrix);
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos) {
@@ -50,6 +56,7 @@ namespace Raytracer {
 		}
 
 		protected virtual void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
+			pos = Vector3.Transform(pos, WorldToLocalMatrix);
 			//0 = bottom
 			//1 = top
 			//2 = left
