@@ -11,9 +11,9 @@ namespace Raytracer
 	public static class SceneEditor
 	{
 
-		static SceneObject inspectedObject;
+		static object inspectedObject;
 
-		public static SceneObject InspectedObject
+		public static object InspectedObject
 		{
 			get
 			{
@@ -83,17 +83,17 @@ namespace Raytracer
 			}
 			else if(v is int i)
 			{
-				panel.Controls.Add(CreateIntNumeric(null, i, (x) => value.SetValue(inspectedObject, x)));
+				panel.Controls.Add(CreateIntNumeric(null, i, null, null, (x) => value.SetValue(inspectedObject, x)));
 			}
 			else if(v is float f)
 			{
-				panel.Controls.Add(CreateNumeric(null, f, (x) => value.SetValue(inspectedObject, x)));
+				panel.Controls.Add(CreateNumeric(null, f, null, null, value.attribute.numericIncrement, (x) => value.SetValue(inspectedObject, x)));
 			}
 			else if(v is Vector3 v3)
 			{
-				panel.Controls.Add(CreateNumeric("X", v3.X, (x) => SetComponent(inspectedObject, value, 0, x)));
-				panel.Controls.Add(CreateNumeric("Y", v3.Y, (x) => SetComponent(inspectedObject, value, 1, x)));
-				panel.Controls.Add(CreateNumeric("Z", v3.Z, (x) => SetComponent(inspectedObject, value, 2, x)));
+				panel.Controls.Add(CreateNumeric("X", v3.X, null, null, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 0, x)));
+				panel.Controls.Add(CreateNumeric("Y", v3.Y, null, null, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 1, x)));
+				panel.Controls.Add(CreateNumeric("Z", v3.Z, null, null, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 2, x)));
 			}
 			else if(v is Enum e)
 			{
@@ -101,10 +101,10 @@ namespace Raytracer
 			}
 			else if(v is Color c)
 			{
-				panel.Controls.Add(CreateColorNumeric("R", c.r, (x) => SetComponent(inspectedObject, value, 0, x)));
-				panel.Controls.Add(CreateColorNumeric("G", c.g, (x) => SetComponent(inspectedObject, value, 1, x)));
-				panel.Controls.Add(CreateColorNumeric("x", c.b, (x) => SetComponent(inspectedObject, value, 2, x)));
-				panel.Controls.Add(CreateColorNumeric("A", c.a, (x) => SetComponent(inspectedObject, value, 3, x)));
+				panel.Controls.Add(CreateColorNumeric("R", c.r, 1f, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 0, x)));
+				panel.Controls.Add(CreateColorNumeric("G", c.g, 1f, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 1, x)));
+				panel.Controls.Add(CreateColorNumeric("B", c.b, 1f, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 2, x)));
+				panel.Controls.Add(CreateColorNumeric("A", c.a, 1f, value.attribute.numericIncrement, (x) => SetComponent(inspectedObject, value, 3, x)));
 			}
 			else
 			{
@@ -136,21 +136,17 @@ namespace Raytracer
 			}
 		}
 
-		static NumericUpDown CreateNumeric(string label, float f, Action<float> feedback)
+		static NumericUpDown CreateNumeric(string label, float f, float? min, float? max, float? increment, Action<float> feedback)
 		{
-			NumericUpDown num;
-			if(!string.IsNullOrEmpty(label))
-			{
-				num = new LabeledNumericUpDown(label);
-			}
-			else
-			{
-				num = new NumericUpDown();
-			}
+			NumericUpDown num = new LabeledNumericUpDown(label);
 			num.DecimalPlaces = 3;
-			num.Minimum = -999;
-			num.Maximum = 999;
+			num.InterceptArrowKeys = false;
+			num.Increment = increment.HasValue ? (decimal)increment : 0.1m;
 			num.TextAlign = HorizontalAlignment.Right;
+			if(min.HasValue) num.Minimum = (decimal)min;
+			else num.Minimum = decimal.MinValue;
+			if(max.HasValue) num.Maximum = (decimal)max;
+			else num.Maximum = decimal.MaxValue;
 			num.Width = 80;
 			num.Value = (decimal)f;
 			num.ValueChanged += (object sender, EventArgs e) =>
@@ -158,25 +154,20 @@ namespace Raytracer
 				feedback((float)num.Value);
 				RaytracerEngine.RedrawScreen(false);
 			};
-			num.Increment = 0.5m;
 			return num;
 		}
 
-		static NumericUpDown CreateIntNumeric(string label, int i, Action<int> feedback)
+		static NumericUpDown CreateIntNumeric(string label, int i, int? min, int? max, Action<int> feedback)
 		{
-			var num = CreateNumeric(label, i, (f) => feedback?.Invoke((int)f));
+			var num = CreateNumeric(label, i, min, max, 1, (f) => feedback?.Invoke((int)f));
 			num.DecimalPlaces = 0;
 			num.Increment = 1;
 			return num;
 		}
 
-		static NumericUpDown CreateColorNumeric(string label, float f, Action<float> feedback)
+		static NumericUpDown CreateColorNumeric(string label, float f, float limit, float? increment, Action<float> feedback)
 		{
-			var num = CreateNumeric(label, f, feedback);
-			num.Minimum = 0;
-			num.Maximum = 1;
-			num.Increment = 0.1m;
-			return num;
+			return CreateNumeric(label, f, 0f, limit, increment ?? 0.01f, feedback);
 		}
 
 		static ComboBox CreateDropDown(string index, Enum items, Action<string> feedback)

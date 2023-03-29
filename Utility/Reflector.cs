@@ -26,9 +26,16 @@ namespace Raytracer
 
 		public string identifier;
 
+		public float? numericIncrement = null;
+
 		public DataIdentifierAttribute(string id)
 		{
 			identifier = id.ToUpper();
+		}
+
+		public DataIdentifierAttribute(string id, float increments) : this(id)
+		{
+			numericIncrement = increments;
 		}
 	}
 

@@ -38,7 +38,7 @@ namespace Raytracer {
 		}
 
 		private void OnSceneTreeSelect(object sender, TreeViewEventArgs e) {
-			SceneEditor.InspectedObject = sceneTree.SelectedNode.Tag as SceneObject;
+			SceneEditor.InspectedObject = sceneTree.SelectedNode.Tag;
 		}
 
 		private void propertiesPanel_Paint(object sender, PaintEventArgs e) {
