@@ -13,11 +13,11 @@ namespace Raytracer
 		public string name;
 		[DataIdentifier("VISIBLE")]
 		public bool visible = true;
-		[DataIdentifier("POSITION")]
+		[DataIdentifier("POSITION", 0.1f)]
 		public Vector3 localPosition = Vector3.Zero;
-		[DataIdentifier("ROTATION")]
+		[DataIdentifier("ROTATION", 1.0f)]
 		public Vector3 localRotation = Vector3.Zero;
-		[DataIdentifier("SCALE")]
+		[DataIdentifier("SCALE", 0.1f)]
 		public Vector3 localScale = Vector3.One;
 
 		private Matrix4x4 childMatrix = Matrix4x4.Identity;
@@ -40,7 +40,6 @@ namespace Raytracer
 				}
 			}
 		}
-
 		public Vector3 WorldPosition
 		{
 			get
@@ -133,7 +132,7 @@ namespace Raytracer
 		public virtual void SetupMatrix()
 		{
 			const float deg2rad = (float)Math.PI / 180f;
-			childMatrix = Matrix4x4.CreateScale(localScale) * Matrix4x4.CreateTranslation(localPosition) * Matrix4x4.CreateFromYawPitchRoll(localRotation.Y * deg2rad, localRotation.X * deg2rad, localRotation.Z * deg2rad);
+			childMatrix = Matrix4x4.CreateScale(localScale) * Matrix4x4.CreateFromYawPitchRoll(localRotation.Y * deg2rad, localRotation.X * deg2rad, localRotation.Z * deg2rad) * Matrix4x4.CreateTranslation(localPosition);
 			LocalToWorldMatrix = GetWorldMatrix();
 			Matrix4x4 inv;
 			Matrix4x4.Invert(LocalToWorldMatrix, out inv);
@@ -165,5 +164,10 @@ namespace Raytracer
 			if(parent != null) return parent.GetWorldMatrix() * childMatrix;
 			else return childMatrix;
 		}
+
+		public Vector3 TransformToWorld(Vector3 local) => Vector3.Transform(local, LocalToWorldMatrix);
+		public Vector3 TransformToLocal(Vector3 world) => Vector3.Transform(world, WorldToLocalMatrix);
+		public Vector3 TransformToWorldNormal(Vector3 localNormal) => Vector3.Normalize(Vector3.TransformNormal(localNormal, LocalToWorldMatrix));
+		public Vector3 TransformToLocalNormal(Vector3 worldNormal) => Vector3.Normalize(Vector3.TransformNormal(worldNormal, WorldToLocalMatrix));
 	}
 }

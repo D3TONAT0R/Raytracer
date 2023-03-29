@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace Raytracer {
 	public class RaytracerEngine {
@@ -421,11 +422,43 @@ namespace Raytracer {
 		void BuildSceneTree() {
 			if(Scene != null && Scene.sceneContent != null && Scene.hasContentUpdate) {
 				infoWindow.sceneTree.Nodes.Clear();
-				var node = new TreeNode("Scene");
-				foreach(var o in Scene.sceneContent) {
-					TraverseTree(o, node);
+
+				var contentRoot = new TreeNode("Objects");
+				foreach(var o in Scene.sceneContent)
+				{
+					TraverseTree(o, contentRoot);
 				}
-				infoWindow.sceneTree.Nodes.Add(node);
+				infoWindow.sceneTree.Nodes.Add(contentRoot);
+
+				if(Scene.prefabContent.Count > 0)
+				{
+					var prefabsRoot = new TreeNode("Prefabs");
+					foreach(var p in Scene.prefabContent)
+					{
+						TraverseTree(p, prefabsRoot);
+					}
+					infoWindow.sceneTree.Nodes.Add(prefabsRoot);
+				}
+
+				var materialsRoot = new TreeNode("Materials");
+				materialsRoot.Nodes.Add(new TreeNode("(Default Material)")
+				{
+					Tag = Scene.DefaultMaterial
+				});
+				foreach(var mat in Scene.globalMaterials.Values)
+				{
+					materialsRoot.Nodes.Add(new TreeNode(mat.globalMaterialName)
+					{
+						Tag = mat
+					});
+				}
+				infoWindow.sceneTree.Nodes.Add(materialsRoot);
+
+				infoWindow.sceneTree.Nodes.Add(new TreeNode("Environment")
+				{
+					Tag = Scene.environment
+				});
+
 				Scene.hasContentUpdate = false;
 			}
 		}

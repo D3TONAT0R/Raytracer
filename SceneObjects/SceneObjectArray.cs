@@ -11,7 +11,7 @@ namespace Raytracer
 	public class SceneObjectArray : SceneObject, IReferencedObject
 	{
 		public SceneObject[] arrayInstances;
-		[DataIdentifier("OFFSET")]
+		[DataIdentifier("OFFSET", 0.1f)]
 		public Vector3 offset = new Vector3(0, 0, 1);
 		[DataIdentifier("COUNT")]
 		public int instanceCount = 1;

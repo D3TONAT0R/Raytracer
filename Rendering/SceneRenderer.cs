@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Raytracer
@@ -39,15 +40,35 @@ namespace Raytracer
 			currentTarget = target;
 			var pixelDepth = Bitmap.GetPixelFormatSize(target.PixelFormat) / 8;
 
-			BeginCopy(pixelDepth);
+			Try(() => BeginCopy(pixelDepth));
+
 
 			ActiveScreenRenderer.RenderToScreen(camera, scene, currentByteBuffer, currentTarget.Width, currentTarget.Height, pixelDepth);
 
-			FlushCurrent();
+			Try(() => FlushCurrent());
 
 			currentBitmapData = null;
 			currentByteBuffer = null;
 			IsRendering = false;
+		}
+
+		private static void Try(Action a, int sleep = 10)
+		{
+			int attemptsLeft = 20;
+			while(attemptsLeft > 0)
+			{
+				attemptsLeft--;
+				try
+				{
+					a.Invoke();
+					return;
+				}
+				catch(Exception e)
+				{
+					if(attemptsLeft <= 0) throw e;
+					Thread.Sleep(sleep);
+				}
+			}
 		}
 
 		private static void BeginCopy(int pixelDepth)
@@ -203,7 +224,7 @@ namespace Raytracer
 		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb, Matrix4x4 aabbMatrix)
 		{
 			//TODO: breaks shapes
-			var rpos = ray.Position;
+			var rpos = -ray.Position;
 			var rdir = ray.Direction;
 			ray = ray.Transform(aabbMatrix);
 			//var rpos = Vector3.Transform(ray.Position, aabbMatrix);

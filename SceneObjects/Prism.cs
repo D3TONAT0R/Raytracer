@@ -63,8 +63,9 @@ namespace Raytracer {
 		}
 
 		public override bool Intersects(Vector3 pos) {
+			pos = TransformToLocal(pos);
 			if(!base.Intersects(pos)) return false;
-			Vector3 rel = (pos - WorldPosition) / size;
+			Vector3 rel = pos / size;
 			return GetIntersectingArea(rel.Y).Contains(rel.X, rel.Z);
 		}
 
@@ -72,7 +73,7 @@ namespace Raytracer {
 			return new Rect(cuts[0] * relY, cuts[1] * relY, 1f - cuts[2] * relY, 1f - cuts[3] * relY);
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
 			CalculateNearestFace(pos, out int face, out _);
 			Vector3 nrm;

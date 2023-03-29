@@ -47,7 +47,7 @@ namespace Raytracer {
 
 		public Ray Transform(Matrix4x4 matrix)
 		{
-			return new Ray(Vector3.Transform(origin, matrix), Vector3.TransformNormal(Direction, matrix), reflectionIteration, sourceScreenPos, maxDistance)
+			return new Ray(Vector3.Transform(origin, matrix), Vector3.Normalize(Vector3.TransformNormal(Direction, matrix)), reflectionIteration, sourceScreenPos, maxDistance)
 			{
 				travelDistance = travelDistance
 			};

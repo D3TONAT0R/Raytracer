@@ -20,6 +20,15 @@ namespace Raytracer
 
 		public Environment environment;
 
+		public Material DefaultMaterial = new Material()
+		{
+			shader = ShaderType.DefaultCheckered,
+			mainColor = Color.White,
+			secColor = Color.LightGray,
+			reflectivity = 0f,
+			textureTiling = new TilingVector(0, 0, 4, 4)
+		};
+
 		public Dictionary<string, Color> globalColors = new Dictionary<string, Color>();
 		public Dictionary<string, Material> globalMaterials = new Dictionary<string, Material>();
 
@@ -170,7 +179,7 @@ namespace Raytracer
 			{
 				foreach(var s in query)
 				{
-					if(s.ExpandedAABB.IsInside(Vector3.Transform(pos, s.WorldToLocalMatrix))) list.Add(s);
+					if(s.ExpandedAABB.IsInside(s.TransformToLocal(pos))) list.Add(s);
 				}
 			}
 			return list.ToArray();

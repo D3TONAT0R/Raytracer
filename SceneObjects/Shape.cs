@@ -40,7 +40,7 @@ namespace Raytracer {
 
 		public abstract Color GetColorAt(Vector3 pos, Ray ray);
 
-		public abstract Vector3 GetNormalAt(Vector3 pos);
+		public abstract Vector3 GetLocalNormalAt(Vector3 pos);
 
 		public virtual Material GetMaterial(Vector3 pos) {
 			return material ?? OverrideMaterial;
