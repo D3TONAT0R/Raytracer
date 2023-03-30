@@ -29,6 +29,7 @@ namespace Raytracer {
 
 		protected override void OnMouseWheel(MouseEventArgs e)
 		{
+            if(!Focused) return;
 			HandledMouseEventArgs hme = e as HandledMouseEventArgs;
 			if(hme != null)
 				hme.Handled = true;

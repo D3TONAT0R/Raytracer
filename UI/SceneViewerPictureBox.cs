@@ -53,15 +53,28 @@ namespace Raytracer {
 
 		protected override void OnMouseClick(MouseEventArgs e)
 		{
-			if(e.Button.HasFlag(MouseButtons.Right))
+			var pixel = GetPixelFromScreenLocation(e.Location);
+			if(!pixel.HasValue) return;
+			var viewportCoord = new Vector2(pixel.Value.X / (float)Image.Size.Width, pixel.Value.Y / (float)Image.Size.Height) * 2f - Vector2.One;
+			viewportCoord.Y = -viewportCoord.Y;
+			var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
+			if(e.Button == MouseButtons.Left)
 			{
-				var pixel = GetPixelFromScreenLocation(e.Location);
-				if(!pixel.HasValue) return;
+				var pos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var hit, allowOptimization: false);
+				if(hit != null)
+				{
+					var node = RaytracerEngine.infoWindow.FindNode(hit);
+					if(node != null)
+					{
+						RaytracerEngine.infoWindow.sceneTree.SelectedNode = node;
+					}
+				}
+			}
+			else if(e.Button == MouseButtons.Right)
+			{
 #if DEBUG
 				System.Diagnostics.Debugger.Break();
 #endif
-				var viewportCoord = new Vector2(pixel.Value.X / (float)Image.Size.Width, pixel.Value.Y / (float)Image.Size.Height) * 2f - Vector2.One;
-				var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
 				var color = SceneRenderer.TraceRay(RaytracerEngine.Scene, ray, VisibilityFlags.Direct);
 			}
 		}
