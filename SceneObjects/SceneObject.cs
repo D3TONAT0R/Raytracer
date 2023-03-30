@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace Raytracer
 {
+	[StructLayout(LayoutKind.Sequential)]
 	public abstract class SceneObject
 	{
 		public bool IsInitialized { get; private set; }
@@ -15,7 +17,7 @@ namespace Raytracer
 		public bool visible = true;
 		[DataIdentifier("POSITION", 0.1f)]
 		public Vector3 localPosition = Vector3.Zero;
-		[DataIdentifier("ROTATION", 1.0f)]
+		[DataIdentifier("ROTATION", 5.0f)]
 		public Vector3 localRotation = Vector3.Zero;
 		[DataIdentifier("SCALE", 0.1f)]
 		public Vector3 localScale = Vector3.One;
@@ -137,6 +139,11 @@ namespace Raytracer
 			Matrix4x4 inv;
 			Matrix4x4.Invert(LocalToWorldMatrix, out inv);
 			WorldToLocalMatrix = inv;
+			foreach(var c in GetContainedObjectsOfType<SceneObject>())
+			{
+				if(c == this) continue;
+				if(c != null) c.SetupMatrix();
+			}
 		}
 
 		public abstract void SetupForRendering();
@@ -148,7 +155,7 @@ namespace Raytracer
 			yield break;
 		}
 
-		public IEnumerable<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
+		public virtual IEnumerable<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
 		{
 			foreach(var s in GetIntersectingShapes(ray))
 			{
@@ -161,7 +168,7 @@ namespace Raytracer
 
 		private Matrix4x4 GetWorldMatrix()
 		{
-			if(parent != null) return parent.GetWorldMatrix() * childMatrix;
+			if(parent != null) return childMatrix * parent.GetWorldMatrix();
 			else return childMatrix;
 		}
 

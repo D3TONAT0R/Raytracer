@@ -60,6 +60,7 @@ namespace Raytracer {
 		public static RenderSettings CurrentRenderSettings => render ? renderSettings[currentRenderSettingsIndex] : previewRenderSettings;
 		public static RenderTarget CurrentRenderTarget => render ? renderTargets[currentRenderTargetIndex] : previewRenderTarget;
 
+		static bool windowInitialized = false;
 		static bool exit = false;
 		static bool animating = false;
 		Thread loopthread;
@@ -92,8 +93,10 @@ namespace Raytracer {
 			loopthread.Start();
 			while(!exit) {
 				Thread.Sleep(250);
-				if (infoWindow == null || !infoWindow.Visible) exit = true;
-				//DrawInfoWindow();
+				if(windowInitialized && (infoWindow == null || !infoWindow.Visible))
+				{
+					exit = true;
+				}
 				if(redrawScreen) DrawScreenOnWinform();
 			}
 		}
@@ -204,7 +207,7 @@ namespace Raytracer {
 				}
 				catch
 				{
-
+					Debugger.Break();
 				}
 			}
 		}
@@ -224,6 +227,7 @@ namespace Raytracer {
 			worker.DoWork += new DoWorkEventHandler(WindowUpdateWorker);
 			worker.RunWorkerAsync();
 			infoWindow.ShowDialog();
+			windowInitialized = true;
 		}
 
 		void SetupMenuStrip()
@@ -369,7 +373,10 @@ namespace Raytracer {
 
 		void WindowUpdateWorker(object sender, EventArgs e) {
 			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-			Thread.Sleep(500);
+			while(!infoWindow.IsInitialized || infoWindow == null)
+			{
+				Thread.Sleep(500);
+			}
 			try {
 				UpdateRenderMenuItems();
 				while(!exit && infoWindow != null) {

@@ -11,7 +11,7 @@ namespace Raytracer
 	{
 		None = 0,
 		Off = None,
-		All = int.MaxValue,
+		All = 0b111,
 		On = All,
 		Direct = 1 << 0,
 		Reflections = 1 << 1,

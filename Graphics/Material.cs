@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using static Raytracer.RaytracerEngine;
 
@@ -62,6 +63,18 @@ namespace Raytracer {
 
 		public static TilingVector FromSize(float textureSize) {
 			return new TilingVector(0, 0, 1f / textureSize, 1f / textureSize);
+		}
+
+		public TilingVector SetComponent(int i, float f)
+		{
+			var v = new TilingVector(x, y, width, height, angle);
+			if(i == 0) v.x = f;
+			else if(i == 1) v.y = f;
+			else if(i == 2) v.width = f;
+			else if(i == 3) v.height = f;
+			else if(i == 4) v.angle = f;
+			else throw new IndexOutOfRangeException();
+			return v;
 		}
 
 		public Vector2 Apply(Vector2 uv) {
@@ -279,7 +292,8 @@ namespace Raytracer {
 			}
 			//Apply reflections
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {
-				var rayOffset = (shape.GetSurfaceProximity(ray.Position) * 1.01f) * worldNormal;
+				var prox = shape.GetSurfaceProximity(ray.Position);
+				var rayOffset = (prox + 0.001f) * worldNormal;
 				var newray = new Ray(ray.Position + rayOffset, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
 				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Reflections, null, false);
 				final = Color.Lerp(final, reflColor * baseColor, reflectivity * reflectivity);

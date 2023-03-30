@@ -16,11 +16,11 @@ namespace Raytracer {
 		}
 
 		[DataIdentifier("LIGHTTYPE")]
-		public LightType type;
+		public LightType type = LightType.Point;
 		[DataIdentifier("INTENSITY", 0.1f)]
-		public float intensity;
+		public float intensity = 1f;
 		[DataIdentifier("COLOR")]
-		public Color color;
+		public Color color = Color.White;
 		[DataIdentifier("SHADOWOFFSET", 0.01f)]
 		public float shadowStartOffset = 0;
 
@@ -32,11 +32,11 @@ namespace Raytracer {
 
 		//Directional Light properties
 		[DataIdentifier("DIRECTION", 0.1f)]
-		public Vector3 lightDirection;
+		public Vector3 lightDirection = -Vector3.UnitY;
 
 		//Point Light properties
 		[DataIdentifier("RANGE", 1f)]
-		public float range;
+		public float range = 10;
 
 		public Light() : base(null) { }
 

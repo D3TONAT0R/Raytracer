@@ -80,13 +80,13 @@ namespace Raytracer
 		static Reflector()
 		{
 			exposedFieldSets = new Dictionary<string, ExposedFieldSet>();
-			var attrs = Assembly.GetCallingAssembly().GetTypes()
-								  .Where(m => m.GetCustomAttributes(typeof(ObjectIdentifierAttribute), false).Length > 0)
-								  .ToArray();
+			var attrs = Assembly.GetCallingAssembly()
+				.GetTypes()
+				.Where(m => m.GetCustomAttributes(typeof(ObjectIdentifierAttribute), false).Length > 0);
 			foreach (var a in attrs)
 			{
-				var typeInfo = new ExposedFieldSet(a);
-				var fields = a.GetFields();
+				var set = new ExposedFieldSet(a);
+				var fields = a.GetFields().OrderBy(f => GetInheritanceDepth(f.DeclaringType));
 				foreach (var f in fields)
 				{
 					var attr = f.GetCustomAttribute<DataIdentifierAttribute>();
@@ -96,11 +96,22 @@ namespace Raytracer
 						f2.attribute = attr;
 						f2.fieldName = f.Name;
 						f2.fieldType = f.FieldType;
-						typeInfo.fields.Add(attr.identifier, f2);
+						set.fields.Add(attr.identifier, f2);
 					}
 				}
-				exposedFieldSets.Add(a.GetCustomAttribute<ObjectIdentifierAttribute>().identifier, typeInfo);
+				exposedFieldSets.Add(a.GetCustomAttribute<ObjectIdentifierAttribute>().identifier, set);
 			}
+		}
+
+		static int GetInheritanceDepth(Type t)
+		{
+			int d = 0;
+			while(t.BaseType != null)
+			{
+				t = t.BaseType;
+				d++;
+			}
+			return d;
 		}
 
 		public static ExposedFieldSet GetExposedFieldSet(Type type)

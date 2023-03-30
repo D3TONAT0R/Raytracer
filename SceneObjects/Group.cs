@@ -79,7 +79,7 @@ namespace Raytracer {
 
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{
-			if(groupAABB.Intersects(ray))
+			if(groupAABB.Intersects(ray.Transform(WorldToLocalMatrix)))
 			{
 				foreach(var c in children)
 				{
@@ -99,7 +99,7 @@ namespace Raytracer {
 			foreach(var c in children)
 			{
 				c.SetupForRendering();
-				groupAABB = groupAABB.Join(c.GetTotalShapeAABB());
+				groupAABB = groupAABB.JoinTransformed(this, c.GetTotalShapeAABB(), c);
 			}
 		}
 

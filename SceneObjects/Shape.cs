@@ -14,6 +14,13 @@ namespace Raytracer {
 		[DataIdentifier("MATERIAL")]
 		public Material material;
 
+		[DataIdentifier("DISPLAY_BOUNDS")]
+		public bool displayBounds = true;
+		[DataIdentifier("BOUNDS_COLOR", 0.25f)]
+		public Color boundsColor = Color.Red;
+
+		private WireCuboid boundsCube;
+
 		public Shape(string name) : base(name) {
 		}
 
@@ -64,5 +71,34 @@ namespace Raytracer {
 		}
 
 		public abstract Vector2 GetUV(Vector3 localPos, Vector3 normal);
+
+		public WireCuboid GetBoundsCube()
+		{
+			if(boundsCube == null)
+			{
+				boundsCube = new WireCuboid(this);
+			}
+			return boundsCube;
+		}
+
+		public sealed override IEnumerable<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
+		{
+			foreach(var s in GetIntersectingShapes(ray))
+			{
+				if(s.visibilityFlags.HasFlag(flags))
+				{
+					yield return s;
+				}
+				if(s.displayBounds)
+				{
+					var bounds = s.GetBoundsCube();
+					bounds.SetupForRendering();
+					if(bounds.visibilityFlags.HasFlag(flags))
+					{
+						yield return bounds;
+					}
+				}
+			}
+		}
 	}
 }
