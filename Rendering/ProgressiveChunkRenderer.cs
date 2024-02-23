@@ -60,12 +60,9 @@ namespace Raytracer
 		private List<Chunk> nextIterationChunks = new List<Chunk>();
 		private int pass;
 
-		private int targetWidth;
-		private int targetHeight;
-		private int targetDepth;
+		private RenderTarget currentRenderTarget;
 		private Camera currentCamera;
 		private Scene currentScene;
-		private byte[] currentBuffer;
 
 		private int chunksRendered = 0;
 		private int pixelsRendered = 0;
@@ -78,16 +75,13 @@ namespace Raytracer
 			progress = pixelsRendered / (float)CurrentPixelRenderData.ScreenArea;
 		}
 
-		public override void RenderToScreen(Camera camera, Scene scene, byte[] byteBuffer, int width, int height, int pixelDepth)
+		public override void RenderToScreen(Camera camera, Scene scene, RenderTarget renderTarget)
 		{
 			pixelsRendered = 0;
 
 			currentCamera = camera;
 			currentScene = scene;
-			currentBuffer = byteBuffer;
-			targetWidth = width;
-			targetHeight = height;
-			targetDepth = pixelDepth;
+			currentRenderTarget = renderTarget;
 
 			pass = passCount;
 
@@ -111,19 +105,26 @@ namespace Raytracer
 			//Render
 			int s = Pow(cellSize, pass);
 			int rendered = 0;
-			for (int y = c.yMin; y <= c.yMax; y += s)
+			for(int y = c.yMin; y <= c.yMax; y += s)
 			{
-				for (int x = c.xMin; x <= c.xMax; x += s)
+				for(int x = c.xMin; x <= c.xMax; x += s)
 				{
-					if (isFirstPass && x == c.xMin && y == c.yMin) continue;
-					var col = GetPixelColor(x, y, currentCamera, currentScene);
-					if (s <= 1)
+					try
 					{
-						SetPixel(currentBuffer, x, y, col, targetWidth, targetHeight, targetDepth);
+						if(isFirstPass && x == c.xMin && y == c.yMin) continue;
+						var color = GetPixelColor(x, y, currentCamera, currentScene);
+						if(s <= 1)
+						{
+							currentRenderTarget.WritePixel(x, y, color);
+						}
+						else
+						{
+							currentRenderTarget.WritePixelArea(x, y, x + s - 1, y + s - 1, color);
+						}
 					}
-					else
+					catch
 					{
-						FillPixels(currentBuffer, x, y, x + s - 1, y + s - 1, col, targetWidth, targetHeight, targetDepth);
+
 					}
 					rendered++;
 				}
@@ -135,7 +136,7 @@ namespace Raytracer
 			{
 				if(pass > 1 && Pow(cellSize, pass) > minChunkSize)
 				{
-					c.SplitNextIteration(nextIterationChunks, targetWidth, targetHeight);
+					c.SplitNextIteration(nextIterationChunks, currentRenderTarget.width, currentRenderTarget.height);
 				}
 				else
 				{
@@ -160,11 +161,11 @@ namespace Raytracer
 		{
 			currentIterationChunks.Clear();
 			int size = Pow(cellSize, pass + 1);
-			for (int y = 0; y < targetHeight; y += size)
+			for (int y = 0; y < currentRenderTarget.height; y += size)
 			{
-				for (int x = 0; x < targetWidth; x += size)
+				for (int x = 0; x < currentRenderTarget.width; x += size)
 				{
-					var chunk = new Chunk(x, y, size, targetWidth, targetHeight);
+					var chunk = new Chunk(x, y, size, currentRenderTarget.width, currentRenderTarget.height);
 					currentIterationChunks.Add(chunk);
 				}
 			}

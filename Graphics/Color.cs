@@ -106,15 +106,14 @@ namespace Raytracer {
 			}
 		}
 
-		public byte[] GetBytes()
+		public ByteColor ToByteColor(bool includeAlpha = true)
 		{
-			return new byte[]
-			{
+			return new ByteColor(
 				ToColorByte(r),
 				ToColorByte(g),
 				ToColorByte(b),
-				ToColorByte(a)
-			};
+				includeAlpha ? ToColorByte(a) : byte.MaxValue
+			);
 		}
 
 		public override string ToString()

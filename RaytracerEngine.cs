@@ -212,7 +212,7 @@ namespace Raytracer
 				{
 					infoWindow.Invoke((Action)delegate
 					{
-						infoWindow.imageViewer.Image = CurrentRenderTarget.RenderBuffer;
+						infoWindow.imageViewer.Image = CurrentRenderTarget.Bitmap;
 					});
 				}
 				catch

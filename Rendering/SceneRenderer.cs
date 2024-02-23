@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Raytracer
@@ -27,29 +28,45 @@ namespace Raytracer
 
 		public static object bufferLock = new object();
 
-		static Bitmap currentTarget;
-		static BitmapData currentBitmapData;
-		static byte[] currentByteBuffer;
+		static RenderTarget currentRenderTarget;
 
 		public static bool IsRendering { get; private set; }
 
-		public static void RenderScene(Camera camera, Scene scene, Bitmap target)
+		public static void RenderScene(Camera camera, Scene scene, RenderTarget target)
 		{
 			IsRendering = true;
-			currentTarget = target;
-			var pixelDepth = Bitmap.GetPixelFormatSize(target.PixelFormat) / 8;
+			currentRenderTarget = target;
 
-			BeginCopy(pixelDepth);
+			//Try(() => BeginCopy(pixelDepth));
 
-			ActiveScreenRenderer.RenderToScreen(camera, scene, currentByteBuffer, currentTarget.Width, currentTarget.Height, pixelDepth);
+			ActiveScreenRenderer.RenderToScreen(camera, scene, currentRenderTarget);
 
-			FlushCurrent();
+			//Try(() => FlushCurrent());
 
-			currentBitmapData = null;
-			currentByteBuffer = null;
+			currentRenderTarget = null;
 			IsRendering = false;
 		}
 
+		private static void Try(Action a, int sleep = 10)
+		{
+			int attemptsLeft = 20;
+			while(attemptsLeft > 0)
+			{
+				attemptsLeft--;
+				try
+				{
+					a.Invoke();
+					return;
+				}
+				catch(Exception e)
+				{
+					if(attemptsLeft <= 0) throw e;
+					Thread.Sleep(sleep);
+				}
+			}
+		}
+
+		/*
 		private static void BeginCopy(int pixelDepth)
 		{
 			currentByteBuffer = new byte[currentTarget.Width * currentTarget.Height * pixelDepth];
@@ -82,7 +99,9 @@ namespace Raytracer
 				}
 			}
 		}
+		*/
 
+		/*
 		private static void Lock()
 		{
 			var rect = new Rectangle(0, 0, currentTarget.Width, currentTarget.Height);
@@ -93,10 +112,11 @@ namespace Raytracer
 		{
 			currentTarget.UnlockBits(currentBitmapData);
 		}
+		*/
 
 		public static void RequestImageRefresh()
 		{
-			FlushCurrent();
+			//FlushCurrent();
 		}
 
 		public static Color TraceRay(Scene scene, Ray ray, VisibilityFlags rayType, Shape excludeShape = null, bool allowOptimization = true)

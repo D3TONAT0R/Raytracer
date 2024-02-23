@@ -112,7 +112,7 @@ namespace Raytracer {
 			{
 				if (scene != null)
 				{
-					SceneRenderer.RenderScene(this, scene, target.RenderBuffer);
+					SceneRenderer.RenderScene(this, scene, target);
 				}
 				else
 				{

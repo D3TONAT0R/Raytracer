@@ -75,7 +75,7 @@ namespace Raytracer
 		private static Bitmap GetActiveBuffer()
 		{
 			var target = RaytracerEngine.lastRenderTarget ?? RaytracerEngine.CurrentRenderTarget;
-			return target.RenderBuffer;
+			return target.Bitmap;
 		}
 
 		private static string GetPathSafeString(string filename)

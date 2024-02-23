@@ -18,24 +18,26 @@ namespace Raytracer
 			progress = renderedStrips / (float)totalStrips;
 		}
 
-		public override void RenderToScreen(Camera camera, Scene scene, byte[] byteBuffer, int width, int height, int pixelDepth)
+		public override void RenderToScreen(Camera camera, Scene scene, RenderTarget renderTarget)
 		{
 			renderedStrips = 0;
-			totalStrips = height;
-			Parallel.For(0, height, i => DrawPixelRow(i, camera, scene, byteBuffer, width, height, pixelDepth));
+			totalStrips = renderTarget.height;
+			Parallel.For(0, renderTarget.height, i => DrawPixelRow(i, camera, scene, renderTarget));
 		}
 
-		private void DrawPixelRow(int y1, Camera camera, Scene scene, byte[] buffer, int width, int height, int depth)
+		private void DrawPixelRow(int y1, Camera camera, Scene scene, RenderTarget renderTarget)
 		{
 			try
 			{
-				for(int x = 0; x < width; x++)
+				for(int x = 0; x < renderTarget.width; x++)
 				{
-					DrawPixel(x, y1, camera, scene, buffer, width, height, depth);
+					DrawPixel(x, y1, camera, scene, renderTarget);
 				}
+				//Console.WriteLine("render row " + y1);
 			}
 			catch
 			{
+				Console.WriteLine("fail row " + y1);
 				//Catch errors during rendering
 			}
 			renderedStrips++;
