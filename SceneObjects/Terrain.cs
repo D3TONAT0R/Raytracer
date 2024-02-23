@@ -11,12 +11,12 @@ namespace Raytracer {
 	[ObjectIdentifier("TERRAIN")]
 	public class Terrain : SolidShape {
 
-		[DataIdentifier("SIZE", 1)]
+		[DataIdentifier("SIZE")]
 		public Vector3 dimensions = new Vector3(10, 1, 10);
 		[DataIdentifier("BOTTOM")]
 		public float bottomThickness = 1;
 
-		[DataIdentifier("NRMSMOOTHNESS", 0.001f)]
+		[DataIdentifier("NRMSMOOTHNESS")]
 		public float normalSmoothness = 0.001f;
 
 		public Sampler2D heightmap;
@@ -45,10 +45,10 @@ namespace Raytracer {
 
 		public override void SetupForRendering() {
 			var add = Vector3.UnitY * bottomThickness;
-			ShapeAABB = new AABB(-add, dimensions + add);
+			ShapeAABB = new AABB(WorldPosition - add, WorldPosition + dimensions + add);
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetNormalAt(Vector3 pos)
 		{
 			return CalculateNormal(GetTerrainCoord(pos).XZ(), true);
 		}

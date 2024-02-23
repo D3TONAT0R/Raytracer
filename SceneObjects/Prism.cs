@@ -30,7 +30,7 @@ namespace Raytracer {
 
 		protected float[] cuts = new float[4] { 0.5f, 0, 0.5f, 0 };
 		[DataIdentifier("AXIS")]
-		public Axis axis = Axis.X;
+		public Axis axis;
 
 		protected bool HasTopFace => cuts[0] - (1f - cuts[1]) > 0.01f && cuts[2] - (1f - cuts[3]) > 0.01f;
 
@@ -64,8 +64,7 @@ namespace Raytracer {
 
 		public override bool Intersects(Vector3 pos) {
 			if(!base.Intersects(pos)) return false;
-			pos = TransformToLocal(pos);
-			Vector3 rel = pos / size;
+			Vector3 rel = (pos - WorldPosition) / size;
 			return GetIntersectingArea(rel.Y).Contains(rel.X, rel.Z);
 		}
 
@@ -73,7 +72,7 @@ namespace Raytracer {
 			return new Rect(cuts[0] * relY, cuts[1] * relY, 1f - cuts[2] * relY, 1f - cuts[3] * relY);
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetNormalAt(Vector3 pos)
 		{
 			CalculateNearestFace(pos, out int face, out _);
 			Vector3 nrm;
@@ -96,7 +95,6 @@ namespace Raytracer {
 		}
 
 		protected override void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
-			pos = TransformToLocal(pos);
 			var intersection = GetIntersectingArea(((pos - localPosition) / size).Y);
 			var cut = ShapeAABB.ShrinkRelative(new Vector3(intersection.left, 0, intersection.bottom), new Vector3(1 - intersection.right, 0, 1 - intersection.top));
 			//0 = bottom

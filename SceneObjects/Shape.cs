@@ -14,13 +14,6 @@ namespace Raytracer {
 		[DataIdentifier("MATERIAL")]
 		public Material material;
 
-		[DataIdentifier("DISPLAY_BOUNDS")]
-		public bool displayBounds = true;
-		[DataIdentifier("BOUNDS_COLOR", 0.25f)]
-		public Color boundsColor = Color.Red;
-
-		private WireCuboid boundsCube;
-
 		public Shape(string name) : base(name) {
 		}
 
@@ -33,6 +26,7 @@ namespace Raytracer {
 			protected set {
 				shapeAABB = value;
 				ExpandedAABB = value.Expand(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid);
+				//ExpandedAABB = value.Expand(0.001f);
 			}
 		}
 
@@ -47,7 +41,7 @@ namespace Raytracer {
 
 		public abstract Color GetColorAt(Vector3 pos, Ray ray);
 
-		public abstract Vector3 GetLocalNormalAt(Vector3 pos);
+		public abstract Vector3 GetNormalAt(Vector3 pos);
 
 		public virtual Material GetMaterial(Vector3 pos) {
 			return material ?? OverrideMaterial;
@@ -61,8 +55,7 @@ namespace Raytracer {
 
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{
-			var tRay = ray.Transform(WorldToLocalMatrix);
-			if(ShapeAABB.Intersects(tRay)) yield return this;
+			if(ShapeAABB.Intersects(ray)) yield return this;
 		}
 
 		public override AABB GetTotalShapeAABB()
@@ -71,34 +64,5 @@ namespace Raytracer {
 		}
 
 		public abstract Vector2 GetUV(Vector3 localPos, Vector3 normal);
-
-		public WireCuboid GetBoundsCube()
-		{
-			if(boundsCube == null)
-			{
-				boundsCube = new WireCuboid(this);
-			}
-			return boundsCube;
-		}
-
-		public sealed override IEnumerable<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
-		{
-			foreach(var s in GetIntersectingShapes(ray))
-			{
-				if(s.visibilityFlags.HasFlag(flags))
-				{
-					yield return s;
-				}
-				if(s.displayBounds)
-				{
-					var bounds = s.GetBoundsCube();
-					bounds.SetupForRendering();
-					if(bounds.visibilityFlags.HasFlag(flags))
-					{
-						yield return bounds;
-					}
-				}
-			}
-		}
 	}
 }

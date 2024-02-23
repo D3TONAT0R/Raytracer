@@ -12,13 +12,13 @@ namespace Raytracer
 	{
 		public string name;
 
-		[DataIdentifier("POSITION", 0.1f)]
+		[DataIdentifier("POSITION")]
 		public Vector3 position;
-		[DataIdentifier("ROTATION", 1f)]
+		[DataIdentifier("ROTATION")]
 		public Vector3 rotation;
-		[DataIdentifier("FOV", 1f)]
+		[DataIdentifier("FOV")]
 		public float fieldOfView;
-		[DataIdentifier("OFFSET", 0.1f)]
+		[DataIdentifier("OFFSET")]
 		public float offset;
 
 		public CameraConfiguration(string name)

@@ -51,7 +51,7 @@ namespace Raytracer
 				key.SetValue("SceneFile", sn.sourceFile);
 				var cam = Camera.MainCamera;
 				key.SetValue("CameraPos", Vector3ToReg(cam.localPosition));
-				key.SetValue("CameraRot", Vector3ToReg(cam.localRotation));
+				key.SetValue("CameraRot", Vector3ToReg(cam.rotation));
 				key.SetValue("CameraFOV", cam.fieldOfView.ToString());
 				key.SetValue("CameraOffset", cam.forwardOffset.ToString());
 			}

@@ -17,6 +17,9 @@ namespace Raytracer {
 
 		public RaytracerForm() {
 			InitializeComponent();
+			for(int i = 0; i <= 5; i++) {
+				//sceneSelection.Items.Add("Scene #: " + i);
+			}
 			RaytracerEngine.SceneLoaded += OnSceneLoaded;
 		}
 
@@ -30,36 +33,16 @@ namespace Raytracer {
 			});
 		}
 
-		public TreeNode FindNode(object tag)
-		{
-			foreach(TreeNode node in sceneTree.Nodes)
-			{
-				if(SearchRecursive(node, tag, out var result)) return result;
-			}
-			return null;
-		}
-
-		private bool SearchRecursive(TreeNode parent, object tag, out TreeNode result)
-		{
-			if(parent.Tag == tag)
-			{
-				result = parent;
-				return true;
-			}
-			foreach(TreeNode child in parent.Nodes)
-			{
-				if(SearchRecursive(child, tag, out result)) return true;
-			}
-			result = null;
-			return false;
-		}
-
 		private void RaytracerForm_Load(object sender, EventArgs e) {
 
 		}
 
 		private void OnSceneTreeSelect(object sender, TreeViewEventArgs e) {
-			SceneEditor.InspectedObject = sceneTree.SelectedNode.Tag;
+			SceneEditor.InspectedObject = sceneTree.SelectedNode.Tag as SceneObject;
+		}
+
+		private void propertiesPanel_Paint(object sender, PaintEventArgs e) {
+
 		}
 
 		private void OnFocusEnter(object sender, EventArgs e) {
@@ -125,7 +108,7 @@ namespace Raytracer {
 						RaytracerEngine.Scene = SceneFileLoader.CreateFromFile(info.sceneFile);
 						var cam = Camera.MainCamera;
 						cam.localPosition = info.cameraPos;
-						cam.localRotation = info.cameraRot;
+						cam.rotation = info.cameraRot;
 						cam.fieldOfView = info.cameraFOV;
 						cam.forwardOffset = info.cameraOffset;
 					}
@@ -154,14 +137,6 @@ namespace Raytracer {
 		private void browseScreenshotFolderToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			Process.Start("explorer.exe", ScreenshotExporter.ScreenshotRootFolder);
-		}
-
-		private void propertiesPanel_Layout(object sender, LayoutEventArgs e)
-		{
-			propertiesPanel.HorizontalScroll.Maximum = 0;
-			propertiesPanel.AutoScroll = false;
-			propertiesPanel.HorizontalScroll.Visible = false;
-			propertiesPanel.AutoScroll = true;
 		}
 	}
 }

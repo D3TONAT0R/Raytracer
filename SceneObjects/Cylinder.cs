@@ -12,9 +12,9 @@ namespace Raytracer {
 
 		[DataIdentifier("AXIS")]
 		public Axis axis = Axis.Y;
-		[DataIdentifier("RADIUS", 0.1f)]
+		[DataIdentifier("RADIUS")]
 		public float radius = 1;
-		[DataIdentifier("LENGTH", 0.1f)]
+		[DataIdentifier("LENGTH")]
 		public float length = 1;
 
 		public Cylinder() : base(null) { }
@@ -27,8 +27,8 @@ namespace Raytracer {
 		}
 
 		public override void SetupForRendering() {
-			Vector3 lower = Vector3.Zero;
-			Vector3 upper = Vector3.Zero;
+			Vector3 lower = WorldPosition;
+			Vector3 upper = WorldPosition;
 			if(axis == Axis.Y) {
 				lower.X -= radius;
 				lower.Z -= radius;
@@ -52,30 +52,27 @@ namespace Raytracer {
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos) {
-			var localPos = TransformToLocal(worldPos);
-			CalculateClosestFace(localPos, out _, out float prox);
+			CalculateClosestFace(worldPos, out _, out float prox);
 			return prox;
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			pos = TransformToLocal(pos);
 			if(axis == Axis.Y) {
-				return pos.Y.Range(ShapeAABB.lower.Y, ShapeAABB.upper.Y) && pos.XZ().Length() < radius;
+				return pos.Y.Range(ShapeAABB.lower.Y, ShapeAABB.upper.Y) && Vector2.Distance(pos.XZ(), WorldPosition.XZ()) < radius;
 			} else if(axis == Axis.X) {
-				return pos.X.Range(ShapeAABB.lower.X, ShapeAABB.upper.X) && pos.ZY().Length() < radius;
+				return pos.X.Range(ShapeAABB.lower.X, ShapeAABB.upper.X) && Vector2.Distance(pos.ZY(), WorldPosition.ZY()) < radius;
 			} else if(axis == Axis.Z) {
-				return pos.Z.Range(ShapeAABB.lower.Z, ShapeAABB.upper.Z) && pos.XY().Length() < radius;
+				return pos.Z.Range(ShapeAABB.lower.Z, ShapeAABB.upper.Z) && Vector2.Distance(pos.XY(), WorldPosition.XY()) < radius;
 			}
 			return true;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetNormalAt(Vector3 pos)
 		{
-			pos = TransformToLocal(pos);
 			CalculateClosestFace(pos, out int face, out _);
 			if(axis == Axis.Y) {
 				if(face == 0) {
-					var xz = pos.XZ();
+					var xz = pos.XZ() - WorldPosition.XZ();
 					return Vector3.Normalize(new Vector3(xz.X, 0, xz.Y));
 				} else if(face == -1) {
 					return -Vector3.UnitY;
@@ -84,7 +81,7 @@ namespace Raytracer {
 				}
 			} else if(axis == Axis.X) {
 				if(face == 0) {
-					var zy = pos.ZY();
+					var zy = pos.ZY() - WorldPosition.ZY();
 					return Vector3.Normalize(new Vector3(0, zy.Y, zy.X));
 				} else if(face == -1) {
 					return -Vector3.UnitX;
@@ -93,7 +90,7 @@ namespace Raytracer {
 				}
 			} else if(axis == Axis.Z) {
 				if(face == 0) {
-					var xy = pos.XY();
+					var xy = pos.XY() - WorldPosition.XY();
 					return Vector3.Normalize(new Vector3(xy.X, xy.Y, 0));
 				} else if(face == -1) {
 					return -Vector3.UnitZ;
@@ -104,24 +101,23 @@ namespace Raytracer {
 			return Vector3.UnitY;
 		}
 
-		private void CalculateClosestFace(Vector3 localPos, out int face, out float prox) {
-			var center = Vector3.Zero;
+		private void CalculateClosestFace(Vector3 worldPos, out int face, out float prox) {
 			face = 0;
 			prox = 0;
 			float proxL = 0;
 			float proxU = 0;
 			if(axis == Axis.Y) {
-				prox = Math.Abs(Vector2.Distance(localPos.XZ(), center.XZ()) - radius);
-				proxL = Math.Abs(localPos.Y - ShapeAABB.lower.Y);
-				proxU = Math.Abs(localPos.Y - ShapeAABB.upper.Y);
+				prox = Math.Abs(Vector2.Distance(worldPos.XZ(), WorldPosition.XZ()) - radius);
+				proxL = Math.Abs(worldPos.Y - ShapeAABB.lower.Y);
+				proxU = Math.Abs(worldPos.Y - ShapeAABB.upper.Y);
 			} else if(axis == Axis.X) {
-				prox = Math.Abs(Vector2.Distance(localPos.ZY(), center.ZY()) - radius);
-				proxL = Math.Abs(localPos.X - ShapeAABB.lower.X);
-				proxU = Math.Abs(localPos.X - ShapeAABB.upper.X);
+				prox = Math.Abs(Vector2.Distance(worldPos.ZY(), WorldPosition.ZY()) - radius);
+				proxL = Math.Abs(worldPos.X - ShapeAABB.lower.X);
+				proxU = Math.Abs(worldPos.X - ShapeAABB.upper.X);
 			} else if(axis == Axis.Z) {
-				prox = Math.Abs(Vector2.Distance(localPos.XY(), center.XY()) - radius);
-				proxL = Math.Abs(localPos.Z - ShapeAABB.lower.Z);
-				proxU = Math.Abs(localPos.Z - ShapeAABB.upper.Z);
+				prox = Math.Abs(Vector2.Distance(worldPos.XY(), WorldPosition.XY()) - radius);
+				proxL = Math.Abs(worldPos.Z - ShapeAABB.lower.Z);
+				proxU = Math.Abs(worldPos.Z - ShapeAABB.upper.Z);
 			}
 			if(proxL < prox) {
 				face = -1;

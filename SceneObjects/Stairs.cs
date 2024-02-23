@@ -11,7 +11,7 @@ namespace Raytracer
 	public class Stairs : SceneObject
 	{
 
-		[DataIdentifier("SIZE", 0.1f)]
+		[DataIdentifier("SIZE")]
 		public Vector3 size;
 		[DataIdentifier("DIRECTION")]
 		public SlopeDirection stairsDirection;
@@ -77,7 +77,7 @@ namespace Raytracer
 
 		public override AABB GetTotalShapeAABB()
 		{
-			return new AABB(Vector3.Zero, size);
+			return new AABB(WorldPosition, WorldPosition + size);
 		}
 
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)

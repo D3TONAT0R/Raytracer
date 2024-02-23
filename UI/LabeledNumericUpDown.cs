@@ -26,20 +26,5 @@ namespace Raytracer {
             label.BackColor = System.Drawing.Color.Transparent;
             label.Location = new System.Drawing.Point(0, 0);
         }
-
-		protected override void OnMouseWheel(MouseEventArgs e)
-		{
-            if(!Focused) return;
-			HandledMouseEventArgs hme = e as HandledMouseEventArgs;
-			if(hme != null)
-				hme.Handled = true;
-
-            var newValue = Value;
-			if(e.Delta > 0)
-				newValue += Increment;
-			else if(e.Delta < 0)
-				newValue -= Increment;
-            Value = Math.Min(Maximum, Math.Max(Minimum, newValue));
-		}
-	}
+    }
 }

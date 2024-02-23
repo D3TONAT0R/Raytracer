@@ -82,12 +82,12 @@ namespace Raytracer {
 			this.defaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.qualityMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.defaultToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-			this.browseScreenshotFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.cameraMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.controlsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+			this.browseScreenshotFolderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.tabControl1.SuspendLayout();
 			this.sceneTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -229,7 +229,7 @@ namespace Raytracer {
 			this.propertiesPanel.Size = new System.Drawing.Size(132, 92);
 			this.propertiesPanel.TabIndex = 0;
 			this.propertiesPanel.WrapContents = false;
-			this.propertiesPanel.Layout += new System.Windows.Forms.LayoutEventHandler(this.propertiesPanel_Layout);
+			this.propertiesPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.propertiesPanel_Paint);
 			// 
 			// cameraTab
 			// 
@@ -462,18 +462,6 @@ namespace Raytracer {
 			this.defaultToolStripMenuItem1.Size = new System.Drawing.Size(112, 22);
 			this.defaultToolStripMenuItem1.Text = "Default";
 			// 
-			// toolStripMenuItem2
-			// 
-			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-			this.toolStripMenuItem2.Size = new System.Drawing.Size(243, 6);
-			// 
-			// browseScreenshotFolderToolStripMenuItem
-			// 
-			this.browseScreenshotFolderToolStripMenuItem.Name = "browseScreenshotFolderToolStripMenuItem";
-			this.browseScreenshotFolderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
-			this.browseScreenshotFolderToolStripMenuItem.Text = "Browse Screenshot Folder";
-			this.browseScreenshotFolderToolStripMenuItem.Click += new System.EventHandler(this.browseScreenshotFolderToolStripMenuItem_Click);
-			// 
 			// cameraMenuItem
 			// 
 			this.cameraMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -486,7 +474,7 @@ namespace Raytracer {
 			// 
 			this.test1ToolStripMenuItem.Enabled = false;
 			this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
-			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+			this.test1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.test1ToolStripMenuItem.Text = "Load Configuration";
 			// 
 			// helpToolStripMenuItem
@@ -500,9 +488,21 @@ namespace Raytracer {
 			// controlsToolStripMenuItem
 			// 
 			this.controlsToolStripMenuItem.Name = "controlsToolStripMenuItem";
-			this.controlsToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+			this.controlsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
 			this.controlsToolStripMenuItem.Text = "Camera Controls";
 			this.controlsToolStripMenuItem.Click += new System.EventHandler(this.controlsToolStripMenuItem_Click);
+			// 
+			// toolStripMenuItem2
+			// 
+			this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+			this.toolStripMenuItem2.Size = new System.Drawing.Size(243, 6);
+			// 
+			// browseScreenshotFolderToolStripMenuItem
+			// 
+			this.browseScreenshotFolderToolStripMenuItem.Name = "browseScreenshotFolderToolStripMenuItem";
+			this.browseScreenshotFolderToolStripMenuItem.Size = new System.Drawing.Size(246, 22);
+			this.browseScreenshotFolderToolStripMenuItem.Text = "Browse Screenshot Folder";
+			this.browseScreenshotFolderToolStripMenuItem.Click += new System.EventHandler(this.browseScreenshotFolderToolStripMenuItem_Click);
 			// 
 			// RaytracerForm
 			// 

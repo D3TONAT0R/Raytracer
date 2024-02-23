@@ -90,7 +90,7 @@ namespace Raytracer
 			Camera.MainCamera = new Camera()
 			{
 				localPosition = Vector3.UnitY,
-				localRotation = Vector3.Zero,
+				rotation = Vector3.Zero,
 				fieldOfView = 60
 			};
 			Camera.MainCamera.HasChanged += PersistentPrefs.WriteLastSessionInfo;
@@ -329,7 +329,7 @@ namespace Raytracer
 			sb.AppendLine("Current camera configuration:");
 			var cam = Camera.MainCamera;
 			sb.AppendLine("Position: " + cam.localPosition.ToString());
-			sb.AppendLine("Rotation: " + cam.localRotation.ToString());
+			sb.AppendLine("Rotation: " + cam.rotation.ToString());
 			sb.AppendLine("FOV: " + cam.fieldOfView.ToString());
 			MessageBox.Show(sb.ToString());
 		}
@@ -469,10 +469,12 @@ namespace Raytracer
 				}
 
 				var materialsRoot = new TreeNode("Materials");
+				/*
 				materialsRoot.Nodes.Add(new TreeNode("(Default Material)")
 				{
 					Tag = Scene.DefaultMaterial
 				});
+				*/
 				foreach(var mat in Scene.globalMaterials.Values)
 				{
 					materialsRoot.Nodes.Add(new TreeNode(mat.globalMaterialName)

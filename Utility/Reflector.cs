@@ -26,16 +26,9 @@ namespace Raytracer
 
 		public string identifier;
 
-		public float? numericIncrement = null;
-
 		public DataIdentifierAttribute(string id)
 		{
 			identifier = id.ToUpper();
-		}
-
-		public DataIdentifierAttribute(string id, float increments) : this(id)
-		{
-			numericIncrement = increments;
 		}
 	}
 
@@ -80,13 +73,13 @@ namespace Raytracer
 		static Reflector()
 		{
 			exposedFieldSets = new Dictionary<string, ExposedFieldSet>();
-			var attrs = Assembly.GetCallingAssembly()
-				.GetTypes()
-				.Where(m => m.GetCustomAttributes(typeof(ObjectIdentifierAttribute), false).Length > 0);
+			var attrs = Assembly.GetCallingAssembly().GetTypes()
+								  .Where(m => m.GetCustomAttributes(typeof(ObjectIdentifierAttribute), false).Length > 0)
+								  .ToArray();
 			foreach (var a in attrs)
 			{
-				var set = new ExposedFieldSet(a);
-				var fields = a.GetFields().OrderBy(f => GetInheritanceDepth(f.DeclaringType));
+				var typeInfo = new ExposedFieldSet(a);
+				var fields = a.GetFields();
 				foreach (var f in fields)
 				{
 					var attr = f.GetCustomAttribute<DataIdentifierAttribute>();
@@ -96,22 +89,11 @@ namespace Raytracer
 						f2.attribute = attr;
 						f2.fieldName = f.Name;
 						f2.fieldType = f.FieldType;
-						set.fields.Add(attr.identifier, f2);
+						typeInfo.fields.Add(attr.identifier, f2);
 					}
 				}
-				exposedFieldSets.Add(a.GetCustomAttribute<ObjectIdentifierAttribute>().identifier, set);
+				exposedFieldSets.Add(a.GetCustomAttribute<ObjectIdentifierAttribute>().identifier, typeInfo);
 			}
-		}
-
-		static int GetInheritanceDepth(Type t)
-		{
-			int d = 0;
-			while(t.BaseType != null)
-			{
-				t = t.BaseType;
-				d++;
-			}
-			return d;
 		}
 
 		public static ExposedFieldSet GetExposedFieldSet(Type type)

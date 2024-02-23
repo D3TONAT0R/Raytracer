@@ -11,7 +11,7 @@ namespace Raytracer {
 	[ObjectIdentifier("SPHERE")]
 	public class Sphere : SolidShape {
 
-		[DataIdentifier("RADIUS", 0.1f)]
+		[DataIdentifier("RADIUS")]
 		public float radius;
 
 		public Sphere() : base(null) { }
@@ -22,25 +22,21 @@ namespace Raytracer {
 		}
 
 		public override void SetupForRendering() {
-			ShapeAABB = new AABB(-Vector3.One * radius, Vector3.One * radius);
+			ShapeAABB = new AABB(WorldPosition - Vector3.One * radius, WorldPosition + Vector3.One * radius);
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			pos = TransformToLocal(pos);
-			return pos.Length() <= radius;
+			return Vector3.Distance(pos, WorldPosition) <= radius;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetNormalAt(Vector3 pos)
 		{
-			pos = TransformToLocal(pos);
-			var nrm = Vector3.Normalize(pos);
+			var nrm = Vector3.Normalize(pos - WorldPosition);
 			return nrm;
 		}
 
-		public override float GetSurfaceProximity(Vector3 worldPos)
-		{
-			var localPos = TransformToLocal(worldPos);
-			return Math.Abs(localPos.Length() - radius);
+		public override float GetSurfaceProximity(Vector3 worldPos) {
+			return Math.Abs(Vector3.Distance(WorldPosition, worldPos) - radius);
 		}
 
 		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)

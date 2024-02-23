@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Numerics;
 using static Raytracer.RaytracerEngine;
 
@@ -65,18 +64,6 @@ namespace Raytracer {
 			return new TilingVector(0, 0, 1f / textureSize, 1f / textureSize);
 		}
 
-		public TilingVector SetComponent(int i, float f)
-		{
-			var v = new TilingVector(x, y, width, height, angle);
-			if(i == 0) v.x = f;
-			else if(i == 1) v.y = f;
-			else if(i == 2) v.width = f;
-			else if(i == 3) v.height = f;
-			else if(i == 4) v.angle = f;
-			else throw new IndexOutOfRangeException();
-			return v;
-		}
-
 		public Vector2 Apply(Vector2 uv) {
 			uv += Offset;
 			uv *= Scale;
@@ -114,6 +101,15 @@ namespace Raytracer {
 
 		public static Material ErrorMaterial = new Material(Color.Magenta, 0, 0, ShaderType.Unlit);
 
+		public static Material DefaultMaterial = new Material()
+		{
+			shader = ShaderType.DefaultCheckered,
+			mainColor = Color.White,
+			secColor = Color.LightGray,
+			reflectivity = 0f,
+			textureTiling = new TilingVector(0, 0, 4, 4)
+		};
+
 		public string globalMaterialName;
 
 		[DataIdentifier("TYPE")]
@@ -127,20 +123,20 @@ namespace Raytracer {
 
 		[DataIdentifier("MAINTEX")]
 		public Sampler2D mainTexture;
-		[DataIdentifier("TILING", 0.01f)]
+		[DataIdentifier("TILING")]
 		public TilingVector textureTiling = new TilingVector();
 		[DataIdentifier("MAPPING")]
 		public TextureMappingType mappingType = TextureMappingType.WorldXYZ;
 
-		[DataIdentifier("REFL", 0.01f)]
+		[DataIdentifier("REFL")]
 		public float reflectivity = 0;
-		[DataIdentifier("SMOOTH", 0.01f)]
+		[DataIdentifier("SMOOTH")]
 		public float smoothness = 0;
-		[DataIdentifier("ALPHACUTOFF", 0.01f)]
+		[DataIdentifier("ALPHACUTOFF")]
 		public float transparencyCutoff = -1;
-		[DataIdentifier("IOR", 0.01f)]
+		[DataIdentifier("IOR")]
 		public float indexOfRefraction = 1f;
-		[DataIdentifier("THICKNESS", 0.01f)]
+		[DataIdentifier("THICKNESS")]
 		public float thickness = -1f;
 
 		public bool isGlobalMaterial = false;
@@ -182,17 +178,16 @@ namespace Raytracer {
 
 		public Color GetColor(Shape shape, Vector3 pos, Vector3 nrm, Ray ray)
 		{
-			var worldNormal = shape.TransformToWorldNormal(nrm);
 			float distance = ray.travelDistance;
 			Color output;
 			if (shader == ShaderType.Default)
 			{
-				output = ReflectiveShader(mainColor * SampleMainTex(shape, pos, nrm, ray), shape, worldNormal, ray);
+				output = ReflectiveShader(mainColor * SampleMainTex(shape, pos, nrm, ray), shape, nrm, ray);
 			}
 			else if (shader == ShaderType.DefaultCheckered)
 			{
 				Color col = GetCheckerColor(shape, pos, nrm, ray);
-				output = ReflectiveShader(col, shape, worldNormal, ray);
+				output = ReflectiveShader(col, shape, nrm, ray);
 			}
 			else if (shader == ShaderType.Unlit)
 			{
@@ -200,12 +195,12 @@ namespace Raytracer {
 			}
 			else if (shader == ShaderType.ReflectiveDebug)
 			{
-				var b = MathUtils.Bounce(ray.Direction, worldNormal);
+				var b = MathUtils.Bounce(ray.Direction, nrm);
 				output = new Color(b.X, b.Y, b.Z, 1);
 			}
 			else if (shader == ShaderType.NormalsDebug)
 			{
-				output = new Color(Math.Abs(worldNormal.X), Math.Abs(worldNormal.Y), Math.Abs(worldNormal.Z), 1);
+				output = new Color(Math.Abs(nrm.X), Math.Abs(nrm.Y), Math.Abs(nrm.Z), 1);
 			}
 			else
 			{
@@ -250,14 +245,14 @@ namespace Raytracer {
 			return texColor;
 		}
 
-		private Color ReflectiveShader(Color baseColor, Shape shape, Vector3 worldNormal, Ray ray) {
+		private Color ReflectiveShader(Color baseColor, Shape shape, Vector3 nrm, Ray ray) {
 			baseColor.r *= 0.75f;
 			baseColor.g *= 0.75f;
 			baseColor.b *= 0.75f;
 			Color final = baseColor;
-			var reflNrm = MathUtils.Bounce(ray.Direction, worldNormal);
+			var reflNrm = MathUtils.Bounce(ray.Direction, nrm);
 
-			var shade = CalculateLighting(CurrentRenderSettings.lightingType, ray.Position, shape, worldNormal, reflNrm);
+			var shade = CalculateLighting(CurrentRenderSettings.lightingType, ray.position, shape, nrm, reflNrm);
 			final *= shade;
 			//Apply transparency
 			if(baseColor.a < 1) {
@@ -273,28 +268,27 @@ namespace Raytracer {
 				Color backColor;
 				if(indexOfRefraction != 1f)
 				{
-					var refractedNormal = MathUtils.Refract(ray.Direction, -worldNormal, 1f, indexOfRefraction);
+					var refractedNormal = MathUtils.Refract(ray.Direction, -nrm, 1f, indexOfRefraction);
 					var refrMaxDistance = thickness > 0 ? thickness : 100;
-					var newray = new Ray(ray.Position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
+					var newray = new Ray(ray.position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
 					var refractedExitPos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref newray, VisibilityFlags.All, out _, shape, shape);
 
-					var exitSurfaceNrm = thickness > 0 ? -worldNormal : shape.GetLocalNormalAt(refractedExitPos ?? newray.Position);
+					var exitSurfaceNrm = thickness > 0 ? -nrm : shape.GetNormalAt(refractedExitPos ?? newray.position);
 					refractedNormal = MathUtils.Refract(refractedNormal, -exitSurfaceNrm, indexOfRefraction, 1f);
-					newray = new Ray(newray.Position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
+					newray = new Ray(newray.position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
 					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Direct, shape) * mainColor;
 				}
 				else
 				{
-					var newray = new Ray(ray.Position, ray.Direction, ray.reflectionIteration + 1, ray.sourceScreenPos);
+					var newray = new Ray(ray.position, ray.Direction, ray.reflectionIteration + 1, ray.sourceScreenPos);
 					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Direct, shape) * mainColor;
 				}
 				final = Color.Lerp(backColor, final, op);
 			}
 			//Apply reflections
 			if(reflectivity > 0 && ray.reflectionIteration <= CurrentRenderSettings.maxBounces) {
-				var prox = shape.GetSurfaceProximity(ray.Position);
-				var rayOffset = (prox + 0.001f) * worldNormal;
-				var newray = new Ray(ray.Position + rayOffset, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
+				var rayOffset = (shape.GetSurfaceProximity(ray.position) * 1.1f) * nrm;
+				var newray = new Ray(ray.position + rayOffset, reflNrm, ray.reflectionIteration + 1, ray.sourceScreenPos);
 				var reflColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Reflections, null, false);
 				final = Color.Lerp(final, reflColor * baseColor, reflectivity * reflectivity);
 			}
@@ -331,7 +325,7 @@ namespace Raytracer {
 				mappingType == TextureMappingType.LocalYProj ||
 				mappingType == TextureMappingType.LocalZProj)
 			{
-				pos = shape.TransformToLocal(pos);
+				pos -= shape.WorldPosition;
 			}
 			switch(mappingType) {
 				case TextureMappingType.LocalXYZ:
@@ -343,7 +337,7 @@ namespace Raytracer {
 				case TextureMappingType.LocalZProj:
 				case TextureMappingType.WorldZProj: uv = new Vector2(pos.X, pos.Y); break;
 				case TextureMappingType.Screen: uv = ray.sourceScreenPos; break;
-				case TextureMappingType.UV: uv = shape.GetUV(shape.TransformToLocal(pos), nrm); break;
+				case TextureMappingType.UV: uv = shape.GetUV(pos - shape.WorldPosition, nrm); break;
 				default: uv = Vector2.Zero; break;
 			}
 			return uv;
