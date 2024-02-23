@@ -10,13 +10,13 @@ namespace Raytracer.SceneObjects
 	[ObjectIdentifier("WINDOW")]
 	public class Window : SceneObject
 	{
-		[DataIdentifier("DIMS")]
+		[DataIdentifier("DIMS", 0.1f)]
 		public Vector3 dimensions = Vector3.One;
 		[DataIdentifier("AXIS")]
 		public Axis axis;
-		[DataIdentifier("BORDER")]
+		[DataIdentifier("BORDER", 0.01f)]
 		public float border = 0.1f;
-		[DataIdentifier("FILLDEPTH")]
+		[DataIdentifier("FILLDEPTH", 0.01f)]
 		public float fillDepth;
 		[DataIdentifier("MATERIAL")]
 		public Material borderMaterial;

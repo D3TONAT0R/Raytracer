@@ -38,18 +38,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
-    <Reference Include="SharpDX, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\ConsoleGameEngine\packages\SharpDX.4.2.0\lib\net45\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.D3DCompiler, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\ConsoleGameEngine\packages\SharpDX.D3DCompiler.4.2.0\lib\net45\SharpDX.D3DCompiler.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct3D11, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\ConsoleGameEngine\packages\SharpDX.Direct3D11.4.2.0\lib\net45\SharpDX.Direct3D11.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
-      <HintPath>..\ConsoleGameEngine\packages\SharpDX.DXGI.4.2.0\lib\net45\SharpDX.DXGI.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -67,6 +55,10 @@
   <ItemGroup>
     <Compile Include="IO\ScreenshotExporter.cs" />
     <Compile Include="SceneObjects\Pyramid.cs" />
+    <Compile Include="SceneObjects\WireCuboid.cs" />
+    <Compile Include="UI\InspectorField.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utility\AABB.cs" />
     <Compile Include="Animation\AnimatedProperty.cs" />
     <Compile Include="Animation\Animator.cs" />
@@ -142,6 +134,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UI\InspectorField.resx">
+      <DependentUpon>InspectorField.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\RaytracerForm.resx">
       <DependentUpon>RaytracerForm.cs</DependentUpon>
     </EmbeddedResource>

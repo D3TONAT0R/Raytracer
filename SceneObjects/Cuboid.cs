@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mail;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Raytracer {
 			Vector3.UnitZ
 		};
 
-		[DataIdentifier("SIZE")]
+		[DataIdentifier("SIZE", 0.1f)]
 		public Vector3 size;
 
 		public Cuboid() : base(null) { }
@@ -31,17 +32,24 @@ namespace Raytracer {
 		}
 
 		public override void SetupForRendering() {
-			ShapeAABB = new AABB(WorldPosition, WorldPosition + size);
+			ShapeAABB = new AABB(Vector3.Zero, size);
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			return ShapeAABB.IsInside(pos);
+			pos = TransformToLocal(pos);
+			return
+				pos.X > 0 && pos.X < size.X &&
+				pos.Y > 0 && pos.Y < size.Y &&
+				pos.Z > 0 && pos.Z < size.Z;
+			//return ShapeAABB.IsInside(pos);
 		}
 
-		public override Vector3 GetNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
 			CalculateNearestFace(pos, out int face, out _);
-			return localNormals[face];
+			var normal = localNormals[face];
+			//return Vector3.TransformNormal(normal, WorldToLocalMatrix);
+			return normal;
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos) {
@@ -50,6 +58,7 @@ namespace Raytracer {
 		}
 
 		protected virtual void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
+			pos = TransformToLocal(pos);
 			//0 = bottom
 			//1 = top
 			//2 = left

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Raytracer {
 	public struct Color {
@@ -54,14 +55,30 @@ namespace Raytracer {
 			}
 			else
 			{
-				throw new ArgumentException($"Attempted to read global color '{globalColorName}' which doesn't exist.");
-				/*
-				r = 1;
-				g = 0;
-				b = 1;
-				a = 1;
-				*/
+				throw new ArgumentException($"Attempted to read nonexisting global color '{globalColorName}'.");
 			}
+		}
+
+		public static Color FromHSV(float h, float s, float v, float a)
+		{
+			h %= 1f;
+			float r = Math.Max(CalcHue(h, 0), CalcHue(h, 1));
+			float g = CalcHue(h, 0.3333f);
+			float b = CalcHue(h, 0.6667f);
+			var c = Lerp(White, new Color(r, g, b), s);
+			c *= v;
+			c.a = a;
+			return c;
+		}
+
+		public static Color FromHSV(float h, float s, float v)
+		{
+			return FromHSV(h, s, v, 1);
+		}
+
+		private static float CalcHue(float h, float c)
+		{
+			return Math.Max(0, Math.Min(1, 1f - Math.Abs(6f * (h - c)) + 1f));
 		}
 
 		public Color SetAlpha(float alpha) {

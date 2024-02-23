@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Numerics;
 using System.Windows.Forms;
+using System.Windows.Media.Media3D;
 
 namespace Raytracer {
 	/// <summary>
@@ -46,17 +47,53 @@ namespace Raytracer {
 		protected override void OnMouseMove(MouseEventArgs e) {
 			if(Image == null) return;
 			Point loc = e.Location;
-			var size = GetDisplayedImageSize();
-			loc.Y -= (ClientSize.Height - size.Height) / 2;
-			loc.X -= (ClientSize.Width - size.Width) / 2;
-			Vector2 pos = new Vector2(loc.X / (float)size.Width, loc.Y / (float)size.Height);
-			Point pixel = new Point((int)(pos.X * Image.Width), (int)(pos.Y * Image.Height));
-			if(pixel.X >= 0 && pixel.Y >= 0 && pixel.X < Image.Width && pixel.Y < Image.Height) {
-				hoveredPixelCoordinates = pixel;
-			} else {
-				hoveredPixelCoordinates = null;
-			}
+			
 			UpdateLabel();
+		}
+
+		protected override void OnMouseClick(MouseEventArgs e)
+		{
+			var pixel = GetPixelFromScreenLocation(e.Location);
+			if(!pixel.HasValue) return;
+			var viewportCoord = new Vector2(pixel.Value.X / (float)Image.Size.Width, pixel.Value.Y / (float)Image.Size.Height) * 2f - Vector2.One;
+			viewportCoord.Y = -viewportCoord.Y;
+			var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
+			if(e.Button == MouseButtons.Left)
+			{
+				var pos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var hit, allowOptimization: false);
+				if(hit != null)
+				{
+					var node = RaytracerEngine.infoWindow.FindNode(hit);
+					if(node != null)
+					{
+						RaytracerEngine.infoWindow.sceneTree.SelectedNode = node;
+					}
+				}
+			}
+			else if(e.Button == MouseButtons.Right)
+			{
+#if DEBUG
+				System.Diagnostics.Debugger.Break();
+#endif
+				var color = SceneRenderer.TraceRay(RaytracerEngine.Scene, ray, VisibilityFlags.Direct);
+			}
+		}
+
+		private Point? GetPixelFromScreenLocation(Point screenLocation)
+		{
+			var size = GetDisplayedImageSize();
+			screenLocation.Y -= (ClientSize.Height - size.Height) / 2;
+			screenLocation.X -= (ClientSize.Width - size.Width) / 2;
+			Vector2 pos = new Vector2(screenLocation.X / (float)size.Width, screenLocation.Y / (float)size.Height);
+			Point pixel = new Point((int)(pos.X * Image.Width), (int)(pos.Y * Image.Height));
+			if(pixel.X >= 0 && pixel.Y >= 0 && pixel.X < Image.Width && pixel.Y < Image.Height)
+			{
+				return pixel;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		protected override void OnMouseLeave(EventArgs e) {

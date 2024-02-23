@@ -20,6 +20,15 @@ namespace Raytracer
 
 		public Environment environment;
 
+		public Material DefaultMaterial = new Material()
+		{
+			shader = ShaderType.DefaultCheckered,
+			mainColor = Color.White,
+			secColor = Color.LightGray,
+			reflectivity = 0f,
+			textureTiling = new TilingVector(0, 0, 4, 4)
+		};
+
 		public Dictionary<string, Color> globalColors = new Dictionary<string, Color>();
 		public Dictionary<string, Material> globalMaterials = new Dictionary<string, Material>();
 
@@ -86,10 +95,12 @@ namespace Raytracer
 			sceneObjectsAABB = AABB.Empty;
 			foreach(var s in sceneContent)
 			{
+				s.SetupMatrix();
 				s.SetupForRendering();
 				sceneObjectsAABB = sceneObjectsAABB.Join(s.GetTotalShapeAABB());
 			}
-			sceneObjectsAABB = sceneObjectsAABB.Expand(1.0f);
+			sceneObjectsAABB = sceneObjectsAABB.Join(new AABB(Camera.MainCamera.ActualCameraPosition, Camera.MainCamera.ActualCameraPosition));
+			sceneObjectsAABB = sceneObjectsAABB.Expand(2.0f);
 			/*
 			foreach(var s1 in shapes)
 			{
@@ -161,11 +172,6 @@ namespace Raytracer
 			//return worldAABB.IsInside(pos);
 		}
 
-		public Shape[] GetAABBIntersectingShape(Vector3 pos)
-		{
-			return GetAABBIntersectingShapes(pos, shapes);
-		}
-
 		public Shape[] GetAABBIntersectingShapes(Vector3 pos, List<Shape> query)
 		{
 			List<Shape> list = new List<Shape>();
@@ -173,7 +179,7 @@ namespace Raytracer
 			{
 				foreach(var s in query)
 				{
-					if(s.ExpandedAABB.IsInside(pos)) list.Add(s);
+					if(s.ExpandedAABB.IsInside(s.TransformToLocal(pos))) list.Add(s);
 				}
 			}
 			return list.ToArray();

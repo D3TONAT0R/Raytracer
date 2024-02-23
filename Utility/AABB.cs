@@ -17,6 +17,16 @@ namespace Raytracer {
 		public Vector3 Size => (upper - lower).Abs();
 		public Vector3 Center => (upper + lower) / 2f;
 
+
+		public Vector3 CornerLLL => lower;
+		public Vector3 CornerULL => new Vector3(upper.X, lower.Y, lower.Y);
+		public Vector3 CornerLUL => new Vector3(lower.X, upper.Y, lower.Y);
+		public Vector3 CornerLLU => new Vector3(lower.X, lower.Y, upper.Y);
+		public Vector3 CornerUUL => new Vector3(upper.X, upper.Y, lower.Y);
+		public Vector3 CornerLUU => new Vector3(lower.X, upper.Y, upper.Y);
+		public Vector3 CornerULU => new Vector3(upper.X, lower.Y, upper.Y);
+		public Vector3 CornerUUU => upper;
+
 		public AABB(Vector3 a, Vector3 b) {
 			lower.X = Math.Min(a.X, b.X);
 			lower.Y = Math.Min(a.Y, b.Y);
@@ -24,6 +34,18 @@ namespace Raytracer {
 			upper.X = Math.Max(a.X, b.X);
 			upper.Y = Math.Max(a.Y, b.Y);
 			upper.Z = Math.Max(a.Z, b.Z);
+		}
+
+		public IEnumerable<Vector3> GetCorners()
+		{
+			yield return CornerLLL;
+			yield return CornerULL;
+			yield return CornerLLU;
+			yield return CornerULU;
+			yield return CornerLUL;
+			yield return CornerUUL;
+			yield return CornerLUU;
+			yield return CornerUUU;
 		}
 
 		public bool IsInside(Vector3 pt) {
@@ -128,6 +150,38 @@ namespace Raytracer {
 				aabb.upper.Z = Math.Max(upper.Z, other.upper.Z);
 				return aabb;
 			}
+		}
+
+		public AABB JoinTransformed(SceneObject ownMatrix, AABB other, SceneObject otherMatrix)
+		{
+			var aabb = new AABB(lower, upper);
+			foreach(var corner in other.GetCorners())
+			{
+				aabb.JoinIntoSelf(ownMatrix.TransformToLocal(otherMatrix.TransformToWorld(corner)));
+			}
+			return aabb;
+		}
+
+		public AABB Join(Vector3 other)
+		{
+			var aabb = new AABB();
+			aabb.lower.X = Math.Min(lower.X, other.X);
+			aabb.lower.Y = Math.Min(lower.Y, other.Y);
+			aabb.lower.Z = Math.Min(lower.Z, other.Z);
+			aabb.upper.X = Math.Max(upper.X, other.X);
+			aabb.upper.Y = Math.Max(upper.Y, other.Y);
+			aabb.upper.Z = Math.Max(upper.Z, other.Z);
+			return aabb;
+		}
+
+		private void JoinIntoSelf(Vector3 p)
+		{
+			lower.X = Math.Min(lower.X, p.X);
+			lower.Y = Math.Min(lower.Y, p.Y);
+			lower.Z = Math.Min(lower.Z, p.Z);
+			upper.X = Math.Max(upper.X, p.X);
+			upper.Y = Math.Max(upper.Y, p.Y);
+			upper.Z = Math.Max(upper.Z, p.Z);
 		}
 
 		public AABB Trim(AABB other) {
