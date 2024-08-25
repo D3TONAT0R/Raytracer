@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
-namespace Raytracer {
-	public class RaytracerEngine {
+namespace Raytracer
+{
+	public class RaytracerEngine
+	{
 
 		public static string rootPath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Raytracer");
 
@@ -29,11 +31,14 @@ namespace Raytracer {
 		public bool IsRendering => render;
 
 		static Scene scene;
-		public static Scene Scene {
-			get {
+		public static Scene Scene
+		{
+			get
+			{
 				return scene;
 			}
-			set {
+			set
+			{
 				scene = value;
 				redrawScreen = true;
 				UpdateCameraConfigurationItems();
@@ -74,14 +79,16 @@ namespace Raytracer {
 			engine.Start();
 		}
 
-		public void Start() {
+		public void Start()
+		{
 			instance = this;
 			exit = false;
 			SetupSettingsAndTargets();
 
 			redrawScreen = true;
 			MakeWinforms();
-			Camera.MainCamera = new Camera() {
+			Camera.MainCamera = new Camera()
+			{
 				localPosition = Vector3.UnitY,
 				localRotation = Vector3.Zero,
 				fieldOfView = 60
@@ -91,7 +98,8 @@ namespace Raytracer {
 			loopthread = new Thread(ts);
 			loopthread.SetApartmentState(ApartmentState.STA);
 			loopthread.Start();
-			while(!exit) {
+			while(!exit)
+			{
 				Thread.Sleep(250);
 				if(windowInitialized && (infoWindow == null || !infoWindow.Visible))
 				{
@@ -145,15 +153,16 @@ namespace Raytracer {
 			renderTargets.Add(new RenderTarget("8K", 7680, 4320));
 		}
 
-		void DrawScreenOnWinform() {
+		void DrawScreenOnWinform()
+		{
 			redrawScreen = false;
 			/*if(winform == null) return;
 			graphics = winform.CreateGraphics();
 			graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;*/
 
-			if (render)
+			if(render)
 			{
-				if (renderTimer == null) renderTimer = new Stopwatch();
+				if(renderTimer == null) renderTimer = new Stopwatch();
 				lastRenderTarget = CurrentRenderTarget;
 
 				renderTimer.Restart();
@@ -161,14 +170,15 @@ namespace Raytracer {
 
 			Camera.MainCamera.Render(Scene, CurrentRenderTarget);
 
-			if (render && renderTimer != null) renderTimer.Stop();
+			if(render && renderTimer != null) renderTimer.Stop();
 
-			if(toScreenshot) {
+			if(toScreenshot)
+			{
 				ScreenshotExporter.SaveScreenshot();
 				toScreenshot = false;
 			}
 
-			if (animating)
+			if(animating)
 			{
 				ScreenshotExporter.SaveSequenceFrame();
 				redrawScreen = true;
@@ -185,7 +195,7 @@ namespace Raytracer {
 
 			RefreshImageView();
 
-			if (render && !animating && renderTimer.ElapsedMilliseconds > 10000)
+			if(render && !animating && renderTimer.ElapsedMilliseconds > 10000)
 			{
 				MessageBox.Show($"Time elapsed: {renderTimer.Elapsed:mm\\:ss}\nResolution: {lastRenderTarget}\nRender Settings: {CurrentRenderSettings.name}", "Render Finished", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
 			}
@@ -195,8 +205,8 @@ namespace Raytracer {
 
 		public void RefreshImageView()
 		{
-			if (infoWindow == null) return;
-			lock (SceneRenderer.bufferLock)
+			if(infoWindow == null) return;
+			lock(SceneRenderer.bufferLock)
 			{
 				try
 				{
@@ -212,14 +222,16 @@ namespace Raytracer {
 			}
 		}
 
-		void MakeWinforms() {
+		void MakeWinforms()
+		{
 			Application.EnableVisualStyles();
 			Thread t2 = new Thread(new ThreadStart(RunInfoWindowThread));
 			t2.SetApartmentState(ApartmentState.STA);
 			t2.Start();
 		}
 
-		void RunInfoWindowThread() {
+		void RunInfoWindowThread()
+		{
 			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 			infoWindow = new RaytracerForm();
 			SetupMenuStrip();
@@ -232,10 +244,10 @@ namespace Raytracer {
 
 		void SetupMenuStrip()
 		{
-			
+
 			var qList = infoWindow.qualityMenuItem.DropDownItems;
 			qList.Clear();
-			for (int i = 0; i < renderSettings.Count; i++)
+			for(int i = 0; i < renderSettings.Count; i++)
 			{
 				var item = new ToolStripMenuItem
 				{
@@ -249,7 +261,7 @@ namespace Raytracer {
 
 			var tList = infoWindow.resolutionMenuItem.DropDownItems;
 			tList.Clear();
-			for (int i = 0; i < renderTargets.Count; i++)
+			for(int i = 0; i < renderTargets.Count; i++)
 			{
 				var rt = renderTargets[i];
 				string text = $"{rt.name} ({rt.width}x{rt.height} - {(rt.PixelCount / 1000000f):F1} MP)";
@@ -268,12 +280,12 @@ namespace Raytracer {
 		{
 			infoWindow.Invoke((Action)delegate
 			{
-				for (int i = 0; i < renderSettings.Count; i++)
+				for(int i = 0; i < renderSettings.Count; i++)
 				{
 					var item = infoWindow.qualityMenuItem.DropDownItems[i] as ToolStripMenuItem;
 					item.Checked = i == currentRenderSettingsIndex;
 				}
-				for (int i = 0; i < renderTargets.Count; i++)
+				for(int i = 0; i < renderTargets.Count; i++)
 				{
 					var item = infoWindow.resolutionMenuItem.DropDownItems[i] as ToolStripMenuItem;
 					item.Checked = i == currentRenderTargetIndex;
@@ -352,7 +364,7 @@ namespace Raytracer {
 
 		public static void BeginRender(bool directlyToFile)
 		{
-			if (render) return;
+			if(render) return;
 			render = true;
 			redrawScreen = true;
 			toScreenshot = directlyToFile;
@@ -371,34 +383,41 @@ namespace Raytracer {
 			exit = true;
 		}
 
-		void WindowUpdateWorker(object sender, EventArgs e) {
+		void WindowUpdateWorker(object sender, EventArgs e)
+		{
 			//Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 			while(!infoWindow.IsInitialized || infoWindow == null)
 			{
 				Thread.Sleep(500);
 			}
-			try {
+			try
+			{
 				UpdateRenderMenuItems();
-				while(!exit && infoWindow != null) {
-					if(infoWindow.IsInitialized) {
+				while(!exit && infoWindow != null)
+				{
+					if(infoWindow.IsInitialized)
+					{
 						infoWindow.Invoke((Action)delegate {
 							StringBuilder sb = new StringBuilder();
 							float progress = 1;
-							if(render && Camera.MainCamera.rendering) {
+							if(render && Camera.MainCamera.rendering)
+							{
 								string renderText = "Rendering ";
 								if(animating) renderText += $"({scene.animator.CurrentFrame}/{scene.animator.TotalRecFrameCount})";
 								renderText += "...";
 								sb.AppendLine(renderText);
 								SceneRenderer.ActiveScreenRenderer.GetProgressInfo(out string progressString, out progress);
 								sb.AppendLine(progressString);
-								if (render && lastRenderTarget != null)
+								if(render && lastRenderTarget != null)
 								{
 									sb.AppendLine(lastRenderTarget.ToString());
 									sb.Append($"Time: {renderTimer.Elapsed:mm\\:ss}");
 								}
-							} else {
+							}
+							else
+							{
 								sb.AppendLine("Idle.");
-								if (lastRenderTarget != null)
+								if(lastRenderTarget != null)
 								{
 									sb.AppendLine($"Last Render: {renderTimer.Elapsed:mm\\:ss}");
 									sb.Append("  @ " + lastRenderTarget.ToString());
@@ -407,7 +426,7 @@ namespace Raytracer {
 							progress = float.IsNaN(progress) ? 0 : Math.Min(1, Math.Max(0, progress));
 							infoWindow.progressInfo.Text = sb.ToString();
 							infoWindow.progressBar.Maximum = 100;
-							infoWindow.progressBar.Value = (int)(progress*100);
+							infoWindow.progressBar.Value = (int)(progress * 100);
 							movementSpeedScale = infoWindow.cameraSpeedScale.Value / 20f;
 							BuildSceneTree();
 						});
@@ -426,8 +445,10 @@ namespace Raytracer {
 			}
 		}
 
-		void BuildSceneTree() {
-			if(Scene != null && Scene.sceneContent != null && Scene.hasContentUpdate) {
+		void BuildSceneTree()
+		{
+			if(Scene != null && Scene.sceneContent != null && Scene.hasContentUpdate)
+			{
 				infoWindow.sceneTree.Nodes.Clear();
 
 				var contentRoot = new TreeNode("Objects");
@@ -448,10 +469,12 @@ namespace Raytracer {
 				}
 
 				var materialsRoot = new TreeNode("Materials");
+				/*
 				materialsRoot.Nodes.Add(new TreeNode("(Default Material)")
 				{
 					Tag = Scene.DefaultMaterial
 				});
+				*/
 				foreach(var mat in Scene.globalMaterials.Values)
 				{
 					materialsRoot.Nodes.Add(new TreeNode(mat.globalMaterialName)
@@ -470,52 +493,67 @@ namespace Raytracer {
 			}
 		}
 
-		void TraverseTree(SceneObject obj, TreeNode node) {
+		void TraverseTree(SceneObject obj, TreeNode node)
+		{
 			TreeNode newnode;
-			if(obj is Group g) {
+			if(obj is Group g)
+			{
 				newnode = new TreeNode(obj.ToString());
-				foreach(var o2 in g.children) {
+				foreach(var o2 in g.children)
+				{
 					TraverseTree(o2, newnode);
 				}
-			} else if(obj is BooleanSolid b) {
+			}
+			else if(obj is BooleanSolid b)
+			{
 				newnode = new TreeNode(obj.ToString());
-				if (b.solids != null)
+				if(b.solids != null)
 				{
-					foreach (var o2 in b.solids)
+					foreach(var o2 in b.solids)
 					{
 						TraverseTree(o2, newnode);
 					}
 				}
-			} else {
+			}
+			else
+			{
 				newnode = new TreeNode(obj.ToString());
 			}
 			newnode.Tag = obj;
 			node.Nodes.Add(newnode);
 		}
 
-		void LoopThread() {
-			while(!exit) {
+		void LoopThread()
+		{
+			while(!exit)
+			{
 				Thread.Sleep(50);
 				Update();
 			}
 		}
 
-		public static void RedrawScreen(bool ignoreRenderStatus) {
-			if(!ignoreRenderStatus && render) {
+		public static void RedrawScreen(bool ignoreRenderStatus)
+		{
+			if(!ignoreRenderStatus && render)
+			{
 				return;
 			}
 			redrawScreen = true;
 		}
 
-		void Update() {
+		void Update()
+		{
 			if(exit) return;
 			if(!AppHasFocus() || Form.ActiveForm != infoWindow) return;
 			Input.Update();
-			if(Input.esc.isDown) {
+			if(Input.esc.isDown)
+			{
 				exit = true;
 			}
-			if(Input.b.isDown) {
-				if(Scene.animator.RecDuration > 0) {
+			if(Input.b.isDown)
+			{
+				if(Scene.animator.RecDuration > 0)
+				{
 					animating = !animating;
 					render = animating;
 					if(animating)
@@ -527,40 +565,52 @@ namespace Raytracer {
 				}
 			}
 			if(animating || render) return;
-			if(Input.w.isPressed) {
+			if(Input.w.isPressed)
+			{
 				KeyPress(0, 0, 1, false);
 			}
-			if(Input.s.isPressed) {
+			if(Input.s.isPressed)
+			{
 				KeyPress(0, 0, -1, false);
 			}
-			if(Input.a.isPressed) {
+			if(Input.a.isPressed)
+			{
 				KeyPress(-1, 0, 0, false);
 			}
-			if(Input.d.isPressed) {
+			if(Input.d.isPressed)
+			{
 				KeyPress(1, 0, 0, false);
 			}
-			if(Input.q.isPressed) {
+			if(Input.q.isPressed)
+			{
 				KeyPress(0, -1, 0, false);
 			}
-			if(Input.e.isPressed) {
+			if(Input.e.isPressed)
+			{
 				KeyPress(0, 1, 0, false);
 			}
-			if(Input.arrowUp.isPressed) {
+			if(Input.arrowUp.isPressed)
+			{
 				KeyPress(-1, 0, 0, true);
 			}
-			if(Input.arrowDown.isPressed) {
+			if(Input.arrowDown.isPressed)
+			{
 				KeyPress(1, 0, 0, true);
 			}
-			if(Input.arrowLeft.isPressed) {
+			if(Input.arrowLeft.isPressed)
+			{
 				KeyPress(0, -1, 0, true);
 			}
-			if(Input.arrowRight.isPressed) {
+			if(Input.arrowRight.isPressed)
+			{
 				KeyPress(0, 1, 0, true);
 			}
-			if(Input.y.isPressed) {
+			if(Input.y.isPressed)
+			{
 				KeyPress(0, 0, -1, true);
 			}
-			if(Input.x.isPressed) {
+			if(Input.x.isPressed)
+			{
 				KeyPress(0, 0, 1, true);
 			}
 			if(Input.n.isPressed)
@@ -573,23 +623,29 @@ namespace Raytracer {
 				Camera.MainCamera.MoveOffset(1f * movementSpeedScale);
 				redrawScreen = true;
 			}
-			if(Input.nLeft.isDown) {
+			if(Input.nLeft.isDown)
+			{
 				MoveRemoteObject(-1, 0);
 			}
-			if(Input.nRight.isDown) {
+			if(Input.nRight.isDown)
+			{
 				MoveRemoteObject(1, 0);
 			}
-			if(Input.nDown.isDown) {
+			if(Input.nDown.isDown)
+			{
 				MoveRemoteObject(0, -1);
 			}
-			if(Input.nUp.isDown) {
+			if(Input.nUp.isDown)
+			{
 				MoveRemoteObject(0, 1);
 			}
-			if(Input.comma.isPressed) {
+			if(Input.comma.isPressed)
+			{
 				redrawScreen = true;
 				Camera.MainCamera.fieldOfView += 5;
 			}
-			if(Input.period.isPressed) {
+			if(Input.period.isPressed)
+			{
 				redrawScreen = true;
 				Camera.MainCamera.fieldOfView -= 5;
 			}
@@ -614,18 +670,24 @@ namespace Raytracer {
 			}
 		}
 
-		void KeyPress(int x, int y, int z, bool rotate) {
+		void KeyPress(int x, int y, int z, bool rotate)
+		{
 			redrawScreen = true;
-			if(rotate) {
+			if(rotate)
+			{
 				float rmul = (float)Math.Tan((Camera.MainCamera.fieldOfView / 2f).DegToRad()) * movementSpeedScale;
 				Camera.MainCamera.Rotate(new Vector3(x, y, z) * 10 * rmul);
-			} else {
+			}
+			else
+			{
 				Camera.MainCamera.Move(new Vector3(x, y, z) * movementSpeedScale, flyMode);
 			}
 		}
 
-		void MoveRemoteObject(int x, int z) {
-			if(Scene.remoteControlledObject != null) {
+		void MoveRemoteObject(int x, int z)
+		{
+			if(Scene.remoteControlledObject != null)
+			{
 				redrawScreen = true;
 				Scene.remoteControlledObject.localPosition += new Vector3(x, 0, z);
 			}
@@ -635,7 +697,7 @@ namespace Raytracer {
 		public static bool AppHasFocus()
 		{
 			var activatedHandle = GetForegroundWindow();
-			if (activatedHandle == IntPtr.Zero)
+			if(activatedHandle == IntPtr.Zero)
 			{
 				return false;       // No window is currently activated
 			}
