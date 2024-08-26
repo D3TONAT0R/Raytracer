@@ -64,7 +64,7 @@ namespace Raytracer {
 
 		public override bool Intersects(Vector3 pos) {
 			if(!base.Intersects(pos)) return false;
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			Vector3 rel = pos / size;
 			return GetIntersectingArea(rel.Y).Contains(rel.X, rel.Z);
 		}
@@ -96,7 +96,7 @@ namespace Raytracer {
 		}
 
 		protected override void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			var intersection = GetIntersectingArea(((pos - localPosition) / size).Y);
 			var cut = ShapeAABB.ShrinkRelative(new Vector3(intersection.left, 0, intersection.bottom), new Vector3(1 - intersection.right, 0, 1 - intersection.top));
 			//0 = bottom

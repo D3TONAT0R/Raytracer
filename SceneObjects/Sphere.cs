@@ -26,20 +26,20 @@ namespace Raytracer {
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			return pos.Length() <= radius;
 		}
 
 		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			var nrm = Vector3.Normalize(pos);
 			return nrm;
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos)
 		{
-			var localPos = TransformToLocal(worldPos);
+			var localPos = WorldToLocalPoint(worldPos);
 			return Math.Abs(localPos.Length() - radius);
 		}
 

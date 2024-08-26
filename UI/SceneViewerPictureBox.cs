@@ -61,14 +61,12 @@ namespace Raytracer {
 			if(e.Button == MouseButtons.Left)
 			{
 				var pos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var hit, allowOptimization: false);
+				TreeNode nextSelection = null;
 				if(hit != null)
 				{
-					var node = RaytracerEngine.infoWindow.FindNode(hit);
-					if(node != null)
-					{
-						RaytracerEngine.infoWindow.sceneTree.SelectedNode = node;
-					}
+					nextSelection = RaytracerEngine.infoWindow.FindNode(hit);
 				}
+				RaytracerEngine.infoWindow.sceneTree.SelectedNode = nextSelection;
 			}
 			else if(e.Button == MouseButtons.Right)
 			{

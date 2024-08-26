@@ -113,9 +113,9 @@ namespace Raytracer
 		{
 			previewRenderSettings = new RenderSettings("Preview")
 			{
-				rayMarchDistanceInVoid = 0.5f,
-				rayMarchDistanceInObject = 0.03f,
-				rayDistanceDegradation = 0.05f,
+				rayMarchDistanceInVoid = 0.2f,
+				rayMarchDistanceInObject = 0.01f,
+				rayDistanceDegradation = 0.03f,
 				maxBounces = 0,
 				lightingType = LightingType.RaytracedNoShadows,
 				allowSelfShadowing = false,
@@ -141,16 +141,18 @@ namespace Raytracer
 			renderSettings.Add(hqRenderSettings);
 			renderSettings.Add(maxRenderSettings);
 
-			previewRenderTarget = new RenderTarget("Preview", 240, 135);
-			renderTargets = new List<RenderTarget>();
-			renderTargets.Add(new RenderTarget("LD", 480, 270));
-			renderTargets.Add(new RenderTarget("SD", 640, 360));
-			renderTargets.Add(new RenderTarget("HD", 1280, 720));
-			renderTargets.Add(new RenderTarget("FHD", 1920, 1080));
-			renderTargets.Add(new RenderTarget("WQHD", 2560, 1440));
-			renderTargets.Add(new RenderTarget("3.2K", 3200, 1800));
-			renderTargets.Add(new RenderTarget("4K", 3840, 2160));
-			renderTargets.Add(new RenderTarget("8K", 7680, 4320));
+			previewRenderTarget = new RenderTarget("Preview", 480, 270);
+			renderTargets = new List<RenderTarget>
+			{
+				new RenderTarget("LD", 480, 270),
+				new RenderTarget("SD", 640, 360),
+				new RenderTarget("HD", 1280, 720),
+				new RenderTarget("FHD", 1920, 1080),
+				new RenderTarget("WQHD", 2560, 1440),
+				new RenderTarget("3.2K", 3200, 1800),
+				new RenderTarget("4K", 3840, 2160),
+				new RenderTarget("8K", 7680, 4320)
+			};
 		}
 
 		void DrawScreenOnWinform()

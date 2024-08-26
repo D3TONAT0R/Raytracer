@@ -182,7 +182,7 @@ namespace Raytracer {
 
 		public Color GetColor(Shape shape, Vector3 pos, Vector3 nrm, Ray ray)
 		{
-			var worldNormal = shape.TransformToWorldNormal(nrm);
+			var worldNormal = shape.LocalToWorldNormal(nrm);
 			float distance = ray.travelDistance;
 			Color output;
 			if (shader == ShaderType.Default)
@@ -331,7 +331,7 @@ namespace Raytracer {
 				mappingType == TextureMappingType.LocalYProj ||
 				mappingType == TextureMappingType.LocalZProj)
 			{
-				pos = shape.TransformToLocal(pos);
+				pos = shape.WorldToLocalPoint(pos);
 			}
 			switch(mappingType) {
 				case TextureMappingType.LocalXYZ:
@@ -343,7 +343,7 @@ namespace Raytracer {
 				case TextureMappingType.LocalZProj:
 				case TextureMappingType.WorldZProj: uv = new Vector2(pos.X, pos.Y); break;
 				case TextureMappingType.Screen: uv = ray.sourceScreenPos; break;
-				case TextureMappingType.UV: uv = shape.GetUV(shape.TransformToLocal(pos), nrm); break;
+				case TextureMappingType.UV: uv = shape.GetUV(shape.WorldToLocalPoint(pos), nrm); break;
 				default: uv = Vector2.Zero; break;
 			}
 			return uv;

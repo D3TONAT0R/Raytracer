@@ -36,7 +36,7 @@ namespace Raytracer {
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			return
 				pos.X > 0 && pos.X < size.X &&
 				pos.Y > 0 && pos.Y < size.Y &&
@@ -58,7 +58,7 @@ namespace Raytracer {
 		}
 
 		protected virtual void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			//0 = bottom
 			//1 = top
 			//2 = left

@@ -179,7 +179,7 @@ namespace Raytracer
 			{
 				foreach(var s in query)
 				{
-					if(s.ExpandedAABB.IsInside(s.TransformToLocal(pos))) list.Add(s);
+					if(s.ExpandedAABB.IsInside(s.WorldToLocalPoint(pos))) list.Add(s);
 				}
 			}
 			return list.ToArray();

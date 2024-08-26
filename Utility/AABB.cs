@@ -157,7 +157,7 @@ namespace Raytracer {
 			var aabb = new AABB(lower, upper);
 			foreach(var corner in other.GetCorners())
 			{
-				aabb.JoinIntoSelf(ownMatrix.TransformToLocal(otherMatrix.TransformToWorld(corner)));
+				aabb.JoinIntoSelf(ownMatrix.WorldToLocalPoint(otherMatrix.LocalToWorldPoint(corner)));
 			}
 			return aabb;
 		}

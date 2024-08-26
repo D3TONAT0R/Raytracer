@@ -15,7 +15,7 @@ namespace Raytracer {
 		public Material material;
 
 		[DataIdentifier("DISPLAY_BOUNDS")]
-		public bool displayBounds = true;
+		public bool displayBounds = false;
 		[DataIdentifier("BOUNDS_COLOR", 0.25f)]
 		public Color boundsColor = Color.Red;
 

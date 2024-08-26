@@ -61,7 +61,7 @@ namespace Raytracer {
 		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
 			var closest = GetClosestSurfaceShape(pos);
-			Vector3 normal = closest.GetLocalNormalAt(pos);
+			Vector3 normal = closest?.GetLocalNormalAt(pos) ?? Vector3.Zero;
 			if(operation == BooleanOperation.Subtract && closest != solids[0]) {
 				normal *= -1;
 			}
@@ -122,15 +122,15 @@ namespace Raytracer {
 			if(material != null) {
 				return material;
 			} else {
-				return GetClosestSurfaceShape(pos).GetMaterial(pos);
+				return GetClosestSurfaceShape(pos)?.GetMaterial(pos);
 			}
 		}
 
 		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
 		{
-			var wp = TransformToWorld(localPos);
+			var wp = LocalToWorldPoint(localPos);
 			var shape = GetClosestSurfaceShape(wp);
-			return shape.GetUV(TransformToLocal(wp), normal);
+			return shape.GetUV(WorldToLocalPoint(wp), normal);
 		}
 
 		/*public override void RegisterExpandedAABB(Dictionary<Shape, AABB> expandedAABBs, float expansionAmount) {

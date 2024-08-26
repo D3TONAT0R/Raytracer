@@ -20,7 +20,7 @@ namespace Raytracer
 
 		public override bool Intersects(Vector3 pos)
 		{
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			var aabb = referenceShape.ShapeAABB.Expand(thickness * 0.5f);
 			float edgeDistX = Math.Min(pos.X - aabb.lower.X, aabb.upper.X - pos.X);
 			float edgeDistY = Math.Min(pos.Y - aabb.lower.Y, aabb.upper.Y - pos.Y);

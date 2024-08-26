@@ -19,7 +19,8 @@ namespace Raytracer
 		{
 			get
 			{
-				return progressiveUpdates && RaytracerEngine.instance.IsRendering ? progressiveRenderer : stripRenderer;
+				return progressiveRenderer;
+				//return progressiveUpdates && RaytracerEngine.instance.IsRendering ? progressiveRenderer : stripRenderer;
 			}
 		}
 

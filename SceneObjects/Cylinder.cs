@@ -52,13 +52,13 @@ namespace Raytracer {
 		}
 
 		public override float GetSurfaceProximity(Vector3 worldPos) {
-			var localPos = TransformToLocal(worldPos);
+			var localPos = WorldToLocalPoint(worldPos);
 			CalculateClosestFace(localPos, out _, out float prox);
 			return prox;
 		}
 
 		public override bool Intersects(Vector3 pos) {
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			if(axis == Axis.Y) {
 				return pos.Y.Range(ShapeAABB.lower.Y, ShapeAABB.upper.Y) && pos.XZ().Length() < radius;
 			} else if(axis == Axis.X) {
@@ -71,7 +71,7 @@ namespace Raytracer {
 
 		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
-			pos = TransformToLocal(pos);
+			pos = WorldToLocalPoint(pos);
 			CalculateClosestFace(pos, out int face, out _);
 			if(axis == Axis.Y) {
 				if(face == 0) {

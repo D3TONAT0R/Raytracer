@@ -39,15 +39,15 @@ namespace Raytracer {
 		}
 
 		public void Move(Vector3 localMoveVector, bool fly) {
-			var euler = localRotation * MathUtils.Deg2Rad;
+			var translationEuler = localRotation * MathUtils.Deg2Rad;
 			if(fly) {
-				euler.X = 0;
-				euler.Z = 0;
+				translationEuler.X = 0;
+				translationEuler.Z = 0;
 			}
-			cameraMatrix = Matrix4x4.CreateFromYawPitchRoll(euler.Y, euler.X, euler.Z);
-			var fwd = Forward(cameraMatrix);
-			var right = Right(cameraMatrix);
-			var up = Up(cameraMatrix);
+			var translationMatrix = Matrix4x4.CreateFromYawPitchRoll(translationEuler.Y, translationEuler.X, translationEuler.Z);
+			var fwd = Forward(translationMatrix);
+			var right = Right(translationMatrix);
+			var up = Up(translationMatrix);
 			localPosition += fwd * localMoveVector.Z;
 			localPosition += right * localMoveVector.X;
 			localPosition += up * localMoveVector.Y;
