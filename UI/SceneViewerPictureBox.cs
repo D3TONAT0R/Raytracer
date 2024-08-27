@@ -14,16 +14,17 @@ namespace Raytracer {
 		public Point? hoveredPixelCoordinates;
 		public Label coordinateLabel;
 
-		public SceneViewerPictureBox() : base() {
+		public SceneViewerPictureBox() : base()
+		{
 			Cursor = Cursors.Cross;
 			coordinateLabel = new Label();
 			Controls.Add(coordinateLabel);
 			coordinateLabel.BackColor = System.Drawing.Color.Transparent;
-			coordinateLabel.ForeColor = System.Drawing.Color.Blue;
+			coordinateLabel.ForeColor = System.Drawing.Color.FromArgb(128, 128, 128);
 			coordinateLabel.Font = new Font(Font, FontStyle.Bold);
 			coordinateLabel.BringToFront();
 			coordinateLabel.Size = new Size(200, 50);
-			coordinateLabel.Enabled = false;
+			coordinateLabel.Enabled = true;
 		}
 
 		protected override void OnPaint(PaintEventArgs paintEventArgs) {
@@ -35,24 +36,16 @@ namespace Raytracer {
 			}
 		}
 
-		private void UpdateLabel() {
-			if(hoveredPixelCoordinates != null) {
-				Point pixel = (Point)hoveredPixelCoordinates;
-				coordinateLabel.Text = $"Pixel: [{pixel.X},{pixel.Y}]";
-			} else {
-				coordinateLabel.Text = "";
-			}
-		}
-
-		protected override void OnMouseMove(MouseEventArgs e) {
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
 			if(Image == null) return;
-			Point loc = e.Location;
-			
-			UpdateLabel();
+			Point? pixel = GetPixelFromScreenLocation(e.Location);
+			UpdateLabel(pixel);
 		}
 
 		protected override void OnMouseClick(MouseEventArgs e)
 		{
+			if(RaytracerEngine.Scene == null) return;
 			var pixel = GetPixelFromScreenLocation(e.Location);
 			if(!pixel.HasValue) return;
 			var viewportCoord = new Vector2(pixel.Value.X / (float)Image.Size.Width, pixel.Value.Y / (float)Image.Size.Height) * 2f - Vector2.One;
@@ -74,6 +67,18 @@ namespace Raytracer {
 				System.Diagnostics.Debugger.Break();
 #endif
 				var color = SceneRenderer.TraceRay(RaytracerEngine.Scene, ray, VisibilityFlags.Direct);
+			}
+		}
+
+		private void UpdateLabel(Point? hoveredPixel)
+		{
+			if(hoveredPixel != null)
+			{
+				coordinateLabel.Text = $"Pixel: [{hoveredPixel.Value.X},{hoveredPixel.Value.Y}]";
+			}
+			else
+			{
+				coordinateLabel.Text = "";
 			}
 		}
 
@@ -113,6 +118,23 @@ namespace Raytracer {
 				result.Width = (int)((1.0f / imageAspectRatio) * (float)containerSize.Height);
 			}
 			return result;
+		}
+
+		private void InitializeComponent()
+		{
+			((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
+			this.SuspendLayout();
+			// 
+			// SceneViewerPictureBox
+			// 
+			((System.ComponentModel.ISupportInitialize)(this)).EndInit();
+			this.ResumeLayout(false);
+
+		}
+
+		private void OnKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+
 		}
 	}
 }
