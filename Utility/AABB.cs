@@ -236,7 +236,7 @@ namespace Raytracer {
 			AABB b = new AABB(transformedCenter, transformedCenter);
 			foreach (var corner in GetCorners())
 			{
-				b = b.Join(corner);
+				b = b.Join(Vector3.Transform(corner, matrix));
 			}
 			return b;
 		}
