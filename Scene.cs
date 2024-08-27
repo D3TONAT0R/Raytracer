@@ -92,15 +92,18 @@ namespace Raytracer
 				RegisterSceneContent(obj);
 			}
 			//shapeAABBs.Clear();
-			sceneObjectsAABB = AABB.Empty;
+			sceneObjectsAABB = AABB.NullBounds;
 			foreach(var s in sceneContent)
 			{
 				s.SetupMatrix();
+				s.RecalculateShapeBounds();
 				s.SetupForRendering();
-				sceneObjectsAABB = sceneObjectsAABB.Join(s.GetTotalShapeAABB());
+				sceneObjectsAABB = sceneObjectsAABB.Join(s.WorldSpaceShapeBounds);
 			}
-			sceneObjectsAABB = sceneObjectsAABB.Join(new AABB(Camera.MainCamera.ActualCameraPosition, Camera.MainCamera.ActualCameraPosition));
-			sceneObjectsAABB = sceneObjectsAABB.Expand(2.0f);
+			sceneObjectsAABB = sceneObjectsAABB.Join(Camera.MainCamera.ActualCameraPosition);
+			//sceneObjectsAABB = new AABB(-Vector3.One * 20, Vector3.One * 20);
+			//sceneObjectsAABB = new AABB(-Vector3.One * 2000, Vector3.One * 2000);
+			//sceneObjectsAABB = sceneObjectsAABB.Expand(2.0f);
 			/*
 			foreach(var s1 in shapes)
 			{
@@ -179,7 +182,7 @@ namespace Raytracer
 			{
 				foreach(var s in query)
 				{
-					if(s.ExpandedAABB.IsInside(s.WorldToLocalPoint(pos))) list.Add(s);
+					if(s.ExpandedLocalShapeBounds.IsInside(s.WorldToLocalPoint(pos))) list.Add(s);
 				}
 			}
 			return list.ToArray();

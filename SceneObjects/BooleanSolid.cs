@@ -36,25 +36,44 @@ namespace Raytracer {
 			foreach(var s in solids) s.Initialize(parentScene);
 		}
 
-		public override void SetupForRendering() {
-			//expandedAABBs = new AABB[solids.Length];
-			for(int i = 0; i < solids.Length; i++) {
-				solids[i].SetupForRendering();
-				//expandedAABBs[i] = solids[i].ShapeAABB.Expand(RaytracedRenderer.CurrentSettings.rayMarchDistanceInVoid);
+		public override AABB ComputeLocalShapeBounds()
+		{
+			foreach(var s in solids)
+			{
+				s.ComputeLocalShapeBounds();
 			}
 
-			if(operation == BooleanOperation.Subtract) {
-				ShapeAABB = solids[0].ShapeAABB;
-			} else if(operation == BooleanOperation.Add) {
-				ShapeAABB = new AABB();
-				foreach(var s in solids) {
-					ShapeAABB = ShapeAABB.Join(s.ShapeAABB);
+			if(operation == BooleanOperation.Subtract)
+			{
+				return solids[0].LocalShapeBounds;
+			} 
+			else if(operation == BooleanOperation.Add)
+			{
+				var bounds = AABB.NullBounds;
+				foreach(var s in solids)
+				{
+					bounds = bounds.Join(s.LocalShapeBounds);
 				}
-			} else if(operation == BooleanOperation.Intersect) {
-				ShapeAABB = AABB.CreateInfinity();
-				foreach(var s in solids) {
-					ShapeAABB = ShapeAABB.Trim(s.ShapeAABB);
+				return bounds;
+			}
+			else if(operation == BooleanOperation.Intersect)
+			{
+				if(solids.Length == 0) return AABB.NullBounds;
+				var bounds = AABB.CreateInfinity();
+				foreach(var s in solids)
+				{
+					bounds = bounds.Trim(s.LocalShapeBounds);
 				}
+				return bounds;
+			}
+			return AABB.NullBounds;
+		}
+
+		public override void SetupForRendering()
+		{
+			for(int i = 0; i < solids.Length; i++)
+			{
+				solids[i].SetupForRendering();
 			}
 		}
 
@@ -98,7 +117,7 @@ namespace Raytracer {
 			float prox = 999;
 			for(int i = 0; i < solids.Length; i++) {
 				//if(RaytracedRenderer.scene.shapeAABBs[solids[i]][1].IsInside(worldPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(worldPos));
-				if(solids[i].ExpandedAABB.IsInside(worldPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(worldPos));
+				if(solids[i].ExpandedLocalShapeBounds.IsInside(worldPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(worldPos));
 			}
 			return prox;
 		}
@@ -107,7 +126,7 @@ namespace Raytracer {
 			Shape shape = null;
 			float closest = float.MaxValue;
 			for(int i = 0; i < solids.Length; i++) {
-				if(solids[i].ExpandedAABB.IsInside(pos)) {
+				if(solids[i].ExpandedLocalShapeBounds.IsInside(pos)) {
 					var prox = solids[i].GetSurfaceProximity(pos);
 					if(prox < closest) {
 						shape = solids[i];

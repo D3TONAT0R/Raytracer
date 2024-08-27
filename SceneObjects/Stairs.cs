@@ -75,7 +75,7 @@ namespace Raytracer
 			foreach(var ss in subShapes) ss.SetupForRendering();
 		}
 
-		public override AABB GetTotalShapeAABB()
+		public override AABB ComputeLocalShapeBounds()
 		{
 			return new AABB(Vector3.Zero, size);
 		}

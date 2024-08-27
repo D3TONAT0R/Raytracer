@@ -98,7 +98,7 @@ namespace Raytracer {
 		protected override void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
 			pos = WorldToLocalPoint(pos);
 			var intersection = GetIntersectingArea(((pos - localPosition) / size).Y);
-			var cut = ShapeAABB.ShrinkRelative(new Vector3(intersection.left, 0, intersection.bottom), new Vector3(1 - intersection.right, 0, 1 - intersection.top));
+			var cut = LocalShapeBounds.ShrinkRelative(new Vector3(intersection.left, 0, intersection.bottom), new Vector3(1 - intersection.right, 0, 1 - intersection.top));
 			//0 = bottom
 			//1 = top
 			//2 = left

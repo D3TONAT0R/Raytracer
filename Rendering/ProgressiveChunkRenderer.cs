@@ -97,8 +97,7 @@ namespace Raytracer
 			{
 				chunksRendered = 0;
 				nextIterationChunks.Clear();
-				int i = 0;
-				Parallel.For(i, currentIterationChunks.Count, ci => RenderChunk(currentIterationChunks[ci], pass, firstPass));
+				Parallel.For(0, currentIterationChunks.Count, ci => RenderChunk(currentIterationChunks[ci], pass, firstPass));
 				firstPass = false;
 				currentIterationChunks.Clear();
 				currentIterationChunks.AddRange(nextIterationChunks);
@@ -116,7 +115,7 @@ namespace Raytracer
 				for (int x = c.xMin; x <= c.xMax; x += s)
 				{
 					if (isFirstPass && x == c.xMin && y == c.yMin) continue;
-					var col = GetPixelColor(x, y, currentCamera, currentScene);
+					var col = TracePixel(x, y, currentCamera, currentScene);
 					if (s <= 1)
 					{
 						SetPixel(currentBuffer, x, y, col, targetWidth, targetHeight, targetDepth);

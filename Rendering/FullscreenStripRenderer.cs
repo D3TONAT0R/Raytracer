@@ -31,7 +31,7 @@ namespace Raytracer
 			{
 				for(int x = 0; x < width; x++)
 				{
-					DrawPixel(x, y1, camera, scene, buffer, width, height, depth);
+					RenderPixel(x, y1, camera, scene, buffer, width, height, depth);
 				}
 			}
 			catch

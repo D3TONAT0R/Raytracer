@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public struct AABB {
 
-		public static readonly AABB Empty = new AABB();
+		public static readonly AABB NullBounds = new AABB();
 		public static AABB CreateInfinity() => new AABB(-Vector3.One * float.MaxValue, Vector3.One * float.MaxValue);
 
 		public Vector3 lower;
@@ -26,6 +26,8 @@ namespace Raytracer {
 		public Vector3 CornerLUU => new Vector3(lower.X, upper.Y, upper.Y);
 		public Vector3 CornerULU => new Vector3(upper.X, lower.Y, upper.Y);
 		public Vector3 CornerUUU => upper;
+
+		public bool IsNullBounds => lower == Vector3.Zero && upper == Vector3.Zero;
 
 		public AABB(Vector3 a, Vector3 b) {
 			lower.X = Math.Min(a.X, b.X);
@@ -134,22 +136,24 @@ namespace Raytracer {
 			};
 		}
 
-		public AABB Join(AABB other) {
-			if(lower == Vector3.Zero && upper == Vector3.Zero)
+		public AABB Join(AABB other)
+		{
+			if(IsNullBounds)
 			{
 				return other;
 			}
-			else
+			if(other.IsNullBounds)
 			{
-				var aabb = new AABB();
-				aabb.lower.X = Math.Min(lower.X, other.lower.X);
-				aabb.lower.Y = Math.Min(lower.Y, other.lower.Y);
-				aabb.lower.Z = Math.Min(lower.Z, other.lower.Z);
-				aabb.upper.X = Math.Max(upper.X, other.upper.X);
-				aabb.upper.Y = Math.Max(upper.Y, other.upper.Y);
-				aabb.upper.Z = Math.Max(upper.Z, other.upper.Z);
-				return aabb;
+				return this;
 			}
+			var aabb = new AABB();
+			aabb.lower.X = Math.Min(lower.X, other.lower.X);
+			aabb.lower.Y = Math.Min(lower.Y, other.lower.Y);
+			aabb.lower.Z = Math.Min(lower.Z, other.lower.Z);
+			aabb.upper.X = Math.Max(upper.X, other.upper.X);
+			aabb.upper.Y = Math.Max(upper.Y, other.upper.Y);
+			aabb.upper.Z = Math.Max(upper.Z, other.upper.Z);
+			return aabb;
 		}
 
 		public AABB JoinTransformed(SceneObject ownMatrix, AABB other, SceneObject otherMatrix)
@@ -224,6 +228,17 @@ namespace Raytracer {
 
 		private float Highest(Vector3 v) {
 			return Math.Max(v.X, Math.Max(v.Y, v.Z));
+		}
+
+		public AABB Transform(Matrix4x4 matrix)
+		{
+			var transformedCenter = Vector3.Transform(Center, matrix);
+			AABB b = new AABB(transformedCenter, transformedCenter);
+			foreach (var corner in GetCorners())
+			{
+				b = b.Join(corner);
+			}
+			return b;
 		}
 	}
 }

@@ -275,13 +275,13 @@ namespace Raytracer {
 				{
 					var refractedNormal = MathUtils.Refract(ray.Direction, -worldNormal, 1f, indexOfRefraction);
 					var refrMaxDistance = thickness > 0 ? thickness : 100;
-					var newray = new Ray(ray.Position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
-					var refractedExitPos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref newray, VisibilityFlags.All, out _, shape, shape);
+					var newRay = new Ray(ray.Position, refractedNormal, ray.reflectionIteration + 1, ray.sourceScreenPos, refrMaxDistance);
+					SceneRenderer.TraceRay(RaytracerEngine.Scene, ref newRay, VisibilityFlags.All, out var refractionResult, shape, shape);
 
-					var exitSurfaceNrm = thickness > 0 ? -worldNormal : shape.GetLocalNormalAt(refractedExitPos ?? newray.Position);
+					var exitSurfaceNrm = thickness > 0 ? -worldNormal : shape.GetLocalNormalAt(refractionResult.Position);
 					refractedNormal = MathUtils.Refract(refractedNormal, -exitSurfaceNrm, indexOfRefraction, 1f);
-					newray = new Ray(newray.Position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
-					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newray, VisibilityFlags.Direct, shape) * mainColor;
+					newRay = new Ray(newRay.Position, refractedNormal, ray.reflectionIteration + 1, Vector2.Zero);
+					backColor = SceneRenderer.TraceRay(RaytracerEngine.Scene, newRay, VisibilityFlags.Direct, shape) * mainColor;
 				}
 				else
 				{

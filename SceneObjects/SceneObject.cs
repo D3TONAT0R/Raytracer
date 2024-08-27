@@ -54,6 +54,12 @@ namespace Raytracer
 
 		public virtual bool CanContainShapes => false;
 
+		public AABB LocalShapeBounds { get; protected set; }
+
+		public AABB ExpandedLocalShapeBounds { get; protected set; }
+
+		public AABB WorldSpaceShapeBounds { get; protected set; }
+
 		public SceneObject() { }
 
 		public SceneObject(string name)
@@ -146,9 +152,33 @@ namespace Raytracer
 			}
 		}
 
-		public abstract void SetupForRendering();
+		public void RecalculateShapeBounds()
+		{
+			foreach (var childObject in GetContainedObjectsOfType<SceneObject>())
+			{
+				if(childObject == this) continue;
+				childObject.RecalculateShapeBounds();
+			}
 
-		public virtual AABB GetTotalShapeAABB() => AABB.Empty;
+			LocalShapeBounds = ComputeLocalShapeBounds();
+			if (!LocalShapeBounds.IsNullBounds)
+			{
+				ExpandedLocalShapeBounds = LocalShapeBounds.Expand(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid);
+				WorldSpaceShapeBounds = LocalShapeBounds.Transform(LocalToWorldMatrix);
+			}
+			else
+			{
+				ExpandedLocalShapeBounds = AABB.NullBounds;
+				WorldSpaceShapeBounds = AABB.NullBounds;
+			}
+		}
+
+		public virtual AABB ComputeLocalShapeBounds()
+		{
+			return AABB.NullBounds;
+		}
+
+		public abstract void SetupForRendering();
 
 		public virtual IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{

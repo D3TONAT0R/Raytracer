@@ -21,27 +21,14 @@ namespace Raytracer {
 
 		private WireCuboid boundsCube;
 
-		public Shape(string name) : base(name) {
-		}
-
-		private AABB shapeAABB;
-
-		public AABB ShapeAABB {
-			get {
-				return shapeAABB;
-			}
-			protected set {
-				shapeAABB = value;
-				ExpandedAABB = value.Expand(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid);
-			}
-		}
-
-		public AABB ExpandedAABB {
-			get;
-			protected set;
-		}
-
 		public override bool CanContainShapes => true;
+
+		public Shape(string name) : base(name) 
+		{
+
+		}
+
+		public abstract override AABB ComputeLocalShapeBounds();
 
 		public abstract bool Intersects(Vector3 pos);
 
@@ -62,12 +49,7 @@ namespace Raytracer {
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{
 			var tRay = ray.Transform(WorldToLocalMatrix);
-			if(ShapeAABB.Intersects(tRay)) yield return this;
-		}
-
-		public override AABB GetTotalShapeAABB()
-		{
-			return ShapeAABB;
+			if(LocalShapeBounds.Intersects(tRay)) yield return this;
 		}
 
 		public abstract Vector2 GetUV(Vector3 localPos, Vector3 normal);

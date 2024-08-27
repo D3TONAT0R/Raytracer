@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IO\ScreenshotExporter.cs" />
+    <Compile Include="RayTraceResult.cs" />
     <Compile Include="SceneObjects\Pyramid.cs" />
     <Compile Include="SceneObjects\WireCuboid.cs" />
     <Compile Include="UI\InspectorField.cs">

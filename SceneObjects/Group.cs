@@ -19,7 +19,6 @@ namespace Raytracer {
 
 		public override bool CanContainShapes => true;
 
-		private AABB groupAABB;
 
 		public Group() : base(null) { }
 
@@ -79,7 +78,7 @@ namespace Raytracer {
 
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{
-			if(groupAABB.Intersects(ray.Transform(WorldToLocalMatrix)))
+			if(LocalShapeBounds.Intersects(ray.Transform(WorldToLocalMatrix)))
 			{
 				foreach(var c in children)
 				{
@@ -88,19 +87,19 @@ namespace Raytracer {
 			}
 		}
 
-		public override AABB GetTotalShapeAABB()
+		public override AABB ComputeLocalShapeBounds()
 		{
-			return groupAABB;
+			var b = AABB.NullBounds;
+			foreach(var c in children)
+			{
+				c.SetupForRendering();
+				b = b.JoinTransformed(this, c.ComputeLocalShapeBounds(), c);
+			}
+			return b;
 		}
 
 		public override void SetupForRendering()
 		{
-			groupAABB = AABB.Empty;
-			foreach(var c in children)
-			{
-				c.SetupForRendering();
-				groupAABB = groupAABB.JoinTransformed(this, c.GetTotalShapeAABB(), c);
-			}
 		}
 
 		/*public List<AABB> shapeAABBs;

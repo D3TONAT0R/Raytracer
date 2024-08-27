@@ -15,13 +15,13 @@ namespace Raytracer
 
 		public abstract void GetProgressInfo(out string progressString, out float progress);
 
-		protected void DrawPixel(int x, int y, Camera camera, Scene scene, byte[] buffer, int width, int height, int depth)
+		protected void RenderPixel(int x, int y, Camera camera, Scene scene, byte[] buffer, int width, int height, int depth)
 		{
-			var color = GetPixelColor(x, y, camera, scene);
+			var color = TracePixel(x, y, camera, scene);
 			SetPixel(buffer, x, y, color, width, height, depth);
 		}
 
-		protected Color GetPixelColor(int x, int y, Camera camera, Scene scene)
+		protected Color TracePixel(int x, int y, Camera camera, Scene scene)
 		{
 			var viewportCoord = new Vector2(x / (float)screenWidth, y / (float)screenHeight) * 2f - Vector2.One;
 			pixelX = x;

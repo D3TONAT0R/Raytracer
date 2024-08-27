@@ -13,8 +13,14 @@ namespace Raytracer
 {
 	public static class SceneRenderer
 	{
+		/// <summary>
+		/// Gets or sets a value indicating whether progressive updates are enabled.
+		/// </summary>
 		public static bool progressiveUpdates = true;
 
+		/// <summary>
+		/// Gets the active screen renderer based on the current rendering settings.
+		/// </summary>
 		public static ScreenRenderer ActiveScreenRenderer
 		{
 			get
@@ -33,8 +39,17 @@ namespace Raytracer
 		static BitmapData currentBitmapData;
 		static byte[] currentByteBuffer;
 
+		/// <summary>
+		/// Gets a value indicating whether the scene is currently being rendered.
+		/// </summary>
 		public static bool IsRendering { get; private set; }
 
+		/// <summary>
+		/// Renders the scene to the specified target bitmap using the provided camera.
+		/// </summary>
+		/// <param name="camera">The camera used to render the scene.</param>
+		/// <param name="scene">The scene to be rendered.</param>
+		/// <param name="target">The target bitmap to render the scene onto.</param>
 		public static void RenderScene(Camera camera, Scene scene, Bitmap target)
 		{
 			IsRendering = true;
@@ -42,7 +57,6 @@ namespace Raytracer
 			var pixelDepth = Bitmap.GetPixelFormatSize(target.PixelFormat) / 8;
 
 			Try(() => BeginCopy(pixelDepth));
-
 
 			ActiveScreenRenderer.RenderToScreen(camera, scene, currentByteBuffer, currentTarget.Width, currentTarget.Height, pixelDepth);
 
@@ -75,7 +89,7 @@ namespace Raytracer
 		private static void BeginCopy(int pixelDepth)
 		{
 			currentByteBuffer = new byte[currentTarget.Width * currentTarget.Height * pixelDepth];
-			lock (bufferLock)
+			lock(bufferLock)
 			{
 				Lock();
 				Marshal.Copy(currentBitmapData.Scan0, currentByteBuffer, 0, currentByteBuffer.Length);
@@ -83,9 +97,12 @@ namespace Raytracer
 			}
 		}
 
+		/// <summary>
+		/// Flushes the current byte buffer to the target bitmap.
+		/// </summary>
 		public static void FlushCurrent()
 		{
-			lock (bufferLock)
+			lock(bufferLock)
 			{
 				bool didLock = false;
 				try
@@ -116,18 +133,30 @@ namespace Raytracer
 			currentTarget.UnlockBits(currentBitmapData);
 		}
 
+		/// <summary>
+		/// Requests a refresh of the image on the screen.
+		/// </summary>
 		public static void RequestImageRefresh()
 		{
 			FlushCurrent();
 		}
 
-		public static Color TraceRay(Scene scene, Ray ray, VisibilityFlags rayType, Shape excludeShape = null, bool allowOptimization = true)
+		/// <summary>
+		/// Traces a ray in the scene and returns the color of the intersecting object.
+		/// </summary>
+		/// <param name="scene">The scene to trace the ray in.</param>
+		/// <param name="ray">The ray to trace.</param>
+		/// <param name="rayType">The type of ray. Used in visibility checks.</param>
+		/// <param name="excludeShape">An optional shape to exclude from the trace.</param>
+		/// <param name="optimize">If true, enables optimization for faster tracing.</param>
+		/// <returns>The rendered color from the traced ray.</returns>
+		public static Color TraceRay(Scene scene, Ray ray, VisibilityFlags rayType, Shape excludeShape = null, bool optimize = true)
 		{
-			if (ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
-			Vector3? hit = TraceRay(scene, ref ray, rayType, out var intersection, excludeShape, null, allowOptimization);
-			if (hit != null && intersection != null)
+			if(ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
+			bool hit = TraceRay(scene, ref ray, rayType, out var result, excludeShape, null, optimize);
+			if(hit && result.HitShape != null)
 			{
-				return intersection.GetColorAt((Vector3)hit, ray);
+				return result.HitShape.GetColorAt(result.Position, ray);
 			}
 			else
 			{
@@ -136,53 +165,72 @@ namespace Raytracer
 			}
 		}
 
-		public static Vector3? TraceRay(Scene scene, ref Ray ray, VisibilityFlags rayType, out Shape intersectingShape, Shape excludeShape = null, Shape exitShape = null, bool allowOptimization = true)
+		/// <summary>
+		/// Traces a ray in the scene and returns the result of the intersection.
+		/// </summary>
+		/// <param name="scene">The scene to trace the ray in.</param>
+		/// <param name="ray">The ray to trace.</param>
+		/// <param name="rayType">The type of ray. Used in visibility checks.</param>
+		/// <param name="result">Contains information on the tracing result.</param>
+		/// <param name="excludeShape">An optional shape to exclude from the trace.</param>
+		/// <param name="exitShape">Optional. If set, returns the position at which the ray has left the shape. The ray must start inside the object.</param>
+		/// <param name="optimize">If true, enables optimization for faster tracing.</param>
+		/// <returns>True, if the tracing returned a result.</returns>
+		public static bool TraceRay(Scene scene, ref Ray ray, VisibilityFlags rayType, out RayTraceResult result, Shape excludeShape = null, Shape exitShape = null, bool optimize = true)
 		{
 			var shapes = scene.GetIntersectingShapes(ray, rayType);
-			intersectingShape = null;
+			result = RayTraceResult.NoTrace;
 			//Ignore excluded shape
-			if (excludeShape != null && shapes.Contains(excludeShape)) shapes.Remove(excludeShape);
-			if (shapes.Count > 0)
+			if(excludeShape != null && shapes.Contains(excludeShape)) shapes.Remove(excludeShape);
+			if(shapes.Count > 0)
 			{
 				//TODO: optimization is temporarily disabled on reflections, causes floating reflections at intersections
-				if(allowOptimization) OptimizeRay(ray, shapes);
-				while (scene.IsInWorldBounds(ray.Position))
+				if(optimize) OptimizeRay(ray, shapes);
+				while(scene.IsInWorldBounds(ray.Position))
 				{
 					var intersecting = scene.GetAABBIntersectingShapes(ray.Position, shapes);
-					if (intersecting.Length == 0)
+					if(intersecting.Length == 0)
 					{
 						//No AABB collision detected
-						if(exitShape != null) return ray.Position;
-						if (!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
+						if (exitShape != null)
 						{
-							return ray.Position;
+							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+							return true;
+						}
+						if(!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
+						{
+							//TODO: Not sure if this is really needed
+							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+							return true;
 						}
 					}
 					else
 					{
-						for (int i = 0; i < intersecting.Length; i++)
+						for(int i = 0; i < intersecting.Length; i++)
 						{
-							var localpos = ray.Position;
-							if (intersecting[i].Intersects(localpos))
+							var localPos = ray.Position;
+							if(intersecting[i].Intersects(localPos))
 							{
 								//We are about to hit something
-								intersectingShape = intersecting[i];
-								return ray.Position;
+								result = new RayTraceResult(intersecting[i], localPos, ray.travelDistance);
+								return true;
 							}
 						}
 
 						var maxReached = !ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInObject + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation);
 						//If Advance returns false, we have reached the ray's maximum distance without hitting any surface
-						if (maxReached)
+						if(maxReached)
 						{
-							return ray.Position;
+							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+							return false;
 						}
 
-						if(exitShape != null && exitShape.Intersects(ray.Position)) 
+						if(exitShape != null && exitShape.Intersects(ray.Position))
 						{
 							//We are no longer in contact with the given shape, return the current position instead
 							if(ray.travelDistance == 0) throw new InvalidOperationException("Not in contact with target shape after a distance of 0 units.");
-							return ray.Position;
+							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+							return true;
 						}
 					}
 				}
@@ -190,9 +238,10 @@ namespace Raytracer
 			else
 			{
 				ray.Advance(ray.maxDistance);
-				return ray.Position;
+				result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+				return false;
 			}
-			return ray.Position;
+			return false;
 		}
 
 		static void OptimizeRay(Ray ray, List<Shape> shapes)
@@ -200,28 +249,35 @@ namespace Raytracer
 			//Jump directly to the first intersection point (skip marching in empty space)
 			float nearestIntersection = float.MaxValue;
 			float farthestIntersection = 0;
-			for (int i = 0; i < shapes.Count; i++)
+			for(int i = 0; i < shapes.Count; i++)
 			{
-				var intersections = GetAABBIntersectionPoints(ray, shapes[i].ExpandedAABB, shapes[i].WorldToLocalMatrix);
-				if (intersections.Count > 0)
+				var intersections = GetAABBIntersectionPoints(ray, shapes[i].ExpandedLocalShapeBounds, shapes[i].WorldToLocalMatrix);
+				if(intersections.Count > 0)
 				{
 					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.Position, intersections[0]));
 				}
-				if (intersections.Count > 1)
+				if(intersections.Count > 1)
 				{
 					farthestIntersection = Math.Max(farthestIntersection, Vector3.Distance(ray.Position, intersections[1]));
 				}
 			}
-			if (farthestIntersection > 0)
+			if(farthestIntersection > 0)
 			{
 				ray.maxDistance = farthestIntersection;
 			}
-			if (nearestIntersection < float.MaxValue && nearestIntersection > 0)
+			if(nearestIntersection < float.MaxValue && nearestIntersection > 0)
 			{
 				ray.Advance(nearestIntersection);
 			}
 		}
 
+		/// <summary>
+		/// Gets the intersection points between a ray and a bounding box.
+		/// </summary>
+		/// <param name="ray">The ray to intersect with the AABB.</param>
+		/// <param name="aabb">The AABB to intersect with the ray.</param>
+		/// <param name="aabbMatrix">The transformation matrix of the AABB.</param>
+		/// <returns>The intersection points between the ray and the AABB.</returns>
 		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb, Matrix4x4 aabbMatrix)
 		{
 			//TODO: breaks shapes
@@ -246,11 +302,11 @@ namespace Raytracer
 			var tFar = float.MaxValue;
 
 			var intersections = new List<Vector3>();
-			for (int axis = 0; axis < 3; axis++)
+			for(int axis = 0; axis < 3; axis++)
 			{
-				if (beginToEnd.GetAxisValue(axis) == 0) // parallel
+				if(beginToEnd.GetAxisValue(axis) == 0) // parallel
 				{
-					if (beginToMin.GetAxisValue(axis) > 0 || beginToMax.GetAxisValue(axis) < 0)
+					if(beginToMin.GetAxisValue(axis) > 0 || beginToMax.GetAxisValue(axis) < 0)
 						return intersections; // segment is not between planes
 				}
 				else
@@ -259,14 +315,14 @@ namespace Raytracer
 					var t2 = beginToMax.GetAxisValue(axis) / beginToEnd.GetAxisValue(axis);
 					var tMin = Math.Min(t1, t2);
 					var tMax = Math.Max(t1, t2);
-					if (tMin > tNear) tNear = tMin;
-					if (tMax < tFar) tFar = tMax;
-					if (tNear > tFar || tFar < 0) return intersections;
+					if(tMin > tNear) tNear = tMin;
+					if(tMax < tFar) tFar = tMax;
+					if(tNear > tFar || tFar < 0) return intersections;
 
 				}
 			}
-			if (tNear >= 0 && tNear <= 1) intersections.Add(segmentBegin + beginToEnd * tNear);
-			if (tFar >= 0 && tFar <= 1) intersections.Add(segmentBegin + beginToEnd * tFar);
+			if(tNear >= 0 && tNear <= 1) intersections.Add(segmentBegin + beginToEnd * tNear);
+			if(tFar >= 0 && tFar <= 1) intersections.Add(segmentBegin + beginToEnd * tFar);
 			return intersections;
 		}
 	}

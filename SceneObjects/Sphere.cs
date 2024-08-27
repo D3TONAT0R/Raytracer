@@ -22,7 +22,12 @@ namespace Raytracer {
 		}
 
 		public override void SetupForRendering() {
-			ShapeAABB = new AABB(-Vector3.One * radius, Vector3.One * radius);
+			
+		}
+
+		public override AABB ComputeLocalShapeBounds()
+		{
+			return new AABB(-Vector3.One * radius, Vector3.One * radius);
 		}
 
 		public override bool Intersects(Vector3 pos) {

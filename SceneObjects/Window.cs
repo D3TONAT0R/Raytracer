@@ -125,12 +125,12 @@ namespace Raytracer.SceneObjects
 			}
 		}
 
-		public override AABB GetTotalShapeAABB()
+		public override AABB ComputeLocalShapeBounds()
 		{
-			var aabb = fillCube.ShapeAABB;
+			var aabb = fillCube.LocalShapeBounds;
 			for(int i = 0; i < borderCubes.Length; i++)
 			{
-				aabb = aabb.Join(borderCubes[i].ShapeAABB);
+				aabb = aabb.Join(borderCubes[i].LocalShapeBounds);
 			}
 			return aabb;
 		}

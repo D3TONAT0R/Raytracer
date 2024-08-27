@@ -18,8 +18,6 @@ namespace Raytracer
 		[DataIdentifier("MATERIAL")]
 		public Material overrideMaterial;
 
-		private AABB totalAABB;
-
 		public string ReferencedObjectName { get; set; }
 
 		public override Material OverrideMaterial => overrideMaterial ?? parent?.OverrideMaterial;
@@ -61,19 +59,27 @@ namespace Raytracer
 			}
 		}
 
-		public override void SetupForRendering()
+		public override AABB ComputeLocalShapeBounds()
 		{
-			totalAABB = AABB.Empty;
-			foreach(var i in arrayInstances)
+			/*
+			foreach (var arrayInstance in arrayInstances)
 			{
-				i.SetupForRendering();
-				totalAABB = totalAABB.Join(i.GetTotalShapeAABB());
+				arrayInstance.RecalculateShapeBounds();
 			}
+			*/
+
+			if(arrayInstances.Length == 0) return AABB.NullBounds;
+			var bounds = arrayInstances[0].ComputeLocalShapeBounds();
+			for (int i = 1; i < arrayInstances.Length; i++)
+			{
+				bounds = bounds.Join(arrayInstances[i].ComputeLocalShapeBounds());
+			}
+			return bounds;
 		}
 
-		public override AABB GetTotalShapeAABB()
+		public override void SetupForRendering()
 		{
-			return totalAABB;
+			
 		}
 	}
 }

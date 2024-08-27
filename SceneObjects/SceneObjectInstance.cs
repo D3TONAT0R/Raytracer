@@ -46,9 +46,9 @@ namespace Raytracer
 			referencedObject.SetupForRendering();
 		}
 
-		public override AABB GetTotalShapeAABB()
+		public override AABB ComputeLocalShapeBounds()
 		{
-			return referencedObject.GetTotalShapeAABB();
+			return referencedObject.LocalShapeBounds;
 		}
 	}
 }

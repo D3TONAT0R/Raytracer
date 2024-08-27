@@ -21,7 +21,7 @@ namespace Raytracer
 		public override bool Intersects(Vector3 pos)
 		{
 			pos = WorldToLocalPoint(pos);
-			var aabb = referenceShape.ShapeAABB.Expand(thickness * 0.5f);
+			var aabb = referenceShape.LocalShapeBounds.Expand(thickness * 0.5f);
 			float edgeDistX = Math.Min(pos.X - aabb.lower.X, aabb.upper.X - pos.X);
 			float edgeDistY = Math.Min(pos.Y - aabb.lower.Y, aabb.upper.Y - pos.Y);
 			float edgeDistZ = Math.Min(pos.Z - aabb.lower.Z, aabb.upper.Z - pos.Z);
@@ -35,13 +35,16 @@ namespace Raytracer
 		public override void SetupForRendering()
 		{
 			parent = referenceShape.parent;
-			ShapeAABB = referenceShape.ShapeAABB;
-			ExpandedAABB = referenceShape.ExpandedAABB;
 			localPosition = referenceShape.localPosition;
 			localRotation = referenceShape.localRotation;
 			localScale = referenceShape.localScale;
 			color = referenceShape.boundsColor;
-			SetupMatrix();
+			//SetupMatrix();
+		}
+
+		public override AABB ComputeLocalShapeBounds()
+		{
+			return referenceShape.LocalShapeBounds;
 		}
 
 		public override Color GetColorAt(Vector3 pos, Ray ray)

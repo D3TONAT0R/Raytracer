@@ -112,8 +112,11 @@ namespace Raytracer {
 				Shape caster = null;
 				if (ray.maxDistance > 0)
 				{
-					//caster = SceneRenderer.TraceRay(scene, ref ray, out _, sourceShape);
-					SceneRenderer.TraceRay(scene, ref ray, VisibilityFlags.Shadows, out caster, null, null, false);
+					//TODO: optimization is disabled here
+					if (SceneRenderer.TraceRay(scene, ref ray, VisibilityFlags.Shadows, out var result, null, null, false))
+					{
+						caster = result.HitShape;
+					}
 				}
 
 				//}

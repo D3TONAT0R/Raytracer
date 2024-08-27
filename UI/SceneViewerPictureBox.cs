@@ -53,11 +53,11 @@ namespace Raytracer {
 			var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
 			if(e.Button == MouseButtons.Left)
 			{
-				var pos = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var hit, allowOptimization: false);
+				bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
 				TreeNode nextSelection = null;
-				if(hit != null)
+				if(hit && result.HitShape != null)
 				{
-					nextSelection = RaytracerEngine.infoWindow.FindNode(hit);
+					nextSelection = RaytracerEngine.infoWindow.FindNode(result.HitShape);
 				}
 				RaytracerEngine.infoWindow.sceneTree.SelectedNode = nextSelection;
 			}

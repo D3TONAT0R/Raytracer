@@ -31,8 +31,14 @@ namespace Raytracer {
 			this.size = size;
 		}
 
-		public override void SetupForRendering() {
-			ShapeAABB = new AABB(Vector3.Zero, size);
+		public override void SetupForRendering()
+		{
+			
+		}
+
+		public override AABB ComputeLocalShapeBounds()
+		{
+			return new AABB(Vector3.Zero, size);
 		}
 
 		public override bool Intersects(Vector3 pos) {
@@ -66,12 +72,12 @@ namespace Raytracer {
 			//4 = back
 			//5 = front
 			float[] dst = new float[6];
-			dst[0] = Math.Abs(pos.Y - ShapeAABB.lower.Y);
-			dst[1] = Math.Abs(pos.Y - ShapeAABB.upper.Y);
-			dst[2] = Math.Abs(pos.X - ShapeAABB.lower.X);
-			dst[3] = Math.Abs(pos.X - ShapeAABB.upper.X);
-			dst[4] = Math.Abs(pos.Z - ShapeAABB.lower.Z);
-			dst[5] = Math.Abs(pos.Z - ShapeAABB.upper.Z);
+			dst[0] = Math.Abs(pos.Y - LocalShapeBounds.lower.Y);
+			dst[1] = Math.Abs(pos.Y - LocalShapeBounds.upper.Y);
+			dst[2] = Math.Abs(pos.X - LocalShapeBounds.lower.X);
+			dst[3] = Math.Abs(pos.X - LocalShapeBounds.upper.X);
+			dst[4] = Math.Abs(pos.Z - LocalShapeBounds.lower.Z);
+			dst[5] = Math.Abs(pos.Z - LocalShapeBounds.upper.Z);
 			nearestFace = -1;
 			proximity = 999;
 			for(int i = 0; i < 6; i++) {

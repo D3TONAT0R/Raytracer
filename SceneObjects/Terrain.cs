@@ -44,8 +44,13 @@ namespace Raytracer {
 		}
 
 		public override void SetupForRendering() {
+			
+		}
+
+		public override AABB ComputeLocalShapeBounds()
+		{
 			var add = Vector3.UnitY * bottomThickness;
-			ShapeAABB = new AABB(-add, dimensions + add);
+			return new AABB(-add, dimensions + add);
 		}
 
 		public override Vector3 GetLocalNormalAt(Vector3 pos)
