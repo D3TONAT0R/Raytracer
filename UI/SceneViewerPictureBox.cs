@@ -50,24 +50,34 @@ namespace Raytracer {
 			if(!pixel.HasValue) return;
 			var viewportCoord = new Vector2(pixel.Value.X / (float)Image.Size.Width, pixel.Value.Y / (float)Image.Size.Height) * 2f - Vector2.One;
 			viewportCoord.Y = -viewportCoord.Y;
-			var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
 			if(e.Button == MouseButtons.Left)
 			{
-				bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
-				TreeNode nextSelection = null;
-				if(hit && result.HitShape != null)
-				{
-					nextSelection = RaytracerEngine.infoWindow.FindNode(result.HitShape);
-				}
-				RaytracerEngine.infoWindow.sceneTree.SelectedNode = nextSelection;
+				PickObject(viewportCoord);
 			}
 			else if(e.Button == MouseButtons.Right)
 			{
 #if DEBUG
 				System.Diagnostics.Debugger.Break();
 #endif
-				var color = SceneRenderer.TraceRay(RaytracerEngine.Scene, ray, VisibilityFlags.Direct);
+				PickObject(viewportCoord);
 			}
+		}
+
+		private void PickObject(Vector2 viewportCoord)
+		{
+			var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
+			bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
+			TreeNode nextSelection = null;
+			if(hit && result.HitShape != null)
+			{
+				nextSelection = RaytracerEngine.infoWindow.FindNode(result.HitShape);
+				if (nextSelection == null)
+				{
+					//Try to pick parent object
+					nextSelection = RaytracerEngine.infoWindow.FindNode(result.HitShape.parent);
+				}
+			}
+			RaytracerEngine.infoWindow.sceneTree.SelectedNode = nextSelection;
 		}
 
 		private void UpdateLabel(Point? hoveredPixel)
