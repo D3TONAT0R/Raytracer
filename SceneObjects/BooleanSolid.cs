@@ -90,20 +90,24 @@ namespace Raytracer {
 		public override bool Intersects(Vector3 localPos) {
 			if(operation == BooleanOperation.Add) {
 				bool b = false;
-				for(int i = 0; i < solids.Length; i++) {
-					b |= solids[i].Intersects(localPos);
+				for(int i = 0; i < solids.Length; i++)
+				{
+					var shapeLocalPos = solids[i].WorldToLocalPoint(LocalToWorldPoint(localPos));
+					if (solids[i].Intersects(shapeLocalPos)) return true;
 				}
-				return b;
+				return false;
 			} else if(operation == BooleanOperation.Intersect) {
 				bool b = true;
 				for(int i = 0; i < solids.Length; i++) {
-					b &= solids[i].Intersects(localPos);
+					var shapeLocalPos = solids[i].WorldToLocalPoint(LocalToWorldPoint(localPos));
+					b &= solids[i].Intersects(shapeLocalPos);
 				}
 				return b;
 			} else if(operation == BooleanOperation.Subtract) {
 				if(!solids[0].Intersects(localPos)) return false;
 				for(int i = 1; i < solids.Length; i++) {
-					if(solids[i].Intersects(localPos)) {
+					var shapeLocalPos = solids[i].WorldToLocalPoint(LocalToWorldPoint(localPos));
+					if(solids[i].Intersects(shapeLocalPos)) {
 						return false;
 					}
 				}
