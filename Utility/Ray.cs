@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Windows.Forms;
 
 namespace Raytracer {
 	public class Ray {
@@ -27,6 +28,17 @@ namespace Raytracer {
 			}
 		}
 
+		public float MarchingMultiplier
+		{
+			get => marchingMultiplier;
+			set
+			{
+				marchingMultiplier = Math.Max(0.01f, marchingMultiplier);
+			}
+		}
+
+		private float marchingMultiplier = 1f;
+
 		public Ray(Vector3 pos, Vector3 dir, int iteration, Vector2 screenPos, float maxDistance = 1000) {
 			origin = pos;
 			Direction = dir;
@@ -35,14 +47,34 @@ namespace Raytracer {
 			this.maxDistance = maxDistance;
 		}
 
+		public Ray(Ray original)
+		{
+			origin = original.origin;
+			maxDistance = original.maxDistance;
+			reflectionIteration = original.reflectionIteration;
+			travelDistance = original.travelDistance;
+			sourceScreenPos = original.sourceScreenPos;
+			Direction = original.Direction;
+		}
+
 		public bool Advance(float distance) {
 			float advance = Math.Min(maxDistance - travelDistance, distance);
-			if(advance < 0.0001f) {
+			if(advance < 0.0001f)
+			{
 				//Max distance reached
 				return false;
 			}
 			travelDistance += distance;
 			return true;
+		}
+
+		public bool March(bool useObjectMarchDistance, bool noDegradation = false)
+		{
+			float distance;
+			if (useObjectMarchDistance) distance = RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInObject;
+			else distance = RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid;
+			float degradation = noDegradation ? 0 : travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation;
+			return Advance(distance * marchingMultiplier + degradation);
 		}
 
 		public Ray Transform(Matrix4x4 matrix)

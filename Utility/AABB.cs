@@ -9,7 +9,7 @@ namespace Raytracer {
 	public struct AABB {
 
 		public static readonly AABB NullBounds = new AABB();
-		public static AABB CreateInfinity() => new AABB(-Vector3.One * float.MaxValue, Vector3.One * float.MaxValue);
+		public static readonly AABB Infinity = new AABB(-Vector3.One * float.MaxValue, Vector3.One * float.MaxValue);
 
 		public Vector3 lower;
 		public Vector3 upper;
@@ -180,12 +180,34 @@ namespace Raytracer {
 
 		private void JoinIntoSelf(Vector3 p)
 		{
+			if (IsNullBounds)
+			{
+				lower = p;
+				upper = p;
+				return;
+			}
 			lower.X = Math.Min(lower.X, p.X);
 			lower.Y = Math.Min(lower.Y, p.Y);
 			lower.Z = Math.Min(lower.Z, p.Z);
 			upper.X = Math.Max(upper.X, p.X);
 			upper.Y = Math.Max(upper.Y, p.Y);
 			upper.Z = Math.Max(upper.Z, p.Z);
+		}
+
+		private void TrimIntoSelf(Vector3 p)
+		{
+			if(IsNullBounds)
+			{
+				lower = p;
+				upper = p;
+				return;
+			}
+			lower.X = Math.Max(lower.X, p.X);
+			lower.Y = Math.Max(lower.Y, p.Y);
+			lower.Z = Math.Max(lower.Z, p.Z);
+			upper.X = Math.Min(upper.X, p.X);
+			upper.Y = Math.Min(upper.Y, p.Y);
+			upper.Z = Math.Min(upper.Z, p.Z);
 		}
 
 		public AABB Trim(AABB other) {
@@ -196,6 +218,16 @@ namespace Raytracer {
 			aabb.upper.X = Math.Min(upper.X, other.upper.X);
 			aabb.upper.Y = Math.Min(upper.Y, other.upper.Y);
 			aabb.upper.Z = Math.Min(upper.Z, other.upper.Z);
+			return aabb;
+		}
+
+		public AABB TrimTransformed(SceneObject ownMatrix, AABB other, SceneObject otherMatrix)
+		{
+			var aabb = new AABB(lower, upper);
+			foreach(var corner in other.GetCorners())
+			{
+				aabb.TrimIntoSelf(ownMatrix.WorldToLocalPoint(otherMatrix.LocalToWorldPoint(corner)));
+			}
 			return aabb;
 		}
 

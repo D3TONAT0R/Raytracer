@@ -70,7 +70,7 @@ namespace Raytracer
 				{
 					var line = reader.ReadLine();
 					lineNum++;
-					if(line.StartsWith("#")) continue;
+					if(line.TrimStart().StartsWith("#")) continue;
 					if(line == null) throw new EndOfStreamException($"Unclosed block at line {startLineNum}.");
 					if(line.Contains('}'))
 					{

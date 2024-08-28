@@ -32,7 +32,7 @@ namespace Raytracer {
 
 		public abstract bool Intersects(Vector3 localPos);
 
-		public abstract Color GetColorAt(Vector3 localPos, Ray ray);
+		public abstract Color GetColorAt(Vector3 localPos, Ray ray, bool invertNormals = false);
 
 		public abstract Vector3 GetLocalNormalAt(Vector3 localPos);
 

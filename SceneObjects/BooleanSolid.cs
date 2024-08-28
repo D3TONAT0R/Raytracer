@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace Raytracer {
 
@@ -33,7 +34,11 @@ namespace Raytracer {
 
 		protected override void OnInit(Scene parentScene)
 		{
-			foreach(var s in solids) s.Initialize(parentScene);
+			foreach (var s in solids)
+			{
+				s.Initialize(parentScene);
+				s.parent = this;
+			}
 		}
 
 		public override AABB ComputeLocalShapeBounds()
@@ -45,24 +50,29 @@ namespace Raytracer {
 
 			if(operation == BooleanOperation.Subtract)
 			{
-				return solids[0].LocalShapeBounds;
+				AABB bounds = AABB.NullBounds;
+				foreach (var corner in solids[0].LocalShapeBounds.GetCorners())
+				{
+					bounds = bounds.Join(WorldToLocalPoint(solids[0].LocalToWorldPoint(corner)));
+				}
+				return bounds;
 			} 
 			else if(operation == BooleanOperation.Add)
 			{
 				var bounds = AABB.NullBounds;
 				foreach(var s in solids)
 				{
-					bounds = bounds.Join(s.LocalShapeBounds);
+					bounds = bounds.JoinTransformed(this, s.LocalShapeBounds, s);
 				}
 				return bounds;
 			}
 			else if(operation == BooleanOperation.Intersect)
 			{
 				if(solids.Length == 0) return AABB.NullBounds;
-				var bounds = AABB.CreateInfinity();
+				var bounds = AABB.Infinity;
 				foreach(var s in solids)
 				{
-					bounds = bounds.Trim(s.LocalShapeBounds);
+					bounds = bounds.TrimTransformed(this, s.LocalShapeBounds, s);
 				}
 				return bounds;
 			}
@@ -104,7 +114,7 @@ namespace Raytracer {
 				}
 				return b;
 			} else if(operation == BooleanOperation.Subtract) {
-				if(!solids[0].Intersects(localPos)) return false;
+				if(!solids[0].Intersects(solids[0].WorldToLocalPoint(LocalToWorldPoint(localPos)))) return false;
 				for(int i = 1; i < solids.Length; i++) {
 					var shapeLocalPos = solids[i].WorldToLocalPoint(LocalToWorldPoint(localPos));
 					if(solids[i].Intersects(shapeLocalPos)) {
@@ -141,6 +151,17 @@ namespace Raytracer {
 				}
 			}
 			return shape;
+		}
+
+		public override Color GetColorAt(Vector3 localPos, Ray ray, bool invertNormals = false)
+		{
+			var shape = GetClosestSurfaceShape(localPos);
+			var localShapePos = shape.WorldToLocalPoint(LocalToWorldPoint(localPos));
+			if(operation == BooleanOperation.Subtract && shape != solids[0])
+			{
+				invertNormals = !invertNormals;
+			}
+			return shape.GetColorAt(localShapePos, ray, invertNormals);
 		}
 
 		public override Material GetMaterial(Vector3 localPos) {

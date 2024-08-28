@@ -59,6 +59,11 @@ namespace Raytracer {
 #if DEBUG
 				System.Diagnostics.Debugger.Break();
 #endif
+				var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
+				ray.MarchingMultiplier = 0.02f;
+				var ray2 = new Ray(ray);
+				bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
+				Color c = SceneRenderer.TraceRay(RaytracerEngine.Scene, ray2, VisibilityFlags.Direct);
 				PickObject(viewportCoord);
 			}
 		}
@@ -66,6 +71,7 @@ namespace Raytracer {
 		private void PickObject(Vector2 viewportCoord)
 		{
 			var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
+			ray.MarchingMultiplier = 0.1f;
 			bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
 			TreeNode nextSelection = null;
 			if(hit && result.HitShape != null)

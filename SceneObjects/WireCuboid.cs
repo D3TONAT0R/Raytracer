@@ -46,7 +46,7 @@ namespace Raytracer
 			return referenceShape.LocalShapeBounds;
 		}
 
-		public override Color GetColorAt(Vector3 localPos, Ray ray)
+		public override Color GetColorAt(Vector3 localPos, Ray ray, bool invertNormals = false)
 		{
 			return color;
 		}

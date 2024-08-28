@@ -16,6 +16,7 @@ namespace Raytracer {
 		DefaultCheckered,
 		ReflectiveDebug,
 		NormalsDebug,
+		NormalsDebugSigned
 	}
 
 	public enum LightingType {
@@ -206,6 +207,10 @@ namespace Raytracer {
 			else if (shader == ShaderType.NormalsDebug)
 			{
 				output = new Color(Math.Abs(worldNormal.X), Math.Abs(worldNormal.Y), Math.Abs(worldNormal.Z), 1);
+			}
+			else if(shader == ShaderType.NormalsDebugSigned)
+			{
+				output = new Color(worldNormal.X, worldNormal.Y, worldNormal.Z, 1);
 			}
 			else
 			{

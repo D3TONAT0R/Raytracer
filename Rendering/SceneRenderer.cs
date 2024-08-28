@@ -197,7 +197,7 @@ namespace Raytracer
 							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
 							return true;
 						}
-						if(!ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInVoid + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation))
+						if(!ray.March(false))
 						{
 							//TODO: Not sure if this is really needed
 							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
@@ -217,7 +217,7 @@ namespace Raytracer
 							}
 						}
 
-						var maxReached = !ray.Advance(RaytracerEngine.CurrentRenderSettings.rayMarchDistanceInObject + ray.travelDistance * RaytracerEngine.CurrentRenderSettings.rayDistanceDegradation);
+						var maxReached = !ray.March(true);
 						//If Advance returns false, we have reached the ray's maximum distance without hitting any surface
 						if(maxReached)
 						{

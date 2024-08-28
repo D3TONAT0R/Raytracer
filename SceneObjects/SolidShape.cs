@@ -12,9 +12,11 @@ namespace Raytracer {
 
 		}
 
-		public override Color GetColorAt(Vector3 localPos, Ray ray) {
+		public override Color GetColorAt(Vector3 localPos, Ray ray, bool invertNormals = false) {
 			var mat = GetMaterial(localPos) ?? RaytracerEngine.Scene.DefaultMaterial;
-			return mat.GetColor(this, localPos, GetLocalNormalAt(localPos), ray);
+			var normal = GetLocalNormalAt(localPos);
+			if (invertNormals) normal *= -1;
+			return mat.GetColor(this, localPos, normal, ray);
 		}
 	}
 }
