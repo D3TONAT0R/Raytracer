@@ -53,9 +53,9 @@ namespace Raytracer {
 			return new AABB(-add, dimensions + add);
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 worldPos)
+		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
-			return CalculateNormal(GetTerrainCoord(worldPos).XZ(), true);
+			return CalculateNormal(GetTerrainCoord(pos).XZ(), true);
 		}
 
 		public override bool Intersects(Vector3 pos) {

@@ -73,10 +73,9 @@ namespace Raytracer {
 			return new Rect(cuts[0] * relY, cuts[1] * relY, 1f - cuts[2] * relY, 1f - cuts[3] * relY);
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 worldPos)
+		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
-			var localPos = WorldToLocalPoint(worldPos);
-			CalculateNearestFace(localPos, out int face, out _);
+			CalculateNearestFace(pos, out int face, out _);
 			Vector3 nrm;
 			if(face == 0) nrm = -Vector3.UnitY;
 			else if(face == 1) nrm = Vector3.UnitY;
@@ -96,8 +95,9 @@ namespace Raytracer {
 			}
 		}
 
-		protected override void CalculateNearestFace(Vector3 localPos, out int nearestFace, out float proximity) {
-			var intersection = GetIntersectingArea((localPos / size).Y);
+		protected override void CalculateNearestFace(Vector3 pos, out int nearestFace, out float proximity) {
+			pos = WorldToLocalPoint(pos);
+			var intersection = GetIntersectingArea((pos / size).Y);
 			var cut = LocalShapeBounds.ShrinkRelative(new Vector3(intersection.left, 0, intersection.bottom), new Vector3(1 - intersection.right, 0, 1 - intersection.top));
 			//0 = bottom
 			//1 = top
@@ -106,12 +106,12 @@ namespace Raytracer {
 			//4 = back
 			//5 = front
 			float[] dst = new float[6];
-			dst[0] = Math.Abs(localPos.Y - cut.lower.Y);
-			dst[1] = Math.Abs(localPos.Y - cut.upper.Y);
-			dst[2] = Math.Abs(localPos.X - cut.lower.X);
-			dst[3] = Math.Abs(localPos.X - cut.upper.X);
-			dst[4] = Math.Abs(localPos.Z - cut.lower.Z);
-			dst[5] = Math.Abs(localPos.Z - cut.upper.Z);
+			dst[0] = Math.Abs(pos.Y - cut.lower.Y);
+			dst[1] = Math.Abs(pos.Y - cut.upper.Y);
+			dst[2] = Math.Abs(pos.X - cut.lower.X);
+			dst[3] = Math.Abs(pos.X - cut.upper.X);
+			dst[4] = Math.Abs(pos.Z - cut.lower.Z);
+			dst[5] = Math.Abs(pos.Z - cut.upper.Z);
 			nearestFace = -1;
 			proximity = 999;
 			for(int i = 0; i < 6; i++) {

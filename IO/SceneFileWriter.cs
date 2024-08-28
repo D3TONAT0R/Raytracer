@@ -104,25 +104,18 @@ namespace Raytracer
 			EndBlock();
 		}
 
-		private static void WriteObject(object obj, string name = null)
-		{
-			var identifierAttribute = obj.GetType().GetCustomAttribute<ObjectIdentifierAttribute>();
-			if (identifierAttribute == null)
-			{
-				throw new InvalidOperationException("Object does not have a ObjectIdentifierAttribute.");
-			}
-			BeginBlock(identifierAttribute.identifier, name);
-			var set = Reflector.GetExposedFieldSet(obj.GetType());
-			foreach (var field in set.fields)
-			{
-				Write(field.Key, field.Value.GetValue(obj));
-			}
-			EndBlock();
-		}
-
 		private static void WriteEnvironmentBlock()
 		{
-			WriteObject(scene.environment);
+			BeginBlock("ENVIRONMENT");
+			if (scene.environment.skyboxTexture != null)
+			{
+				Write("SKYBOX", scene.environment.skyboxTexture);
+				Write("SKYBOX_SPHERICAL", scene.environment.skyboxIsSpherical);
+			}
+			Write("AMBIENT", scene.environment.ambientColor);
+			Write("FOG", scene.environment.fogColor);
+			Write("FOG_DISTANCE", scene.environment.fogDistance);
+			EndBlock();
 		}
 
 		private static void WriteObjectsBlock()
@@ -136,7 +129,7 @@ namespace Raytracer
 			EndBlock();
 		}
 
-		static void WriteSceneObject(SceneObject obj)
+		static void WriteObject(SceneObject obj)
 		{
 			var objType = obj.GetType();
 			var keyword = objType.GetCustomAttribute<ObjectIdentifierAttribute>().identifier;

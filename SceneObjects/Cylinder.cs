@@ -79,13 +79,13 @@ namespace Raytracer {
 			return true;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 worldPos)
+		public override Vector3 GetLocalNormalAt(Vector3 pos)
 		{
-			worldPos = WorldToLocalPoint(worldPos);
-			CalculateClosestFace(worldPos, out int face, out _);
+			pos = WorldToLocalPoint(pos);
+			CalculateClosestFace(pos, out int face, out _);
 			if(axis == Axis.Y) {
 				if(face == 0) {
-					var xz = worldPos.XZ();
+					var xz = pos.XZ();
 					return Vector3.Normalize(new Vector3(xz.X, 0, xz.Y));
 				} else if(face == -1) {
 					return -Vector3.UnitY;
@@ -94,7 +94,7 @@ namespace Raytracer {
 				}
 			} else if(axis == Axis.X) {
 				if(face == 0) {
-					var zy = worldPos.ZY();
+					var zy = pos.ZY();
 					return Vector3.Normalize(new Vector3(0, zy.Y, zy.X));
 				} else if(face == -1) {
 					return -Vector3.UnitX;
@@ -103,7 +103,7 @@ namespace Raytracer {
 				}
 			} else if(axis == Axis.Z) {
 				if(face == 0) {
-					var xy = worldPos.XY();
+					var xy = pos.XY();
 					return Vector3.Normalize(new Vector3(xy.X, xy.Y, 0));
 				} else if(face == -1) {
 					return -Vector3.UnitZ;
