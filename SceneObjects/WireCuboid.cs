@@ -52,7 +52,7 @@ namespace Raytracer
 			return color;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 worldPos)
 		{
 			return Vector3.Zero;
 		}

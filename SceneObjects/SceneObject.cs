@@ -204,7 +204,7 @@ namespace Raytracer
 
 		public Vector3 LocalToWorldPoint(Vector3 local) => Vector3.Transform(local, LocalToWorldMatrix);
 		public Vector3 WorldToLocalPoint(Vector3 world) => Vector3.Transform(world, WorldToLocalMatrix);
-		public Vector3 LocalToWorldNormal(Vector3 localNormal) => Vector3.TransformNormal(localNormal, LocalToWorldMatrix);
-		public Vector3 WorldToLocalNormal(Vector3 worldNormal) => Vector3.TransformNormal(worldNormal, WorldToLocalMatrix);
+		public Vector3 LocalToWorldNormal(Vector3 localNormal) => Vector3.Normalize(Vector3.TransformNormal(localNormal, LocalToWorldMatrix));
+		public Vector3 WorldToLocalNormal(Vector3 worldNormal) => Vector3.Normalize(Vector3.TransformNormal(worldNormal, WorldToLocalMatrix));
 	}
 }

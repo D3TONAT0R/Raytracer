@@ -35,10 +35,10 @@ namespace Raytracer {
 			return pos.Length() <= radius;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 worldPos)
 		{
-			pos = WorldToLocalPoint(pos);
-			var nrm = Vector3.Normalize(pos);
+			worldPos = WorldToLocalPoint(worldPos);
+			var nrm = Vector3.Normalize(worldPos);
 			return nrm;
 		}
 

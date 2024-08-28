@@ -77,10 +77,10 @@ namespace Raytracer {
 			}
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 worldPos)
 		{
-			var closest = GetClosestSurfaceShape(pos);
-			Vector3 normal = closest?.GetLocalNormalAt(pos) ?? Vector3.Zero;
+			var closest = GetClosestSurfaceShape(worldPos);
+			Vector3 normal = closest?.GetLocalNormalAt(worldPos) ?? Vector3.Zero;
 			if(operation == BooleanOperation.Subtract && closest != solids[0]) {
 				normal *= -1;
 			}
