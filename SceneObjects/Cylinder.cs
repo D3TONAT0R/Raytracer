@@ -61,31 +61,28 @@ namespace Raytracer {
 			return new AABB(lower, upper);
 		}
 
-		public override float GetSurfaceProximity(Vector3 worldPos) {
-			var localPos = WorldToLocalPoint(worldPos);
+		public override float GetSurfaceProximity(Vector3 localPos) {
 			CalculateClosestFace(localPos, out _, out float prox);
 			return prox;
 		}
 
-		public override bool Intersects(Vector3 pos) {
-			pos = WorldToLocalPoint(pos);
+		public override bool Intersects(Vector3 localPos) {
 			if(axis == Axis.Y) {
-				return pos.Y.Range(LocalShapeBounds.lower.Y, LocalShapeBounds.upper.Y) && pos.XZ().Length() < radius;
+				return localPos.Y.Range(LocalShapeBounds.lower.Y, LocalShapeBounds.upper.Y) && localPos.XZ().Length() < radius;
 			} else if(axis == Axis.X) {
-				return pos.X.Range(LocalShapeBounds.lower.X, LocalShapeBounds.upper.X) && pos.ZY().Length() < radius;
+				return localPos.X.Range(LocalShapeBounds.lower.X, LocalShapeBounds.upper.X) && localPos.ZY().Length() < radius;
 			} else if(axis == Axis.Z) {
-				return pos.Z.Range(LocalShapeBounds.lower.Z, LocalShapeBounds.upper.Z) && pos.XY().Length() < radius;
+				return localPos.Z.Range(LocalShapeBounds.lower.Z, LocalShapeBounds.upper.Z) && localPos.XY().Length() < radius;
 			}
 			return true;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 localPos)
 		{
-			pos = WorldToLocalPoint(pos);
-			CalculateClosestFace(pos, out int face, out _);
+			CalculateClosestFace(localPos, out int face, out _);
 			if(axis == Axis.Y) {
 				if(face == 0) {
-					var xz = pos.XZ();
+					var xz = localPos.XZ();
 					return Vector3.Normalize(new Vector3(xz.X, 0, xz.Y));
 				} else if(face == -1) {
 					return -Vector3.UnitY;
@@ -94,7 +91,7 @@ namespace Raytracer {
 				}
 			} else if(axis == Axis.X) {
 				if(face == 0) {
-					var zy = pos.ZY();
+					var zy = localPos.ZY();
 					return Vector3.Normalize(new Vector3(0, zy.Y, zy.X));
 				} else if(face == -1) {
 					return -Vector3.UnitX;
@@ -103,7 +100,7 @@ namespace Raytracer {
 				}
 			} else if(axis == Axis.Z) {
 				if(face == 0) {
-					var xy = pos.XY();
+					var xy = localPos.XY();
 					return Vector3.Normalize(new Vector3(xy.X, xy.Y, 0));
 				} else if(face == -1) {
 					return -Vector3.UnitZ;
@@ -143,16 +140,16 @@ namespace Raytracer {
 			}
 		}
 
-		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		public override Vector2 GetUV(Vector3 localPos, Vector3 localNormal)
 		{
 			if(axis == Axis.X)
 			{
-				if(normal.X > 0.9f)
+				if(localNormal.X > 0.9f)
 				{
 					//Top face uv
 					return new Vector2(localPos.Z * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
 				}
-				else if(normal.X < -0.9f)
+				else if(localNormal.X < -0.9f)
 				{
 					//Botton face uv
 					return new Vector2(localPos.Z * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
@@ -166,12 +163,12 @@ namespace Raytracer {
 			}
 			else if(axis == Axis.Y)
 			{
-				if(normal.Y > 0.9f)
+				if(localNormal.Y > 0.9f)
 				{
 					//Top face uv
 					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Z * 0.5f + 0.5f);
 				}
-				else if(normal.Y < -0.9f)
+				else if(localNormal.Y < -0.9f)
 				{
 					//Botton face uv
 					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Z * 0.5f + 0.5f);
@@ -185,12 +182,12 @@ namespace Raytracer {
 			}
 			else if(axis == Axis.Z)
 			{
-				if(normal.Z > 0.9f)
+				if(localNormal.Z > 0.9f)
 				{
 					//Top face uv
 					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
 				}
-				else if(normal.Z < -0.9f)
+				else if(localNormal.Z < -0.9f)
 				{
 					//Botton face uv
 					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);

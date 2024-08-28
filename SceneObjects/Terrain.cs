@@ -53,20 +53,18 @@ namespace Raytracer {
 			return new AABB(-add, dimensions + add);
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 localPos)
 		{
-			return CalculateNormal(GetTerrainCoord(pos).XZ(), true);
+			return CalculateNormal(GetTerrainCoord(localPos).XZ(), true);
 		}
 
-		public override bool Intersects(Vector3 pos) {
-			var norm = GetTerrainCoord(pos);
+		public override bool Intersects(Vector3 localPos) {
+			var norm = GetTerrainCoord(localPos);
 			return GetHeightAt(norm.XZ()) >= norm.Y;
 		}
 
-		public Vector3 GetTerrainCoord(Vector3 worldPos) {
-			var pos = worldPos - localPosition;
-			pos /= dimensions;
-			return pos;
+		public Vector3 GetTerrainCoord(Vector3 localPos) {
+			return localPos / dimensions;
 		}
 
 		public float GetHeightAt(float x, float y) {
@@ -125,14 +123,14 @@ namespace Raytracer {
 			}
 		}
 
-		public override float GetSurfaceProximity(Vector3 worldPos) {
-			var h = GetHeightAt(GetTerrainCoord(worldPos).XZ());
+		public override float GetSurfaceProximity(Vector3 localPos) {
+			var h = GetHeightAt(GetTerrainCoord(localPos).XZ());
 			h *= dimensions.Y;
 			h += localPosition.Y;
-			return Math.Abs(h - worldPos.Y);
+			return Math.Abs(h - localPos.Y);
 		}
 
-		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		public override Vector2 GetUV(Vector3 localPos, Vector3 localNormal)
 		{
 			return new Vector2(localPos.X / dimensions.X, localPos.Z / dimensions.Z);
 		}

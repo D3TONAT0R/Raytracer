@@ -51,8 +51,8 @@ namespace Raytracer {
 			}
 		}
 
-		public override Material GetMaterial(Vector3 pos) {
-			CalculateNearestFace(pos, out int face, out _);
+		public override Material GetMaterial(Vector3 localPos) {
+			CalculateNearestFace(localPos, out int face, out _);
 			var r = roofMaterial ?? material;
 			Material mat;
 			if(face == 0) {

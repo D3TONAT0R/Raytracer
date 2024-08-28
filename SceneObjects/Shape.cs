@@ -30,17 +30,17 @@ namespace Raytracer {
 
 		public abstract override AABB ComputeLocalShapeBounds();
 
-		public abstract bool Intersects(Vector3 pos);
+		public abstract bool Intersects(Vector3 localPos);
 
-		public abstract Color GetColorAt(Vector3 pos, Ray ray);
+		public abstract Color GetColorAt(Vector3 localPos, Ray ray);
 
-		public abstract Vector3 GetLocalNormalAt(Vector3 pos);
+		public abstract Vector3 GetLocalNormalAt(Vector3 localPos);
 
-		public virtual Material GetMaterial(Vector3 pos) {
+		public virtual Material GetMaterial(Vector3 localPos) {
 			return material ?? OverrideMaterial;
 		}
 
-		public abstract float GetSurfaceProximity(Vector3 worldPos);
+		public abstract float GetSurfaceProximity(Vector3 localPos);
 
 		public virtual Shape[] GetSubShapes() {
 			return new Shape[] { this };
@@ -52,7 +52,7 @@ namespace Raytracer {
 			if(LocalShapeBounds.Intersects(tRay)) yield return this;
 		}
 
-		public abstract Vector2 GetUV(Vector3 localPos, Vector3 normal);
+		public abstract Vector2 GetUV(Vector3 localPos, Vector3 localNormal);
 
 		public WireCuboid GetBoundsCube()
 		{

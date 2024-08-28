@@ -18,13 +18,12 @@ namespace Raytracer
 			referenceShape = boundingShape;
 		}
 
-		public override bool Intersects(Vector3 pos)
+		public override bool Intersects(Vector3 localPos)
 		{
-			pos = WorldToLocalPoint(pos);
 			var aabb = referenceShape.LocalShapeBounds.Expand(thickness * 0.5f);
-			float edgeDistX = Math.Min(pos.X - aabb.lower.X, aabb.upper.X - pos.X);
-			float edgeDistY = Math.Min(pos.Y - aabb.lower.Y, aabb.upper.Y - pos.Y);
-			float edgeDistZ = Math.Min(pos.Z - aabb.lower.Z, aabb.upper.Z - pos.Z);
+			float edgeDistX = Math.Min(localPos.X - aabb.lower.X, aabb.upper.X - localPos.X);
+			float edgeDistY = Math.Min(localPos.Y - aabb.lower.Y, aabb.upper.Y - localPos.Y);
+			float edgeDistZ = Math.Min(localPos.Z - aabb.lower.Z, aabb.upper.Z - localPos.Z);
 			int i = 0;
 			if(edgeDistX <= thickness) i++;
 			if(edgeDistY <= thickness) i++;
@@ -47,22 +46,22 @@ namespace Raytracer
 			return referenceShape.LocalShapeBounds;
 		}
 
-		public override Color GetColorAt(Vector3 pos, Ray ray)
+		public override Color GetColorAt(Vector3 localPos, Ray ray)
 		{
 			return color;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 localPos)
 		{
 			return Vector3.Zero;
 		}
 
-		public override float GetSurfaceProximity(Vector3 worldPos)
+		public override float GetSurfaceProximity(Vector3 localPos)
 		{
 			return 0;
 		}
 
-		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		public override Vector2 GetUV(Vector3 localPos, Vector3 localNormal)
 		{
 			return Vector2.Zero;
 		}

@@ -324,32 +324,34 @@ namespace Raytracer {
 			}
 		}
 
-		private Vector2 GetTextureCoords(Shape shape, Vector3 pos, Vector3 nrm, Ray ray) {
+		private Vector2 GetTextureCoords(Shape shape, Vector3 localPos, Vector3 localNormal, Ray ray)
+		{
+			Vector3 uvPos = localPos;
 			Vector2 uv;
-			if(mappingType == TextureMappingType.LocalXYZ ||
-				mappingType == TextureMappingType.LocalXProj ||
-				mappingType == TextureMappingType.LocalYProj ||
-				mappingType == TextureMappingType.LocalZProj)
+			if(mappingType == TextureMappingType.WorldXYZ ||
+				mappingType == TextureMappingType.WorldXProj ||
+				mappingType == TextureMappingType.WorldYProj ||
+				mappingType == TextureMappingType.WorldZProj)
 			{
-				pos = shape.WorldToLocalPoint(pos);
+				uvPos = ray.Position;
 			}
 			switch(mappingType) {
-				case TextureMappingType.LocalXYZ:
-				case TextureMappingType.WorldXYZ: uv = MapWorld(pos, nrm, true); break;
+				case TextureMappingType.LocalXYZ: uv = MapTriplanar(uvPos, localNormal, true); break;
+				case TextureMappingType.WorldXYZ: uv = MapTriplanar(uvPos, shape.LocalToWorldNormal(localNormal), true); break;
 				case TextureMappingType.LocalXProj:
-				case TextureMappingType.WorldXProj: uv = new Vector2(pos.Z, pos.Y); break;
+				case TextureMappingType.WorldXProj: uv = new Vector2(uvPos.Z, uvPos.Y); break;
 				case TextureMappingType.LocalYProj:
-				case TextureMappingType.WorldYProj: uv = new Vector2(pos.X, pos.Z); break;
+				case TextureMappingType.WorldYProj: uv = new Vector2(uvPos.X, uvPos.Z); break;
 				case TextureMappingType.LocalZProj:
-				case TextureMappingType.WorldZProj: uv = new Vector2(pos.X, pos.Y); break;
+				case TextureMappingType.WorldZProj: uv = new Vector2(uvPos.X, uvPos.Y); break;
 				case TextureMappingType.Screen: uv = ray.sourceScreenPos; break;
-				case TextureMappingType.UV: uv = shape.GetUV(shape.WorldToLocalPoint(pos), nrm); break;
+				case TextureMappingType.UV: uv = shape.GetUV(uvPos, localNormal); break;
 				default: uv = Vector2.Zero; break;
 			}
 			return uv;
 		}
 
-		private Vector2 MapWorld(Vector3 pos, Vector3 nrm, bool correctMirroring) {
+		private Vector2 MapTriplanar(Vector3 pos, Vector3 nrm, bool correctMirroring) {
 			if(correctMirroring) {
 				Vector3 mirrorCorrection = new Vector3(nrm.X < 0 ? -1 : 1, nrm.Y < 0 ? -1 : 1, nrm.Z < 0 ? -1 : 1);
 				pos *= mirrorCorrection;

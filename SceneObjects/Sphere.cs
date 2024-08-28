@@ -30,27 +30,24 @@ namespace Raytracer {
 			return new AABB(-Vector3.One * radius, Vector3.One * radius);
 		}
 
-		public override bool Intersects(Vector3 pos) {
-			pos = WorldToLocalPoint(pos);
-			return pos.Length() <= radius;
+		public override bool Intersects(Vector3 localPos) {
+			return localPos.Length() <= radius;
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 localPos)
 		{
-			pos = WorldToLocalPoint(pos);
-			var nrm = Vector3.Normalize(pos);
+			var nrm = Vector3.Normalize(localPos);
 			return nrm;
 		}
 
-		public override float GetSurfaceProximity(Vector3 worldPos)
+		public override float GetSurfaceProximity(Vector3 localPos)
 		{
-			var localPos = WorldToLocalPoint(worldPos);
 			return Math.Abs(localPos.Length() - radius);
 		}
 
-		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		public override Vector2 GetUV(Vector3 localPos, Vector3 localNormal)
 		{
-			return new Vector2(MathUtils.Dir2DToAngle01(normal.X, normal.Z), normal.Y * 0.5f + 0.5f);
+			return new Vector2(MathUtils.Dir2DToAngle01(localNormal.X, localNormal.Z), localNormal.Y * 0.5f + 0.5f);
 		}
 	}
 }

@@ -77,33 +77,33 @@ namespace Raytracer {
 			}
 		}
 
-		public override Vector3 GetLocalNormalAt(Vector3 pos)
+		public override Vector3 GetLocalNormalAt(Vector3 localPos)
 		{
-			var closest = GetClosestSurfaceShape(pos);
-			Vector3 normal = closest?.GetLocalNormalAt(pos) ?? Vector3.Zero;
+			var closest = GetClosestSurfaceShape(localPos);
+			Vector3 normal = closest?.GetLocalNormalAt(localPos) ?? Vector3.Zero;
 			if(operation == BooleanOperation.Subtract && closest != solids[0]) {
 				normal *= -1;
 			}
 			return normal;
 		}
 
-		public override bool Intersects(Vector3 pos) {
+		public override bool Intersects(Vector3 localPos) {
 			if(operation == BooleanOperation.Add) {
 				bool b = false;
 				for(int i = 0; i < solids.Length; i++) {
-					b |= solids[i].Intersects(pos);
+					b |= solids[i].Intersects(localPos);
 				}
 				return b;
 			} else if(operation == BooleanOperation.Intersect) {
 				bool b = true;
 				for(int i = 0; i < solids.Length; i++) {
-					b &= solids[i].Intersects(pos);
+					b &= solids[i].Intersects(localPos);
 				}
 				return b;
 			} else if(operation == BooleanOperation.Subtract) {
-				if(!solids[0].Intersects(pos)) return false;
+				if(!solids[0].Intersects(localPos)) return false;
 				for(int i = 1; i < solids.Length; i++) {
-					if(solids[i].Intersects(pos)) {
+					if(solids[i].Intersects(localPos)) {
 						return false;
 					}
 				}
@@ -113,21 +113,23 @@ namespace Raytracer {
 			}
 		}
 
-		public override float GetSurfaceProximity(Vector3 worldPos) {
+		public override float GetSurfaceProximity(Vector3 localPos) {
 			float prox = 999;
 			for(int i = 0; i < solids.Length; i++) {
-				//if(RaytracedRenderer.scene.shapeAABBs[solids[i]][1].IsInside(worldPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(worldPos));
-				if(solids[i].ExpandedLocalShapeBounds.IsInside(worldPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(worldPos));
+				//if(RaytracedRenderer.scene.shapeAABBs[solids[i]][1].IsInside(localPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(localPos));
+				if(solids[i].ExpandedLocalShapeBounds.IsInside(localPos)) prox = Math.Min(prox, solids[i].GetSurfaceProximity(localPos));
 			}
 			return prox;
 		}
 
-		private Shape GetClosestSurfaceShape(Vector3 pos) {
+		private Shape GetClosestSurfaceShape(Vector3 localPos) {
 			Shape shape = null;
 			float closest = float.MaxValue;
+			var worldPos = LocalToWorldPoint(localPos);
 			for(int i = 0; i < solids.Length; i++) {
-				if(solids[i].ExpandedLocalShapeBounds.IsInside(pos)) {
-					var prox = solids[i].GetSurfaceProximity(pos);
+				var shapeLocalPos = solids[i].WorldToLocalPoint(worldPos);
+				if(solids[i].ExpandedLocalShapeBounds.IsInside(shapeLocalPos)) {
+					var prox = solids[i].GetSurfaceProximity(shapeLocalPos);
 					if(prox < closest) {
 						shape = solids[i];
 						closest = prox;
@@ -137,19 +139,18 @@ namespace Raytracer {
 			return shape;
 		}
 
-		public override Material GetMaterial(Vector3 pos) {
+		public override Material GetMaterial(Vector3 localPos) {
 			if(material != null) {
 				return material;
 			} else {
-				return GetClosestSurfaceShape(pos)?.GetMaterial(pos);
+				return GetClosestSurfaceShape(localPos)?.GetMaterial(localPos);
 			}
 		}
 
-		public override Vector2 GetUV(Vector3 localPos, Vector3 normal)
+		public override Vector2 GetUV(Vector3 localPos, Vector3 localNormal)
 		{
-			var wp = LocalToWorldPoint(localPos);
-			var shape = GetClosestSurfaceShape(wp);
-			return shape.GetUV(WorldToLocalPoint(wp), normal);
+			var shape = GetClosestSurfaceShape(localPos);
+			return shape.GetUV(localPos, localNormal);
 		}
 
 		/*public override void RegisterExpandedAABB(Dictionary<Shape, AABB> expandedAABBs, float expansionAmount) {

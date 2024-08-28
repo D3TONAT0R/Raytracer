@@ -156,7 +156,7 @@ namespace Raytracer
 			bool hit = TraceRay(scene, ref ray, rayType, out var result, excludeShape, null, optimize);
 			if(hit && result.HitShape != null)
 			{
-				return result.HitShape.GetColorAt(result.Position, ray);
+				return result.HitShape.GetColorAt(result.HitShape.WorldToLocalPoint(result.Position), ray);
 			}
 			else
 			{
@@ -208,11 +208,11 @@ namespace Raytracer
 					{
 						for(int i = 0; i < intersecting.Length; i++)
 						{
-							var localPos = ray.Position;
+							var localPos = intersecting[i].WorldToLocalPoint(ray.Position);
 							if(intersecting[i].Intersects(localPos))
 							{
 								//We are about to hit something
-								result = new RayTraceResult(intersecting[i], localPos, ray.travelDistance);
+								result = new RayTraceResult(intersecting[i], ray.Position, ray.travelDistance);
 								return true;
 							}
 						}
@@ -225,7 +225,7 @@ namespace Raytracer
 							return false;
 						}
 
-						if(exitShape != null && exitShape.Intersects(ray.Position))
+						if(exitShape != null && exitShape.Intersects(exitShape.WorldToLocalPoint(ray.Position)))
 						{
 							//We are no longer in contact with the given shape, return the current position instead
 							if(ray.travelDistance == 0) throw new InvalidOperationException("Not in contact with target shape after a distance of 0 units.");
