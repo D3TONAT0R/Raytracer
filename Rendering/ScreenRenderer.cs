@@ -26,9 +26,9 @@ namespace Raytracer
 			var viewportCoord = new Vector2(x / (float)screenWidth, y / (float)screenHeight) * 2f - Vector2.One;
 			pixelX = x;
 			pixelY = y;
-
 			var ray = camera.ScreenPointToRay(viewportCoord);
-			return SceneRenderer.TraceRay(scene, ray, VisibilityFlags.Direct).SetAlpha(1);
+			Color c = SceneRenderer.TraceRay(scene, ray, VisibilityFlags.Direct).SetAlpha(1);
+			return c;
 		}
 
 		protected void SetPixel(byte[] buffer, int x, int y, Color color, int width, int height, int depth)

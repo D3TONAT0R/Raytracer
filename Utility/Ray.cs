@@ -11,6 +11,7 @@ namespace Raytracer {
 
 		public int reflectionIteration;
 		public float travelDistance;
+		public float startDistance;
 		public Vector2 sourceScreenPos;
 
 		private Vector3 dir;
@@ -66,6 +67,12 @@ namespace Raytracer {
 			}
 			travelDistance += distance;
 			return true;
+		}
+
+		public void SetStartDistance(float distance)
+		{
+			startDistance = distance;
+			travelDistance = Math.Max(travelDistance, startDistance);
 		}
 
 		public bool March(bool useObjectMarchDistance, bool noDegradation = false)

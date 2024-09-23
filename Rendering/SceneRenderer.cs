@@ -154,6 +154,7 @@ namespace Raytracer
 		{
 			if(ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
 			bool hit = TraceRay(scene, ref ray, rayType, out var result, excludeShape, null, optimize);
+
 			if(hit && result.HitShape != null)
 			{
 				return result.HitShape.GetColorAt(result.HitShape.WorldToLocalPoint(result.Position), ray);
@@ -244,6 +245,7 @@ namespace Raytracer
 			return false;
 		}
 
+		//TODO: Use shape local space for even better optimization
 		static void OptimizeRay(Ray ray, List<Shape> shapes)
 		{
 			//Jump directly to the first intersection point (skip marching in empty space)
@@ -251,7 +253,8 @@ namespace Raytracer
 			float farthestIntersection = 0;
 			for(int i = 0; i < shapes.Count; i++)
 			{
-				var intersections = GetAABBIntersectionPoints(ray, shapes[i].ExpandedLocalShapeBounds, shapes[i].WorldToLocalMatrix);
+				//var intersections = GetAABBIntersectionPoints(ray, shapes[i].LocalShapeBounds, shapes[i].WorldToLocalMatrix);
+				var intersections = GetAABBIntersectionPoints(ray, shapes[i].WorldSpaceShapeBounds, Matrix4x4.Identity);
 				if(intersections.Count > 0)
 				{
 					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.Position, intersections[0]));
@@ -267,7 +270,7 @@ namespace Raytracer
 			}
 			if(nearestIntersection < float.MaxValue && nearestIntersection > 0)
 			{
-				ray.Advance(nearestIntersection);
+				ray.SetStartDistance(nearestIntersection);
 			}
 		}
 
@@ -280,9 +283,10 @@ namespace Raytracer
 		/// <returns>The intersection points between the ray and the AABB.</returns>
 		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb, Matrix4x4 aabbMatrix)
 		{
-			//TODO: breaks shapes
-			var rpos = -ray.Position;
+			//TODO: breaks shapes when optimizing a ray
+			var rpos = ray.Position;
 			var rdir = ray.Direction;
+			//Matrix4x4.Invert(aabbMatrix, out var invAabbMatrix);
 			ray = ray.Transform(aabbMatrix);
 			//var rpos = Vector3.Transform(ray.Position, aabbMatrix);
 			//var rdir = Vector3.TransformNormal(ray.Direction, aabbMatrix);
