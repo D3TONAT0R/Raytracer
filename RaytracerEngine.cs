@@ -28,6 +28,8 @@ namespace Raytracer
 		static bool render = false;
 		static bool toScreenshot = false;
 
+		public static RenderMode Mode { get; set; } = RenderMode.Normal;
+
 		public bool IsRendering => render;
 
 		static Scene scene;

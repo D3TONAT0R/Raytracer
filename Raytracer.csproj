@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="IO\ScreenshotExporter.cs" />
     <Compile Include="RayTraceResult.cs" />
+    <Compile Include="Rendering\RenderMode.cs" />
     <Compile Include="SceneObjects\Pyramid.cs" />
     <Compile Include="SceneObjects\WireCuboid.cs" />
     <Compile Include="UI\InspectorField.cs">
@@ -145,6 +146,7 @@
       <DependentUpon>SceneViewerPictureBox.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="Properties\DataSources\RaytracerEngine.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

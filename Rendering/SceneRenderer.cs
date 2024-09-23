@@ -270,7 +270,7 @@ namespace Raytracer
 			}
 			if(nearestIntersection < float.MaxValue && nearestIntersection > 0)
 			{
-				ray.SetStartDistance(nearestIntersection);
+				ray.SetStartDistance(nearestIntersection + 0.00001f);
 			}
 		}
 
