@@ -39,6 +39,9 @@ namespace Raytracer
 		static BitmapData currentBitmapData;
 		static byte[] currentByteBuffer;
 
+		[ThreadStatic]
+		private static List<Vector3> intersectionPoints;
+
 		/// <summary>
 		/// Gets a value indicating whether the scene is currently being rendered.
 		/// </summary>
@@ -253,15 +256,16 @@ namespace Raytracer
 			float farthestIntersection = 0;
 			for(int i = 0; i < shapes.Count; i++)
 			{
-				//var intersections = GetAABBIntersectionPoints(ray, shapes[i].LocalShapeBounds, shapes[i].WorldToLocalMatrix);
-				var intersections = GetAABBIntersectionPoints(ray, shapes[i].WorldSpaceShapeBounds, Matrix4x4.Identity);
-				if(intersections.Count > 0)
+				var shape = shapes[i];
+				GetAABBIntersectionPoints(ray, shape.WorldSpaceShapeBounds, Matrix4x4.Identity, Matrix4x4.Identity);
+				//GetAABBIntersectionPoints(ray, shape.LocalShapeBounds, shape.WorldToLocalMatrix, shape.LocalToWorldMatrix);
+				if(intersectionPoints.Count > 0)
 				{
-					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.Position, intersections[0]));
+					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.Position, intersectionPoints[0]));
 				}
-				if(intersections.Count > 1)
+				if(intersectionPoints.Count > 1)
 				{
-					farthestIntersection = Math.Max(farthestIntersection, Vector3.Distance(ray.Position, intersections[1]));
+					farthestIntersection = Math.Max(farthestIntersection, Vector3.Distance(ray.Position, intersectionPoints[1]));
 				}
 			}
 			if(farthestIntersection > 0)
@@ -281,7 +285,7 @@ namespace Raytracer
 		/// <param name="aabb">The AABB to intersect with the ray.</param>
 		/// <param name="aabbMatrix">The transformation matrix of the AABB.</param>
 		/// <returns>The intersection points between the ray and the AABB.</returns>
-		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb, Matrix4x4 aabbMatrix)
+		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb, Matrix4x4 aabbMatrix, Matrix4x4 inverseAabbMatrix)
 		{
 			//TODO: breaks shapes when optimizing a ray
 			var rpos = ray.Position;
@@ -305,13 +309,14 @@ namespace Raytracer
 			var tNear = float.MinValue;
 			var tFar = float.MaxValue;
 
-			var intersections = new List<Vector3>();
+			if(intersectionPoints == null) intersectionPoints = new List<Vector3>();
+			intersectionPoints.Clear();
 			for(int axis = 0; axis < 3; axis++)
 			{
 				if(beginToEnd.GetAxisValue(axis) == 0) // parallel
 				{
 					if(beginToMin.GetAxisValue(axis) > 0 || beginToMax.GetAxisValue(axis) < 0)
-						return intersections; // segment is not between planes
+						return intersectionPoints; // segment is not between planes
 				}
 				else
 				{
@@ -321,13 +326,13 @@ namespace Raytracer
 					var tMax = Math.Max(t1, t2);
 					if(tMin > tNear) tNear = tMin;
 					if(tMax < tFar) tFar = tMax;
-					if(tNear > tFar || tFar < 0) return intersections;
+					if(tNear > tFar || tFar < 0) return intersectionPoints;
 
 				}
 			}
-			if(tNear >= 0 && tNear <= 1) intersections.Add(segmentBegin + beginToEnd * tNear);
-			if(tFar >= 0 && tFar <= 1) intersections.Add(segmentBegin + beginToEnd * tFar);
-			return intersections;
+			if(tNear >= 0 && tNear <= 1) intersectionPoints.Add(Vector3.Transform(segmentBegin + beginToEnd * tNear, inverseAabbMatrix));
+			if(tFar >= 0 && tFar <= 1) intersectionPoints.Add(Vector3.Transform(segmentBegin + beginToEnd * tFar, inverseAabbMatrix));
+			return intersectionPoints;
 		}
 	}
 }

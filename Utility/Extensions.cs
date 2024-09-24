@@ -25,21 +25,16 @@ namespace Raytracer
 
 		public static float GetAxisValue(this Vector3 v, int axis)
 		{
-			if(axis == 0)
+			switch (axis)
 			{
-				return v.X;
-			}
-			else if(axis == 1)
-			{
-				return v.Y;
-			}
-			else if(axis == 2)
-			{
-				return v.Z;
-			}
-			else
-			{
-				throw new IndexOutOfRangeException();
+				case 0:
+					return v.X;
+				case 1:
+					return v.Y;
+				case 2:
+					return v.Z;
+				default:
+					throw new IndexOutOfRangeException();
 			}
 		}
 
