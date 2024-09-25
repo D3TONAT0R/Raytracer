@@ -39,9 +39,6 @@ namespace Raytracer
 		static BitmapData currentBitmapData;
 		static byte[] currentByteBuffer;
 
-		[ThreadStatic]
-		private static List<Vector3> intersectionPoints;
-
 		/// <summary>
 		/// Gets a value indicating whether the scene is currently being rendered.
 		/// </summary>
@@ -189,7 +186,7 @@ namespace Raytracer
 			if(shapes.Count > 0)
 			{
 				//TODO: optimization is temporarily disabled on reflections, causes floating reflections at intersections
-				if(optimize) OptimizeRay(ray, shapes);
+				if(optimize) ray.AdvanceToNextShapeBounds(shapes);
 				while(scene.IsInWorldBounds(ray.Position))
 				{
 					var intersecting = scene.GetAABBIntersectingShapes(ray.Position, shapes);
@@ -246,93 +243,6 @@ namespace Raytracer
 				return false;
 			}
 			return false;
-		}
-
-		//TODO: Use shape local space for even better optimization
-		static void OptimizeRay(Ray ray, List<Shape> shapes)
-		{
-			//Jump directly to the first intersection point (skip marching in empty space)
-			float nearestIntersection = float.MaxValue;
-			float farthestIntersection = 0;
-			for(int i = 0; i < shapes.Count; i++)
-			{
-				var shape = shapes[i];
-				GetAABBIntersectionPoints(ray, shape.WorldSpaceShapeBounds, Matrix4x4.Identity, Matrix4x4.Identity);
-				//GetAABBIntersectionPoints(ray, shape.LocalShapeBounds, shape.WorldToLocalMatrix, shape.LocalToWorldMatrix);
-				if(intersectionPoints.Count > 0)
-				{
-					nearestIntersection = Math.Min(nearestIntersection, Vector3.Distance(ray.Position, intersectionPoints[0]));
-				}
-				if(intersectionPoints.Count > 1)
-				{
-					farthestIntersection = Math.Max(farthestIntersection, Vector3.Distance(ray.Position, intersectionPoints[1]));
-				}
-			}
-			if(farthestIntersection > 0)
-			{
-				ray.maxDistance = farthestIntersection;
-			}
-			if(nearestIntersection < float.MaxValue && nearestIntersection > 0)
-			{
-				ray.SetStartDistance(nearestIntersection + 0.00001f);
-			}
-		}
-
-		/// <summary>
-		/// Gets the intersection points between a ray and a bounding box.
-		/// </summary>
-		/// <param name="ray">The ray to intersect with the AABB.</param>
-		/// <param name="aabb">The AABB to intersect with the ray.</param>
-		/// <param name="aabbMatrix">The transformation matrix of the AABB.</param>
-		/// <returns>The intersection points between the ray and the AABB.</returns>
-		public static List<Vector3> GetAABBIntersectionPoints(Ray ray, AABB aabb, Matrix4x4 aabbMatrix, Matrix4x4 inverseAabbMatrix)
-		{
-			//TODO: breaks shapes when optimizing a ray
-			var rpos = ray.Position;
-			var rdir = ray.Direction;
-			//Matrix4x4.Invert(aabbMatrix, out var invAabbMatrix);
-			ray = ray.Transform(aabbMatrix);
-			//var rpos = Vector3.Transform(ray.Position, aabbMatrix);
-			//var rdir = Vector3.TransformNormal(ray.Direction, aabbMatrix);
-
-			Vector3 segmentBegin = rpos;
-			Vector3 segmentEnd = rpos + rdir * ray.maxDistance;
-			Vector3 boxCenter = aabb.Center;
-			Vector3 boxSize = aabb.Size;
-
-			var beginToEnd = segmentEnd - segmentBegin;
-			var minToMax = new Vector3(boxSize.X, boxSize.Y, boxSize.Z);
-			var min = boxCenter - minToMax / 2;
-			var max = boxCenter + minToMax / 2;
-			var beginToMin = min - segmentBegin;
-			var beginToMax = max - segmentBegin;
-			var tNear = float.MinValue;
-			var tFar = float.MaxValue;
-
-			if(intersectionPoints == null) intersectionPoints = new List<Vector3>();
-			intersectionPoints.Clear();
-			for(int axis = 0; axis < 3; axis++)
-			{
-				if(beginToEnd.GetAxisValue(axis) == 0) // parallel
-				{
-					if(beginToMin.GetAxisValue(axis) > 0 || beginToMax.GetAxisValue(axis) < 0)
-						return intersectionPoints; // segment is not between planes
-				}
-				else
-				{
-					var t1 = beginToMin.GetAxisValue(axis) / beginToEnd.GetAxisValue(axis);
-					var t2 = beginToMax.GetAxisValue(axis) / beginToEnd.GetAxisValue(axis);
-					var tMin = Math.Min(t1, t2);
-					var tMax = Math.Max(t1, t2);
-					if(tMin > tNear) tNear = tMin;
-					if(tMax < tFar) tFar = tMax;
-					if(tNear > tFar || tFar < 0) return intersectionPoints;
-
-				}
-			}
-			if(tNear >= 0 && tNear <= 1) intersectionPoints.Add(Vector3.Transform(segmentBegin + beginToEnd * tNear, inverseAabbMatrix));
-			if(tFar >= 0 && tFar <= 1) intersectionPoints.Add(Vector3.Transform(segmentBegin + beginToEnd * tFar, inverseAabbMatrix));
-			return intersectionPoints;
 		}
 	}
 }
