@@ -30,7 +30,6 @@ namespace Raytracer {
 			
 		}
 
-		//TODO: rotated y cylinders are cut off when rotated around the x axis
 		public override AABB ComputeLocalShapeBounds()
 		{
 			Vector3 lower = Vector3.Zero;

@@ -19,12 +19,12 @@ namespace Raytracer {
 
 
 		public Vector3 CornerLLL => lower;
-		public Vector3 CornerULL => new Vector3(upper.X, lower.Y, lower.Y);
-		public Vector3 CornerLUL => new Vector3(lower.X, upper.Y, lower.Y);
-		public Vector3 CornerLLU => new Vector3(lower.X, lower.Y, upper.Y);
-		public Vector3 CornerUUL => new Vector3(upper.X, upper.Y, lower.Y);
-		public Vector3 CornerLUU => new Vector3(lower.X, upper.Y, upper.Y);
-		public Vector3 CornerULU => new Vector3(upper.X, lower.Y, upper.Y);
+		public Vector3 CornerULL => new Vector3(upper.X, lower.Y, lower.Z);
+		public Vector3 CornerLUL => new Vector3(lower.X, upper.Y, lower.Z);
+		public Vector3 CornerLLU => new Vector3(lower.X, lower.Y, upper.Z);
+		public Vector3 CornerUUL => new Vector3(upper.X, upper.Y, lower.Z);
+		public Vector3 CornerLUU => new Vector3(lower.X, upper.Y, upper.Z);
+		public Vector3 CornerULU => new Vector3(upper.X, lower.Y, upper.Z);
 		public Vector3 CornerUUU => upper;
 
 		public bool IsNullBounds => lower == Vector3.Zero && upper == Vector3.Zero;
