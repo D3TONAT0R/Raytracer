@@ -199,6 +199,7 @@ namespace Raytracer
 
 			RefreshImageView();
 
+			if(renderTimer == null) renderTimer = new Stopwatch();
 			if(render && !animating && renderTimer.ElapsedMilliseconds > 10000)
 			{
 				MessageBox.Show($"Time elapsed: {renderTimer.Elapsed:mm\\:ss}\nResolution: {lastRenderTarget}\nRender Settings: {CurrentRenderSettings.name}", "Render Finished", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);

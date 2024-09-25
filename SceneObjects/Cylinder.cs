@@ -30,6 +30,7 @@ namespace Raytracer {
 			
 		}
 
+		//TODO: rotated y cylinders are cut off when rotated around the x axis
 		public override AABB ComputeLocalShapeBounds()
 		{
 			Vector3 lower = Vector3.Zero;
@@ -151,7 +152,7 @@ namespace Raytracer {
 				}
 				else if(localNormal.X < -0.9f)
 				{
-					//Botton face uv
+					//Bottom face uv
 					return new Vector2(localPos.Z * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
 				}
 				else
@@ -170,7 +171,7 @@ namespace Raytracer {
 				}
 				else if(localNormal.Y < -0.9f)
 				{
-					//Botton face uv
+					//Bottom face uv
 					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Z * 0.5f + 0.5f);
 				}
 				else
@@ -189,7 +190,7 @@ namespace Raytracer {
 				}
 				else if(localNormal.Z < -0.9f)
 				{
-					//Botton face uv
+					//Bottom face uv
 					return new Vector2(localPos.X * 0.5f + 0.5f, localPos.Y * 0.5f + 0.5f);
 				}
 				else
