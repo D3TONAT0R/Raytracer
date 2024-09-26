@@ -111,7 +111,7 @@ namespace Raytracer {
 				//GetAABBIntersectionPoints(ray, shape.LocalShapeBounds, shape.WorldToLocalMatrix, shape.LocalToWorldMatrix);
 				if(intersectionPointCache.Count > 0)
 				{
-					float distance = Vector3.Dot(Position - intersectionPointCache[0], Direction);
+					float distance = Vector3.Dot(intersectionPointCache[0] - Position, Direction);
 					if(distance > 0)
 					{
 						nearestIntersection = Math.Min(nearestIntersection, distance);
@@ -119,10 +119,10 @@ namespace Raytracer {
 				}
 				if(intersectionPointCache.Count > 1)
 				{
-					float distance = Vector3.Dot(Position - intersectionPointCache[0], Direction);
+					float distance = Vector3.Dot(intersectionPointCache[1] - Position, Direction);
 					if(distance > 0)
 					{
-						farthestIntersection = Math.Max(nearestIntersection, distance);
+						farthestIntersection = Math.Max(farthestIntersection, distance);
 					}
 				}
 			}
@@ -132,7 +132,15 @@ namespace Raytracer {
 			}
 			if(nearestIntersection < float.MaxValue && nearestIntersection > 0)
 			{
-				SetStartDistance(nearestIntersection + 0.00001f);
+				float target = nearestIntersection + 0.00001f;
+				if(startDistance == 0)
+				{
+					SetStartDistance(target);
+				}
+				else
+				{
+					Advance(target - travelDistance);
+				}
 			}
 		}
 
