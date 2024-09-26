@@ -25,6 +25,8 @@ namespace Raytracer {
 		//public AABB[] shapeAABBs;
 		//private AABB[] expandedAABBs;
 
+		public override Material OverrideMaterial => material ?? parent?.OverrideMaterial;
+
 		public BooleanSolid() : base(null) { }
 
 		public BooleanSolid(string name, BooleanOperation type, params SolidShape[] shapes) : base(name) {
