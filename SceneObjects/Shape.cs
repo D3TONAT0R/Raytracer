@@ -48,8 +48,8 @@ namespace Raytracer {
 
 		public override IEnumerable<Shape> GetIntersectingShapes(Ray ray)
 		{
-			var tRay = ray.Transform(WorldToLocalMatrix);
-			if(LocalShapeBounds.Intersects(tRay)) yield return this;
+			ray = ray.Transform(WorldToLocalMatrix);
+			if(LocalShapeBounds.Intersects(ray)) yield return this;
 		}
 
 		public abstract Vector2 GetUV(Vector3 localPos, Vector3 localNormal);

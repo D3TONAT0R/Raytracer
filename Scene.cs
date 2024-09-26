@@ -175,7 +175,7 @@ namespace Raytracer
 			//return worldAABB.IsInside(pos);
 		}
 
-		public Shape[] GetAABBIntersectingShapes(Vector3 pos, List<Shape> query)
+		public List<Shape> GetAABBIntersectingShapes(Vector3 pos, List<Shape> query)
 		{
 			List<Shape> list = new List<Shape>();
 			if(sceneObjectsAABB.IsInside(pos))
@@ -185,7 +185,7 @@ namespace Raytracer
 					if(s.ExpandedLocalShapeBounds.IsInside(s.WorldToLocalPoint(pos))) list.Add(s);
 				}
 			}
-			return list.ToArray();
+			return list;
 		}
 
 		public SceneObject FindSceneObject(string path)

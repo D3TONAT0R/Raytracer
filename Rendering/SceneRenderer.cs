@@ -190,7 +190,7 @@ namespace Raytracer
 				while(scene.IsInWorldBounds(ray.Position))
 				{
 					var intersecting = scene.GetAABBIntersectingShapes(ray.Position, shapes);
-					if(intersecting.Length == 0)
+					if(intersecting.Count == 0)
 					{
 						//No AABB collision detected
 						if (exitShape != null)
@@ -200,14 +200,8 @@ namespace Raytracer
 						}
 
 						//Skip to next object
-						/*
-						if(ray.travelDistance >= ray.maxDistance)
-						{
-							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
-							return true;
-						}
-						*/
 						bool canContinue = optimize ? ray.AdvanceToNextShapeBounds(shapes) : ray.March(false);
+						//bool canContinue = ray.March(false);
 						if(!canContinue)
 						{
 							//TODO: Not sure if this is really needed
@@ -217,7 +211,7 @@ namespace Raytracer
 					}
 					else
 					{
-						for(int i = 0; i < intersecting.Length; i++)
+						for(int i = 0; i < intersecting.Count; i++)
 						{
 							var localPos = intersecting[i].WorldToLocalPoint(ray.Position);
 							if(intersecting[i].Intersects(localPos))
