@@ -62,7 +62,7 @@ namespace Raytracer {
 				var ray = Camera.MainCamera.ScreenPointToRay(viewportCoord);
 				ray.MarchingMultiplier = 0.02f;
 				var ray2 = new Ray(ray);
-				bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
+				//bool hit = SceneRenderer.TraceRay(RaytracerEngine.Scene, ref ray, VisibilityFlags.Direct, out var result, optimize: false);
 				Color c = SceneRenderer.TraceRay(RaytracerEngine.Scene, ray2, VisibilityFlags.Direct);
 				PickObject(viewportCoord);
 			}

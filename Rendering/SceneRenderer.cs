@@ -198,7 +198,17 @@ namespace Raytracer
 							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
 							return true;
 						}
-						if(!ray.March(false))
+
+						//Skip to next object
+						/*
+						if(ray.travelDistance >= ray.maxDistance)
+						{
+							result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+							return true;
+						}
+						*/
+						bool canContinue = optimize ? ray.AdvanceToNextShapeBounds(shapes) : ray.March(false);
+						if(!canContinue)
 						{
 							//TODO: Not sure if this is really needed
 							result = new RayTraceResult(null, ray.Position, ray.travelDistance);

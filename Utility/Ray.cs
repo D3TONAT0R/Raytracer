@@ -99,11 +99,11 @@ namespace Raytracer {
 
 		//TODO: Use shape local space for even better optimization
 		//TODO: test if this still works as intended
-		public void AdvanceToNextShapeBounds(List<Shape> shapes)
+		public bool AdvanceToNextShapeBounds(List<Shape> shapes)
 		{
 			//Jump directly to the first intersection point (skip marching in empty space)
 			float nearestIntersection = float.MaxValue;
-			float farthestIntersection = 0;
+			float farthestIntersection = travelDistance;
 			for(int i = 0; i < shapes.Count; i++)
 			{
 				var shape = shapes[i];
@@ -114,7 +114,7 @@ namespace Raytracer {
 					float distance = Vector3.Dot(intersectionPointCache[0] - Position, Direction);
 					if(distance > 0)
 					{
-						nearestIntersection = Math.Min(nearestIntersection, distance);
+						nearestIntersection = Math.Min(nearestIntersection, distance) - travelDistance;
 					}
 				}
 				if(intersectionPointCache.Count > 1)
@@ -122,11 +122,11 @@ namespace Raytracer {
 					float distance = Vector3.Dot(intersectionPointCache[1] - Position, Direction);
 					if(distance > 0)
 					{
-						farthestIntersection = Math.Max(farthestIntersection, distance);
+						farthestIntersection = Math.Max(farthestIntersection, distance) - travelDistance;
 					}
 				}
 			}
-			if(farthestIntersection > 0)
+			if(startDistance == 0 && farthestIntersection > 0)
 			{
 				maxDistance = farthestIntersection;
 			}
@@ -136,12 +136,14 @@ namespace Raytracer {
 				if(startDistance == 0)
 				{
 					SetStartDistance(target);
+					return true;
 				}
 				else
 				{
-					Advance(target - travelDistance);
+					return Advance(target - travelDistance);
 				}
 			}
+			return false;
 		}
 
 		/// <summary>
