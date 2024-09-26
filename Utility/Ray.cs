@@ -137,7 +137,7 @@ namespace Raytracer {
 				}
 				else
 				{
-					return Advance(target - travelDistance);
+					return Advance(target);
 				}
 			}
 			return false;
