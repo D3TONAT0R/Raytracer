@@ -654,6 +654,11 @@ namespace Raytracer
 				redrawScreen = true;
 				Camera.MainCamera.fieldOfView -= 5;
 			}
+			if(Input.k.isDown)
+			{
+				redrawScreen = true;
+				Mode = Mode == RenderMode.Normal ? RenderMode.BoundingBoxesDebug : RenderMode.Normal;
+			}
 
 			if(scene != null && scene.animator != null)
 			{

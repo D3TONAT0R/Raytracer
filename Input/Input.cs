@@ -37,6 +37,7 @@ namespace Raytracer {
 		public static InputKey b = new InputKey(Key.B);
 		public static InputKey n = new InputKey(Key.N);
 		public static InputKey m = new InputKey(Key.M);
+		public static InputKey k = new InputKey(Key.K);
 
 		public static InputKey nLeft = new InputKey(Key.NumPad4);
 		public static InputKey nRight = new InputKey(Key.NumPad6);
@@ -44,7 +45,7 @@ namespace Raytracer {
 		public static InputKey nUp = new InputKey(Key.NumPad8);
 
 		public static InputKey[] allKeys = new InputKey[] {
-			esc,confirm,space,tab,up,w,arrowUp,down,s,arrowDown,left,a,arrowLeft,right,d,arrowRight,q,e,comma,period,r,nLeft,nRight,nDown,nUp,b
+			esc,confirm,space,tab,up,w,arrowUp,down,s,arrowDown,left,a,arrowLeft,right,d,arrowRight,q,e,comma,period,r,nLeft,nRight,nDown,nUp,b,k
 		};
 
 		public static void Update() {
@@ -74,6 +75,7 @@ namespace Raytracer {
 			l.Evaluate();
 			y.Evaluate();
 			x.Evaluate();
+			k.Evaluate();
 			nLeft.Evaluate();
 			nRight.Evaluate();
 			nDown.Evaluate();

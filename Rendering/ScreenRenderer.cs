@@ -28,7 +28,14 @@ namespace Raytracer
 			pixelY = y;
 			var ray = camera.ScreenPointToRay(viewportCoord);
 			Color c = SceneRenderer.TraceRay(scene, ray, VisibilityFlags.Direct).SetAlpha(1);
-			return c;
+			switch(RaytracerEngine.Mode)
+			{
+				case RenderMode.Normal: return c;
+				case RenderMode.BoundingBoxesDebug:
+					float d = Math.Max(ray.startDistance / 10f, 0);
+					return new Color(d, d, d, 1);
+				default: return new Color(1, 0, 1, 1);
+			}
 		}
 
 		protected void SetPixel(byte[] buffer, int x, int y, Color color, int width, int height, int depth)
