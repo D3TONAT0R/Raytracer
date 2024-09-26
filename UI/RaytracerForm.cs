@@ -163,5 +163,26 @@ namespace Raytracer {
 			propertiesPanel.HorizontalScroll.Visible = false;
 			propertiesPanel.AutoScroll = true;
 		}
+
+		private void OnBrowseResourcesFolderClick(object sender, EventArgs e)
+		{
+
+		}
+
+		private void OnSetResourcesFolderClick(object sender, EventArgs e)
+		{
+			var folderDialog = new FolderBrowserDialog
+			{
+				// Set options here
+				Description = "Select Resources Folder",
+				ShowNewFolderButton = true,
+				RootFolder = System.Environment.SpecialFolder.MyComputer
+			};
+			var result = folderDialog.ShowDialog();
+			if(result == DialogResult.OK || result == DialogResult.Yes)
+			{
+				PersistentPrefs.ResourcesRootPath = folderDialog.SelectedPath;
+			}
+		}
 	}
 }

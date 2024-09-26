@@ -18,9 +18,6 @@ namespace Raytracer
 {
 	public class RaytracerEngine
 	{
-
-		public static string rootPath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Raytracer");
-
 		public static RaytracerEngine instance;
 
 		public static Action SceneLoaded;

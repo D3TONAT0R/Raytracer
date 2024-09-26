@@ -23,7 +23,7 @@ namespace Raytracer
 			var d = new SaveFileDialog()
 			{
 				DefaultExt = ".txt",
-				InitialDirectory = RaytracerEngine.rootPath
+				InitialDirectory = PersistentPrefs.ResourcesRootPath
 			};
 			var result = d.ShowDialog();
 			if (result == DialogResult.OK)

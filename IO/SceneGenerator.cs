@@ -44,7 +44,7 @@ namespace Raytracer {
 
 		public static Scene GeneratePreset(int index) {
 			if(index == 0) {
-				return SceneFileLoader.CreateFromFile(System.IO.Path.Combine(RaytracerEngine.rootPath, "scene_4.txt"));
+				return SceneFileLoader.CreateFromFile(System.IO.Path.Combine(PersistentPrefs.ResourcesRootPath, "scene_4.txt"));
 			} else if(index == 1) {
 				return GenerateSphereWorld();
 			} else if(index == 2) {
@@ -161,7 +161,7 @@ namespace Raytracer {
 				DefaultExt = ".txt",
 				CheckFileExists = true,
 				Multiselect = false,
-				InitialDirectory = RaytracerEngine.rootPath
+				InitialDirectory = PersistentPrefs.ResourcesRootPath
 			};
 			var result = d.ShowDialog();
 			if (result == DialogResult.OK)

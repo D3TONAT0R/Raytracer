@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Raytracer {
 	public class Sampler2D {
 
-		public static string defaultPath = Path.Combine(RaytracerEngine.rootPath, "Textures");
+		public static string defaultPath = Path.Combine(PersistentPrefs.ResourcesRootPath, "Textures");
 
 		public readonly string textureName;
 

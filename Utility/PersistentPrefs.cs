@@ -22,6 +22,24 @@ namespace Raytracer
 
 		const string rootRegistryPath = @"SOFTWARE\Raytracer";
 
+		public static string ResourcesRootPath
+		{
+			get
+			{
+				var key = Registry.CurrentUser.OpenSubKey(rootRegistryPath);
+				if(key != null)
+				{
+					return (string)key.GetValue("ResourcesRootPath");
+				}
+				return Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), "Raytracer");
+			}
+			set
+			{
+				var key = Registry.CurrentUser.CreateSubKey(rootRegistryPath);
+				key.SetValue("ResourcesRootPath", value);
+			}
+		}
+
 		public static bool TryGetLastSessionInfo(out LastSessionInfo info)
 		{
 			var key = Registry.CurrentUser.OpenSubKey(Path.Combine(rootRegistryPath, "LastSession"));

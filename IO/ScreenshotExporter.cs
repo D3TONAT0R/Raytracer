@@ -12,8 +12,8 @@ namespace Raytracer
 {
 	public static class ScreenshotExporter
 	{
-		public static string ScreenshotRootFolder => Path.Combine(RaytracerEngine.rootPath, "Screenshots");
-		public static string AnimationsRootFolder => Path.Combine(RaytracerEngine.rootPath, "Animations");
+		public static string ScreenshotRootFolder => Path.Combine(PersistentPrefs.ResourcesRootPath, "Screenshots");
+		public static string AnimationsRootFolder => Path.Combine(PersistentPrefs.ResourcesRootPath, "Animations");
 
 		public static string currentAnimationSequenceName = null;
 
