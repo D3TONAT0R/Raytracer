@@ -15,6 +15,8 @@ namespace Raytracer {
 		public float startDistance;
 		public Vector2 sourceScreenPos;
 
+		public Color accumulatedVolumeColor;
+
 		private Vector3 dir;
 		public Vector3 InverseDirection {
 			get;
@@ -94,15 +96,14 @@ namespace Raytracer {
 		}
 
 		//TODO: Use shape local space for even better optimization
-		//TODO: test if this still works as intended
-		public bool AdvanceToNextShapeBounds(List<Shape> shapes)
+		public bool AdvanceToNextObjectBounds(List<SceneObject> objects)
 		{
 			//Jump directly to the first intersection point (skip marching in empty space)
 			float nearestIntersection = float.MaxValue;
 			float farthestIntersection = travelDistance;
-			for(int i = 0; i < shapes.Count; i++)
+			for(int i = 0; i < objects.Count; i++)
 			{
-				var shape = shapes[i];
+				var shape = objects[i];
 				byte hitFlags = GetAABBIntersectionPoints(shape.WorldSpaceShapeBounds, Matrix4x4.Identity, Matrix4x4.Identity, out var p1, out var p2);
 				//GetAABBIntersectionPoints(ray, shape.LocalShapeBounds, shape.WorldToLocalMatrix, shape.LocalToWorldMatrix);
 				//if((hitFlags & (1 << 0)) != 0)
@@ -211,6 +212,20 @@ namespace Raytracer {
 				else p2 = v;
 			}
 			return hits;
+		}
+
+		public void AccumulateVolumeColor(Color color)
+		{
+			if(accumulatedVolumeColor.a <= 0)
+			{
+				accumulatedVolumeColor = color;
+			}
+			else
+			{
+				//TODO: needs testing
+				float w = color.a / (color.a + accumulatedVolumeColor.a);
+				accumulatedVolumeColor = accumulatedVolumeColor * (1 - w) + color * w;
+			}
 		}
 	}
 }

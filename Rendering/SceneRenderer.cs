@@ -155,15 +155,21 @@ namespace Raytracer
 			if(ray.reflectionIteration >= RaytracerEngine.CurrentRenderSettings.maxBounces + 1) return Color.Black;
 			bool hit = TraceRay(scene, ref ray, rayType, out var result, excludeShape, null, optimize);
 
+			Color final;
 			if(hit && result.HitShape != null)
 			{
-				return result.HitShape.GetColorAt(result.HitShape.WorldToLocalPoint(result.Position), ray);
+				final = result.HitShape.GetColorAt(result.HitShape.WorldToLocalPoint(result.Position), ray);
 			}
 			else
 			{
 				//We didn't hit anything, render the sky instead
-				return scene.environment.SampleSkybox(ray.Direction);
+				final = scene.environment.SampleSkybox(ray.Direction);
 			}
+			if(ray.accumulatedVolumeColor.a > 0)
+			{
+				final = Color.Lerp(final, ray.accumulatedVolumeColor.SetAlpha(1), ray.accumulatedVolumeColor.a);
+			}
+			return final;
 		}
 
 		/// <summary>
@@ -180,16 +186,18 @@ namespace Raytracer
 		public static bool TraceRay(Scene scene, ref Ray ray, VisibilityFlags rayType, out RayTraceResult result, Shape excludeShape = null, Shape exitShape = null, bool optimize = true)
 		{
 			var shapes = scene.GetIntersectingShapes(ray, rayType);
+			var volumes = scene.GetIntersectingVolumes(ray, rayType);
+			var objects = new List<SceneObject>().Concat(shapes).Concat(volumes).ToList();
 			result = RayTraceResult.NoTrace;
 			//Ignore excluded shape
 			if(excludeShape != null && shapes.Contains(excludeShape)) shapes.Remove(excludeShape);
-			if(shapes.Count > 0)
+			if(objects.Count > 0)
 			{
 				//TODO: optimization is temporarily disabled on reflections, causes floating reflections at intersections
-				if(optimize) ray.AdvanceToNextShapeBounds(shapes);
+				if(optimize) ray.AdvanceToNextObjectBounds(objects);
 				while(scene.IsInWorldBounds(ray.Position))
 				{
-					var intersecting = scene.GetAABBIntersectingShapes(ray.Position, shapes);
+					var intersecting = scene.GetAABBIntersectingObjects(ray.Position, objects);
 					if(intersecting.Count == 0)
 					{
 						//No AABB collision detected
@@ -200,7 +208,7 @@ namespace Raytracer
 						}
 
 						//Skip to next object
-						bool canContinue = optimize ? ray.AdvanceToNextShapeBounds(shapes) : ray.March(false);
+						bool canContinue = optimize ? ray.AdvanceToNextObjectBounds(objects) : ray.March(false);
 						//bool canContinue = ray.March(false);
 						if(!canContinue)
 						{
@@ -213,12 +221,27 @@ namespace Raytracer
 					{
 						for(int i = 0; i < intersecting.Count; i++)
 						{
-							var localPos = intersecting[i].WorldToLocalPoint(ray.Position);
-							if(intersecting[i].Intersects(localPos))
+							var obj = intersecting[i];
+							if(obj is Shape shape)
 							{
-								//We are about to hit something
-								result = new RayTraceResult(intersecting[i], ray.Position, ray.travelDistance);
-								return true;
+								var localPos = intersecting[i].WorldToLocalPoint(ray.Position);
+								if(shape.Intersects(localPos))
+								{
+									//We are about to hit something
+									result = new RayTraceResult(shape, ray.Position, ray.travelDistance);
+									return true;
+								}
+							}
+							else if(obj is Volume volume)
+							{
+								//TODO: take ray travel distance into account
+								float d = volume.GetDensity(ray.Position);
+								Color c = volume.color.SetAlpha(d);
+								ray.AccumulateVolumeColor(c);
+							}
+							else
+							{
+								throw new NotImplementedException("Unknown object type intersected: " + obj.GetType().Name);
 							}
 						}
 

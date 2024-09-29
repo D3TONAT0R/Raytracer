@@ -58,6 +58,7 @@
     <Compile Include="RayTraceResult.cs" />
     <Compile Include="Rendering\RenderMode.cs" />
     <Compile Include="SceneObjects\Pyramid.cs" />
+    <Compile Include="SceneObjects\Volume.cs" />
     <Compile Include="SceneObjects\WireCuboid.cs" />
     <Compile Include="UI\InspectorField.cs">
       <SubType>Component</SubType>

@@ -41,6 +41,7 @@ namespace Raytracer
 
 		List<Shape> shapes = new List<Shape>();
 		List<Light> lights = new List<Light>();
+		List<Volume> volumes = new List<Volume>();
 
 		public SceneObject remoteControlledObject;
 
@@ -87,11 +88,11 @@ namespace Raytracer
 		{
 			shapes.Clear();
 			lights.Clear();
+			volumes.Clear();
 			foreach(var obj in sceneContent)
 			{
 				RegisterSceneContent(obj);
 			}
-			//shapeAABBs.Clear();
 			sceneObjectsAABB = AABB.NullBounds;
 			foreach(var s in sceneContent)
 			{
@@ -101,49 +102,14 @@ namespace Raytracer
 				sceneObjectsAABB = sceneObjectsAABB.Join(s.WorldSpaceShapeBounds);
 			}
 			sceneObjectsAABB = sceneObjectsAABB.Join(Camera.MainCamera.ActualCameraPosition);
-			//sceneObjectsAABB = new AABB(-Vector3.One * 20, Vector3.One * 20);
-			//sceneObjectsAABB = new AABB(-Vector3.One * 2000, Vector3.One * 2000);
-			//sceneObjectsAABB = sceneObjectsAABB.Expand(2.0f);
-			/*
-			foreach(var s1 in shapes)
-			{
-				foreach(var s in s1.GetSubShapes())
-				{
-					s.SetupForRendering();
-					sceneObjectsAABB = sceneObjectsAABB.Join(s.ShapeAABB.Offset(s.HierarchyPositionOffset));
-					//s.SetupAABBs(expandedAABBs, expansionAmount);
-					//shapeAABBs.Add(s, new AABB[] { s.ShapeAABB, s.ShapeAABB.Expand(expansionAmount) });
-				}
-			}
-			*/
 		}
 
 		void RegisterSceneContent(SceneObject obj)
 		{
 			shapes.AddRange(obj.GetContainedObjectsOfType<Shape>());
 			lights.AddRange(obj.GetContainedObjectsOfType<Light>());
-			/*
-			if(obj is ObjectInstance instance)
-			{
-				RegisterSceneContent(instance.referencedObject);
-			}
-			else if(obj is Group group)
-			{
-				shapes.AddRange(group.GetContainedObjectsOfType<Shape>());
-				lights.AddRange(group.GetContainedObjectsOfType<Light>());
-			}
-			else if(obj is Shape)
-			{
-				shapes.Add(obj as Shape);
-			}
-			else if(obj is Light)
-			{
-				lights.Add(obj as Light);
-			}
-			*/
+			volumes.AddRange(obj.GetContainedObjectsOfType<Volume>());
 		}
-
-		static Random r = new Random();
 
 		public List<Shape> GetIntersectingShapes(Ray ray, VisibilityFlags flags)
 		{
@@ -155,7 +121,21 @@ namespace Raytracer
 					list.AddRange(o.GetIntersectingShapes(ray, flags));
 				}
 			}
-			list.RemoveAll((s) => !s.VisibleInHierarchy);
+			list.RemoveAll(s => !s.VisibleInHierarchy);
+			return list;
+		}
+
+		public List<Volume> GetIntersectingVolumes(Ray ray, VisibilityFlags flags)
+		{
+			var list = new List<Volume>();
+			foreach(var v in volumes)
+			{
+				if(v.IntersectsRay(ray))
+				{
+					list.Add(v);
+				}
+			}
+			list.RemoveAll(v => !v.VisibleInHierarchy);
 			return list;
 		}
 
@@ -175,9 +155,9 @@ namespace Raytracer
 			//return worldAABB.IsInside(pos);
 		}
 
-		public List<Shape> GetAABBIntersectingShapes(Vector3 pos, List<Shape> query)
+		public List<SceneObject> GetAABBIntersectingObjects(Vector3 pos, List<SceneObject> query)
 		{
-			List<Shape> list = new List<Shape>();
+			List<SceneObject> list = new List<SceneObject>();
 			if(sceneObjectsAABB.IsInside(pos))
 			{
 				foreach(var s in query)
