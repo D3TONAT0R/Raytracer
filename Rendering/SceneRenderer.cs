@@ -234,8 +234,7 @@ namespace Raytracer
 							}
 							else if(obj is Volume volume)
 							{
-								//TODO: take ray travel distance into account
-								float d = volume.GetDensity(ray.Position);
+								float d = volume.GetDensity(volume.WorldToLocalPoint(ray.Position)) * ray.LastMarchDistance;
 								Color c = volume.color.SetAlpha(d);
 								ray.AccumulateVolumeColor(c);
 							}

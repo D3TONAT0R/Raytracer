@@ -180,6 +180,16 @@ namespace Raytracer {
 			);
 		}
 
+		public static Color LerpRGB(Color a, Color b, float t, float alpha = 1)
+		{
+			return new Color(
+				Lerp(a.r, b.r, t),
+				Lerp(a.g, b.g, t),
+				Lerp(a.b, b.b, t),
+				alpha
+			);
+		}
+
 		private static float Lerp(float a, float b, float t) {
 			return a + (b - a) * t;
 		}

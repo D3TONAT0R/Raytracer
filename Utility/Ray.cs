@@ -43,6 +43,8 @@ namespace Raytracer {
 
 		private float marchingMultiplier = 1f;
 
+		public float LastMarchDistance { get; private set; }
+
 		public Ray(Vector3 pos, Vector3 dir, int iteration, Vector2 screenPos, float maxDistance = 1000) {
 			origin = pos;
 			Direction = dir;
@@ -69,6 +71,7 @@ namespace Raytracer {
 				return false;
 			}
 			travelDistance += distance;
+			LastMarchDistance = distance;
 			return true;
 		}
 
@@ -223,8 +226,9 @@ namespace Raytracer {
 			else
 			{
 				//TODO: needs testing
-				float w = color.a / (color.a + accumulatedVolumeColor.a);
-				accumulatedVolumeColor = accumulatedVolumeColor * (1 - w) + color * w;
+				float finalAlpha = accumulatedVolumeColor.a + color.a;
+				float l = color.a / finalAlpha;
+				accumulatedVolumeColor = Color.LerpRGB(accumulatedVolumeColor, color, l, finalAlpha);
 			}
 		}
 	}

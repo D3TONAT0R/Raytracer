@@ -33,7 +33,7 @@ namespace Raytracer {
 			return a + (b - a) * t;
 		}
 
-		public static float Remap(float a, float b, float t) {
+		public static float InverseLerp(float a, float b, float t) {
 			return (t - a) / (b - a);
 		}
 
@@ -102,6 +102,11 @@ namespace Raytracer {
 				a = 0.5f - a;
 			}
 			return (a + 1.0f) % 1.0f;
+		}
+
+		public static float Saturate(float f)
+		{
+			return Math.Min(1, Math.Max(0, f));
 		}
 	}
 }

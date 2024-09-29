@@ -140,7 +140,7 @@ namespace Raytracer {
 			var lnorm = Vector3.Normalize(localPosition - point);
 			var dev = 0.5f + Vector3.Dot(reflNormal, lnorm) * 0.5f;
 			//float l = (float)Math.Max(0, Math.Pow(dev, 80f * reflectivity));
-			float l = Math.Max(0, MathUtils.Remap(0.5f+spec*0.48f, 1f, 1-dev));
+			float l = Math.Max(0, MathUtils.InverseLerp(0.5f+spec*0.48f, 1f, 1-dev));
 			return color * intensity * l * spec;
 		}
 
