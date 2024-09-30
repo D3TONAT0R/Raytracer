@@ -167,7 +167,7 @@ namespace Raytracer
 			}
 			if(ray.accumulatedVolumeColor.a > 0)
 			{
-				final = Color.Lerp(final, ray.accumulatedVolumeColor.SetAlpha(1), ray.accumulatedVolumeColor.a);
+				final = Color.Lerp(final, ray.accumulatedVolumeColor.SetAlpha(1), MathUtils.Saturate(ray.accumulatedVolumeColor.a));
 			}
 			return final;
 		}
@@ -234,9 +234,15 @@ namespace Raytracer
 							}
 							else if(obj is Volume volume)
 							{
-								float d = volume.GetDensity(volume.WorldToLocalPoint(ray.Position)) * ray.LastMarchDistance;
+								float d = volume.GetDensity(ray.Position) * ray.LastMarchDistance;
 								Color c = volume.color.SetAlpha(d);
 								ray.AccumulateVolumeColor(c);
+								if(ray.AccumulatedVolumeAlpha >= 1)
+								{
+									//We have reached 100% volume opacity
+									result = new RayTraceResult(null, ray.Position, ray.travelDistance);
+									return false;
+								}
 							}
 							else
 							{

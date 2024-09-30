@@ -45,6 +45,8 @@ namespace Raytracer {
 
 		public float LastMarchDistance { get; private set; }
 
+		public float AccumulatedVolumeAlpha => accumulatedVolumeColor.a;
+
 		public Ray(Vector3 pos, Vector3 dir, int iteration, Vector2 screenPos, float maxDistance = 1000) {
 			origin = pos;
 			Direction = dir;
